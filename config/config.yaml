@@ -1,0 +1,9 @@
+index_dir: DATA
+nppes_dir: data/nppes
+reference_dir: reference
+output_dir: outputs
+workers: 4
+recon:
+  sample_size: 20
+  probe_mb: 40
+  probe_url_pattern: healthnet-ca_in-network

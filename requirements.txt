@@ -1,0 +1,5 @@
+ijson==3.6.0
+pandas==3.0.6
+pyarrow==26.0.0
+pytest==9.1.1
+PyYAML==6.0.3

@@ -1,0 +1,53 @@
+{
+  "duplicate_file_entries_removed": 7,
+  "duplicate_urls_merged_by_normalization": 0,
+  "file_names_with_multiple_urls": 0,
+  "in_network_file_entries_raw": 40,
+  "index_files_parsed": 11,
+  "per_brand": {
+    "ambetter": {
+      "index_files": 1,
+      "market_types": {
+        "individual": 1120
+      },
+      "plan_rows": 1120,
+      "unique_files": 28,
+      "unique_plans": 1120
+    },
+    "fidelis": {
+      "index_files": 1,
+      "market_types": {
+        "individual": 94
+      },
+      "plan_rows": 94,
+      "unique_files": 2,
+      "unique_plans": 94
+    },
+    "healthnet": {
+      "index_files": 1,
+      "market_types": {
+        "group": 1693
+      },
+      "plan_rows": 1693,
+      "unique_files": 2,
+      "unique_plans": 1693
+    },
+    "qualchoice": {
+      "index_files": 8,
+      "market_types": {
+        "group": 363
+      },
+      "plan_rows": 368,
+      "unique_files": 1,
+      "unique_plans": 363
+    }
+  },
+  "plan_entries_raw": 3275,
+  "plan_entries_without_file": 0,
+  "plan_file_rows": 3275,
+  "reporting_structure_entries": 40,
+  "unique_file_urls_normalized": 33,
+  "unique_file_urls_raw": 33,
+  "unique_plans": 3270,
+  "unique_plans_in_multiple_index_files": 4
+}
