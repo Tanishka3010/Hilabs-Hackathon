@@ -1,0 +1,6 @@
+selection_rule,contexts,candidate_rows
+single_rate,835715,1492344.0
+lower_median_of_tied_rates,3032,10459.0
+most_frequent_rate,1708,7941.0
+outliers_set_aside+single_rate,84,748.0
+outliers_set_aside+lower_median_of_tied_rates,35,228.0

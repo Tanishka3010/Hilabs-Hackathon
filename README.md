@@ -7,11 +7,11 @@ A reproducible pipeline over Centene's Transparency-in-Coverage (TiC) files. Sco
 | `recon` | Streams every index file and profiles its schema, plans and file URLs | `outputs/c1/recon_report.md` |
 | `c1` | Parses all index files into plan × file, deduplicated file and plan tables | `outputs/c1/*.parquet`, `*.csv`, `c1_stats.json` |
 | `c2` | Applies the scope filters and the network-type rule cascade to every plan and file | `outputs/c2/plan_classification.csv`, `file_classification.csv`, `ppo_plans.csv`, `ppo_files.csv`, `exclusions_summary.csv`, `conflicts.csv`, `c2_stats.json` |
-| `c4` | Downloads each PPO rate file to `raw/ptd/` (resumable) and streams it into rate tables (rate selection still to come) | `outputs/c4/<file_key>/rates.parquet`, `provider_refs.parquet`, `file_header.json` |
+| `c4` | Downloads each PPO rate file to `raw/ptd/` (resumable), streams it into rate tables, then keeps one rate per provider context with a documented selection rule | `outputs/c4/<file_key>/rates_selected.parquet`, `rates.parquet`, `provider_refs.parquet`, `selection_summary.csv`, `c4_stats.json` |
 | `c3` | Grades every file used: 13 quality metrics per rate file, 5 per index file, with a weighted score and grade | `outputs/c3/file_scores.csv`, `metric_values.csv`, `metric_details.json`, `index_file_scores.csv`, `c3_stats.json` |
 | `c5` | Provider location (in progress) | `outputs/c5` |
 
-The logic and the reasons behind each decision are in [docs/logic_c1_c2.md](docs/logic_c1_c2.md) (C1, C2) and [docs/logic_c3.md](docs/logic_c3.md) (C3 file-quality metrics). Unresolved data ambiguities are in [docs/open_questions.md](docs/open_questions.md).
+The logic and the reasons behind each decision are in [docs/logic_c1_c2.md](docs/logic_c1_c2.md) (C1, C2) [docs/logic_c3.md](docs/logic_c3.md) (C3 file-quality metrics) and [docs/logic_c4.md](docs/logic_c4.md) (C4 rate extraction and selection). To resume the project in a new session, start with [docs/PROJECT_CONTEXT.md](docs/PROJECT_CONTEXT.md). Unresolved data ambiguities are in [docs/open_questions.md](docs/open_questions.md).
 
 ## Setup (Python 3.11+)
 ```bash
@@ -72,6 +72,8 @@ Assumptions the organizers haven't confirmed are switches in `config/config.yaml
 - **1 PPO rate file**, `healthnet-ca_in-network.json`. It's labelled `MIXED` because every CA network shares it, so PPO rates must be filtered inside it (C3).
 
 - C3: the CA rate file scores **0.857 (grade B)** on all 13 metrics. Its weak points are specialty-matched coverage (49% of benchmark weight), benchmark coverage on professional rates (68%), procedure-code identifiability (75%) and outliers (1.6%). 96.7% of its NPIs are valid, active and in CA. See [docs/logic_c3.md](docs/logic_c3.md).
+
+- C4: **840,574 selected rates** for 3,735 NPIs and 2,888 TINs. 4,859 provider contexts had several rates; each kept one by a fixed rule: drop unusable → prefer negotiated → set aside more-than-10× outliers → most frequent → lower median on a tie. See [docs/logic_c4.md](docs/logic_c4.md).
 
 ## Tests
 ```bash

@@ -1,0 +1,208 @@
+{
+  "as_of_date": "2026-10-06",
+  "files": {
+    "5bf4afa2cef9bc2a": {
+      "extract": {
+        "bytes_read": 701615514,
+        "bytes_total": 701615514,
+        "complete": true,
+        "file_key": "5bf4afa2cef9bc2a",
+        "file_url": "https://www.centene.com/content/dam/centene/Centene%20Corporate/json/DOCUMENT/2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json",
+        "invalid_records": {},
+        "last_updated_on": "2026-10-06",
+        "n_in_network_items": 1717,
+        "n_inline_provider_rows": 0,
+        "n_negotiated_prices": 1500288,
+        "n_negotiated_rates": 397726,
+        "n_provider_references": 2825,
+        "n_provider_rows": 5672,
+        "n_rows": 1500288,
+        "reporting_entity_name": "Centene Management Company LLC",
+        "reporting_entity_type": "Third Party Administrator",
+        "version": "2.0.0"
+      },
+      "selection": {
+        "billing_codes": 775,
+        "by_rule": [
+          {
+            "candidate_rows": 1492344.0,
+            "contexts": 835715,
+            "selection_rule": "single_rate"
+          },
+          {
+            "candidate_rows": 10459.0,
+            "contexts": 3032,
+            "selection_rule": "lower_median_of_tied_rates"
+          },
+          {
+            "candidate_rows": 7941.0,
+            "contexts": 1708,
+            "selection_rule": "most_frequent_rate"
+          },
+          {
+            "candidate_rows": 748.0,
+            "contexts": 84,
+            "selection_rule": "outliers_set_aside+single_rate"
+          },
+          {
+            "candidate_rows": 228.0,
+            "contexts": 35,
+            "selection_rule": "outliers_set_aside+lower_median_of_tied_rates"
+          }
+        ],
+        "conflict_examples": [
+          {
+            "billing_class": "institutional",
+            "billing_code": "23",
+            "billing_code_type": "RC",
+            "n_candidate_rows": 7,
+            "name": "EARLY - COMMUNITY, NEURO - H",
+            "negotiated_rate": 241.34,
+            "npi": 1851494231,
+            "procedure_code": null,
+            "rate_max": 7380.48,
+            "rate_min": 241.34,
+            "selection_rule": "outliers_set_aside+single_rate",
+            "tin": "65-1191375"
+          },
+          {
+            "billing_class": "institutional",
+            "billing_code": "23",
+            "billing_code_type": "RC",
+            "n_candidate_rows": 14,
+            "name": "EARLY - COMMUNITY, MMTA - GI",
+            "negotiated_rate": 241.34,
+            "npi": 1851494231,
+            "procedure_code": null,
+            "rate_max": 7380.48,
+            "rate_min": 241.34,
+            "selection_rule": "outliers_set_aside+single_rate",
+            "tin": "65-1191375"
+          },
+          {
+            "billing_class": "institutional",
+            "billing_code": "23",
+            "billing_code_type": "RC",
+            "n_candidate_rows": 7,
+            "name": "EARLY - COMMUNITY, BEHAVIORA",
+            "negotiated_rate": 241.34,
+            "npi": 1851494231,
+            "procedure_code": null,
+            "rate_max": 7380.48,
+            "rate_min": 241.34,
+            "selection_rule": "outliers_set_aside+single_rate",
+            "tin": "65-1191375"
+          },
+          {
+            "billing_class": "institutional",
+            "billing_code": "23",
+            "billing_code_type": "RC",
+            "n_candidate_rows": 7,
+            "name": "LATE - COMMUNITY, NEURO - HI",
+            "negotiated_rate": 241.34,
+            "npi": 1851494231,
+            "procedure_code": null,
+            "rate_max": 7380.48,
+            "rate_min": 241.34,
+            "selection_rule": "outliers_set_aside+single_rate",
+            "tin": "65-1191375"
+          },
+          {
+            "billing_class": "institutional",
+            "billing_code": "23",
+            "billing_code_type": "RC",
+            "n_candidate_rows": 21,
+            "name": "LATE - COMMUNITY, MMTA - INF",
+            "negotiated_rate": 241.34,
+            "npi": 1851494231,
+            "procedure_code": null,
+            "rate_max": 7380.48,
+            "rate_min": 241.34,
+            "selection_rule": "outliers_set_aside+single_rate",
+            "tin": "65-1191375"
+          },
+          {
+            "billing_class": "institutional",
+            "billing_code": "23",
+            "billing_code_type": "RC",
+            "n_candidate_rows": 14,
+            "name": "LATE - COMMUNITY, MMTA - GI/",
+            "negotiated_rate": 241.34,
+            "npi": 1851494231,
+            "procedure_code": null,
+            "rate_max": 7380.48,
+            "rate_min": 241.34,
+            "selection_rule": "outliers_set_aside+single_rate",
+            "tin": "65-1191375"
+          },
+          {
+            "billing_class": "institutional",
+            "billing_code": "23",
+            "billing_code_type": "RC",
+            "n_candidate_rows": 7,
+            "name": "EARLY - COMMUNITY, WOUND - L",
+            "negotiated_rate": 241.34,
+            "npi": 1851494231,
+            "procedure_code": null,
+            "rate_max": 7380.48,
+            "rate_min": 241.34,
+            "selection_rule": "outliers_set_aside+single_rate",
+            "tin": "65-1191375"
+          },
+          {
+            "billing_class": "institutional",
+            "billing_code": "23",
+            "billing_code_type": "RC",
+            "n_candidate_rows": 14,
+            "name": "LATE - COMMUNITY, MMTA - SUR",
+            "negotiated_rate": 241.34,
+            "npi": 1851494231,
+            "procedure_code": null,
+            "rate_max": 7380.48,
+            "rate_min": 241.34,
+            "selection_rule": "outliers_set_aside+single_rate",
+            "tin": "65-1191375"
+          },
+          {
+            "billing_class": "institutional",
+            "billing_code": "23",
+            "billing_code_type": "RC",
+            "n_candidate_rows": 28,
+            "name": "LATE - COMMUNITY, MMTA - CAR",
+            "negotiated_rate": 241.34,
+            "npi": 1851494231,
+            "procedure_code": null,
+            "rate_max": 7380.48,
+            "rate_min": 241.34,
+            "selection_rule": "outliers_set_aside+single_rate",
+            "tin": "65-1191375"
+          },
+          {
+            "billing_class": "institutional",
+            "billing_code": "23",
+            "billing_code_type": "RC",
+            "n_candidate_rows": 7,
+            "name": "EARLY - COMMUNITY, NEURO - M",
+            "negotiated_rate": 241.34,
+            "npi": 1851494231,
+            "procedure_code": null,
+            "rate_max": 7380.48,
+            "rate_min": 241.34,
+            "selection_rule": "outliers_set_aside+single_rate",
+            "tin": "65-1191375"
+          }
+        ],
+        "contexts_with_conflict": 4859,
+        "dropped_rows": {},
+        "npi_tin_pairs": 3780,
+        "npis": 3735,
+        "pairs_before_selection": 1511720,
+        "procedure_codes": 1073,
+        "rows_with_network_hint": 273,
+        "rows_with_procedure_code": 599967,
+        "selected_rows": 840574,
+        "tins": 2888
+      }
+    }
+  }
+}
