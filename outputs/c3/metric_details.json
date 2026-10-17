@@ -1,0 +1,291 @@
+{
+  "5bf4afa2cef9bc2a": {
+    "code_coverage": {
+      "benchmark_codes": 583,
+      "codes_priced": 134,
+      "codes_priced_any_class": 203,
+      "scored_billing_classes": [
+        "professional"
+      ],
+      "top_missing_codes": [
+        "H0015",
+        "27447",
+        "J0177",
+        "J2350",
+        "H2020",
+        "J2777",
+        "27130",
+        "T2046",
+        "H2036",
+        "43239",
+        "67028",
+        "95938",
+        "95939",
+        "J2781",
+        "G0482",
+        "23472",
+        "95955",
+        "59510",
+        "H0011",
+        "H0005"
+      ],
+      "unweighted_share": 0.2298,
+      "weighted_share_any_class": 0.7533
+    },
+    "code_identifiability": {
+      "by_code_type": {
+        "CPT": 3535,
+        "HCPCS": 446,
+        "RC": 1123712,
+        "RC (no procedure code)": 372595
+      },
+      "rows": 1500288,
+      "rows_with_procedure_code": 1127693
+    },
+    "conflicting_rates": {
+      "contexts": 841729,
+      "contexts_with_multiple_rates": 4194,
+      "widest_examples": [
+        {
+          "additional_information": null,
+          "billing_class": "institutional",
+          "billing_code": "370",
+          "billing_code_modifier": null,
+          "billing_code_type": "RC",
+          "max_rate": 2391.92,
+          "min_rate": 233.81,
+          "n_rates": 2,
+          "name": "MOD SED OTH PHYS/QHP 5/>YRS",
+          "negotiated_type": "negotiated",
+          "npi": 1730171265,
+          "service_code": "22",
+          "setting": "outpatient",
+          "tin": "51-0519167"
+        },
+        {
+          "additional_information": null,
+          "billing_class": "institutional",
+          "billing_code": "370",
+          "billing_code_modifier": null,
+          "billing_code_type": "RC",
+          "max_rate": 2391.92,
+          "min_rate": 233.81,
+          "n_rates": 2,
+          "name": "Anesthesia General",
+          "negotiated_type": "negotiated",
+          "npi": 1730171265,
+          "service_code": "22",
+          "setting": "outpatient",
+          "tin": "51-0519167"
+        },
+        {
+          "additional_information": null,
+          "billing_class": "institutional",
+          "billing_code": "370",
+          "billing_code_modifier": null,
+          "billing_code_type": "RC",
+          "max_rate": 2391.92,
+          "min_rate": 233.81,
+          "n_rates": 2,
+          "name": "MOD SED SAME PHYS/QHP 5/>YRS",
+          "negotiated_type": "negotiated",
+          "npi": 1730171265,
+          "service_code": "22",
+          "setting": "outpatient",
+          "tin": "51-0519167"
+        },
+        {
+          "additional_information": null,
+          "billing_class": "institutional",
+          "billing_code": "370",
+          "billing_code_modifier": null,
+          "billing_code_type": "RC",
+          "max_rate": 2391.92,
+          "min_rate": 233.81,
+          "n_rates": 2,
+          "name": "MOD SED OTHER PHYS/QHP EA",
+          "negotiated_type": "negotiated",
+          "npi": 1730171265,
+          "service_code": "22",
+          "setting": "outpatient",
+          "tin": "51-0519167"
+        },
+        {
+          "additional_information": null,
+          "billing_class": "institutional",
+          "billing_code": "370",
+          "billing_code_modifier": null,
+          "billing_code_type": "RC",
+          "max_rate": 2391.92,
+          "min_rate": 233.81,
+          "n_rates": 2,
+          "name": "MOD SED SVC PRV SM PHYS PER",
+          "negotiated_type": "negotiated",
+          "npi": 1730171265,
+          "service_code": "22",
+          "setting": "outpatient",
+          "tin": "51-0519167"
+        }
+      ]
+    },
+    "exact_duplicates": {
+      "distinct_rows": 1487556,
+      "rows": 1500288
+    },
+    "expired_rates": {
+      "rows": 1500288,
+      "rows_expired": 0
+    },
+    "file_freshness": {
+      "as_of": "2026-10-06",
+      "date_in_file_url": "2026-09-30",
+      "days": 0,
+      "last_updated_on": "2026-10-06",
+      "url_date_matches_content": false
+    },
+    "outlier_rate": {
+      "eligible_rows": 1444075,
+      "outlier_rows": 22499,
+      "top_groups": [
+        {
+          "billing_class": "institutional",
+          "billing_code": "23",
+          "billing_code_type": "RC",
+          "max_rate": 7380.48,
+          "median": 121.63499999999999,
+          "min_rate": 1.45,
+          "name": "EARLY - INSTITUTIONAL, MMTA",
+          "outliers": 135,
+          "procedure_code": null
+        },
+        {
+          "billing_class": "institutional",
+          "billing_code": "23",
+          "billing_code_type": "RC",
+          "max_rate": 7380.48,
+          "median": 121.63499999999999,
+          "min_rate": 1.45,
+          "name": "EARLY - INSTITUTIONAL, MS RE",
+          "outliers": 90,
+          "procedure_code": null
+        },
+        {
+          "billing_class": "institutional",
+          "billing_code": "23",
+          "billing_code_type": "RC",
+          "max_rate": 7380.48,
+          "median": 121.63499999999999,
+          "min_rate": 1.45,
+          "name": "LATE - COMMUNITY, MS REHAB -",
+          "outliers": 75,
+          "procedure_code": null
+        },
+        {
+          "billing_class": "institutional",
+          "billing_code": "23",
+          "billing_code_type": "RC",
+          "max_rate": 7380.48,
+          "median": 121.63499999999999,
+          "min_rate": 1.45,
+          "name": "EARLY - COMMUNITY, MMTA - CA",
+          "outliers": 60,
+          "procedure_code": null
+        },
+        {
+          "billing_class": "institutional",
+          "billing_code": "23",
+          "billing_code_type": "RC",
+          "max_rate": 7380.48,
+          "median": 121.63499999999999,
+          "min_rate": 1.45,
+          "name": "EARLY - COMMUNITY, MS REHAB",
+          "outliers": 60,
+          "procedure_code": null
+        },
+        {
+          "billing_class": "institutional",
+          "billing_code": "23",
+          "billing_code_type": "RC",
+          "max_rate": 7380.48,
+          "median": 121.63499999999999,
+          "min_rate": 1.45,
+          "name": "LATE - COMMUNITY, MMTA - CAR",
+          "outliers": 60,
+          "procedure_code": null
+        },
+        {
+          "billing_class": "institutional",
+          "billing_code": "23",
+          "billing_code_type": "RC",
+          "max_rate": 7380.48,
+          "median": 121.63499999999999,
+          "min_rate": 1.45,
+          "name": "LATE - COMMUNITY, MMTA - END",
+          "outliers": 60,
+          "procedure_code": null
+        },
+        {
+          "billing_class": "institutional",
+          "billing_code": "23",
+          "billing_code_type": "RC",
+          "max_rate": 7380.48,
+          "median": 121.63499999999999,
+          "min_rate": 1.45,
+          "name": "LATE - COMMUNITY, WOUND - LO",
+          "outliers": 45,
+          "procedure_code": null
+        },
+        {
+          "billing_class": "institutional",
+          "billing_code": "23",
+          "billing_code_type": "RC",
+          "max_rate": 7380.48,
+          "median": 121.63499999999999,
+          "min_rate": 1.45,
+          "name": "LATE - COMMUNITY, MMTA - INF",
+          "outliers": 45,
+          "procedure_code": null
+        },
+        {
+          "billing_class": "institutional",
+          "billing_code": "420",
+          "billing_code_type": "RC",
+          "max_rate": 144638.65,
+          "median": 12893.66,
+          "min_rate": 51.57,
+          "name": "SELF CARE MNGMENT TRAINING",
+          "outliers": 44,
+          "procedure_code": null
+        }
+      ]
+    },
+    "provider_validity": {
+      "check_digit_valid": 3734,
+      "distinct_npis": 3735,
+      "distinct_tins": 2888,
+      "status": "unavailable: NPPES file missing"
+    },
+    "rate_type_usability": {
+      "fee schedule": 46,
+      "negotiated": 1500242
+    },
+    "referential_integrity": {
+      "rows": 1500288,
+      "rows_unresolved": 0
+    },
+    "schema_validity": {
+      "invalid_records": {},
+      "records": 1500288,
+      "rows": 1500288,
+      "rows_missing_required": 0
+    },
+    "specialty_code_coverage": {
+      "status": "unavailable: NPPES file missing"
+    },
+    "zero_invalid_rates": {
+      "null": 0,
+      "placeholder": 0,
+      "zero_or_negative": 0
+    }
+  }
+}

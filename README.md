@@ -7,9 +7,11 @@ A reproducible pipeline over Centene's Transparency-in-Coverage (TiC) files. Sco
 | `recon` | Streams every index file and profiles its schema, plans and file URLs | `outputs/c1/recon_report.md` |
 | `c1` | Parses all index files into plan × file, deduplicated file and plan tables | `outputs/c1/*.parquet`, `*.csv`, `c1_stats.json` |
 | `c2` | Applies the scope filters and the network-type rule cascade to every plan and file | `outputs/c2/plan_classification.csv`, `file_classification.csv`, `ppo_plans.csv`, `ppo_files.csv`, `exclusions_summary.csv`, `conflicts.csv`, `c2_stats.json` |
-| `c4` / `c3` / `c5` | Rate extraction, file quality score, provider location (in progress; see [docs/work_split.md](docs/work_split.md)) | `outputs/c4`, `outputs/c3`, `outputs/c5` |
+| `c4` | Downloads each PPO rate file to `raw/ptd/` (resumable) and streams it into rate tables (rate selection still to come) | `outputs/c4/<file_key>/rates.parquet`, `provider_refs.parquet`, `file_header.json` |
+| `c3` | Grades every file used: 13 quality metrics per rate file, 5 per index file, with a weighted score and grade | `outputs/c3/file_scores.csv`, `metric_values.csv`, `metric_details.json`, `index_file_scores.csv`, `c3_stats.json` |
+| `c5` | Provider location (in progress) | `outputs/c5` |
 
-The logic and the reasons behind each decision are in [docs/logic_c1_c2.md](docs/logic_c1_c2.md). Unresolved data ambiguities are in [docs/open_questions.md](docs/open_questions.md).
+The logic and the reasons behind each decision are in [docs/logic_c1_c2.md](docs/logic_c1_c2.md) (C1, C2) and [docs/logic_c3.md](docs/logic_c3.md) (C3 file-quality metrics). Unresolved data ambiguities are in [docs/open_questions.md](docs/open_questions.md).
 
 ## Setup (Python 3.11+)
 ```bash
@@ -46,6 +48,13 @@ Add the optional provider fingerprint (streams up to 40 MB of each ambiguous in-
 ```bash
 .venv/bin/python -m src.run --stage c2 --fingerprint
 ```
+Extract the PPO rate file and grade the files (`c4` downloads about 700 MB the first time; NPPES-based metrics need `raw/nppes/npidata_pfile_*.csv`):
+```bash
+.venv/bin/python -m src.run --stage c4
+```
+```bash
+.venv/bin/python -m src.run --stage c3
+```
 
 Useful options:
 - `--index-dir`, `--output-dir`, `--nppes-dir`, `--reference-dir` override the config paths.
@@ -61,6 +70,8 @@ Assumptions the organizers haven't confirmed are switches in `config/config.yaml
 - **456 PPO plans** (455 high confidence, 1 medium), including 3 PPO+EPO plans the organizers confirmed as PPO.
 - Ruled out: 723 HMO, 127 EOA (a separate network, confirmed by the organizers) and 6 POS. No EPO-only plans exist.
 - **1 PPO rate file**, `healthnet-ca_in-network.json`. It's labelled `MIXED` because every CA network shares it, so PPO rates must be filtered inside it (C3).
+
+- C3: the CA rate file scores **0.887 (grade B)** on 11 of 13 metrics. The 2 NPPES-based metrics need the NPPES file. Its weak points are benchmark coverage on professional rates (68% of benchmark weight), procedure-code identifiability (75%) and outliers (1.6%). See [docs/logic_c3.md](docs/logic_c3.md).
 
 ## Tests
 ```bash

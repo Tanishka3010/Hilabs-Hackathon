@@ -1,0 +1,160 @@
+{
+  "as_of_date": "2026-10-06",
+  "index_file_scores": {
+    "2026-09-28_ambetter_index (1).json": {
+      "grade": "B",
+      "total": 0.8135
+    },
+    "2026-09-28_fidelis_index (2).json": {
+      "grade": "C",
+      "total": 0.7778
+    },
+    "2026-09-28_qualchoice_alf_plan_index.json": {
+      "grade": "C",
+      "total": 0.7778
+    },
+    "2026-09-28_qualchoice_arnold_and_blevins_index.json": {
+      "grade": "C",
+      "total": 0.7778
+    },
+    "2026-09-28_qualchoice_big_four_index.json": {
+      "grade": "C",
+      "total": 0.7778
+    },
+    "2026-09-28_qualchoice_city_of_fort_smith_index.json": {
+      "grade": "C",
+      "total": 0.7778
+    },
+    "2026-09-28_qualchoice_city_of_hot_springs_index.json": {
+      "grade": "A",
+      "total": 1.0
+    },
+    "2026-09-28_qualchoice_dillards_index.json": {
+      "grade": "C",
+      "total": 0.7778
+    },
+    "2026-09-28_qualchoice_index.json": {
+      "grade": "D",
+      "total": 0.6493
+    },
+    "2026-09-28_qualchoice_jv_manufacturing_index.json": {
+      "grade": "C",
+      "total": 0.7778
+    },
+    "2026-09-30_healthnet_index.json": {
+      "grade": "A",
+      "total": 0.9311
+    }
+  },
+  "index_files_scored": 11,
+  "index_metric_definitions": {
+    "index_duplicate_entries": "1 - share of plan entries that repeat an entry already listed",
+    "index_freshness": "last_updated_on of the index vs the as-of date (same scale as file_freshness)",
+    "index_id_consistency": "Share of plans whose plan_id_type agrees with the ID's shape and market (no C2 data flag)",
+    "index_network_type_stated": "Share of plans whose name states a network type (PPO/HMO/EPO/POS/EOA)",
+    "index_schema_completeness": "Share of plan entries with plan name, plan ID, ID type, market type and an in-network file URL"
+  },
+  "index_weights": {
+    "index_duplicate_entries": 0.5,
+    "index_freshness": 1.0,
+    "index_id_consistency": 1.0,
+    "index_network_type_stated": 1.0,
+    "index_schema_completeness": 1.0
+  },
+  "metric_definitions": {
+    "code_coverage": {
+      "definition": "Share of benchmark codes (HiLabs Spec-Proc list) with at least one usable rate in the scored billing classes (default: professional), weighted by the codes' benchmark weight",
+      "group": "completeness",
+      "why": "A file is only useful for benchmarking if it prices the codes that drive spend; weighting stops a file scoring well on rare codes"
+    },
+    "code_identifiability": {
+      "definition": "Share of price rows whose service maps to a standard procedure code: billing_code is CPT/HCPCS/MS-DRG, or a revenue-code row carries a CPT/HCPCS-shaped code in additional_information",
+      "group": "validity",
+      "why": "A revenue code alone (e.g. RC 636 'drugs') cannot be compared across payers; rates must be tied to a specific procedure to be benchmarked"
+    },
+    "conflicting_rates": {
+      "definition": "Share of (NPI, TIN, code, modifier, billing class, place of service, rate type) contexts that carry more than one distinct rate",
+      "group": "uniqueness",
+      "why": "Conflicting prices for the same service and provider make the 'true' rate ambiguous and force a selection rule; tolerance 10%"
+    },
+    "exact_duplicates": {
+      "definition": "Share of rate rows that repeat another row on every business field (provider, code, context, type, rate, expiration)",
+      "group": "uniqueness",
+      "why": "Exact duplicates inflate counts and storage but do not change prices, so they are tolerated up to 50%"
+    },
+    "expired_rates": {
+      "definition": "Share of rate rows whose expiration_date is before the as-of date (9999-12-31 = open-ended)",
+      "group": "timeliness",
+      "why": "Expired rates are no longer in force and must not be used as current prices; tolerance 10%"
+    },
+    "file_freshness": {
+      "definition": "Days between the file's last_updated_on and the as-of date; full score up to 31 days, zero at 365",
+      "group": "timeliness",
+      "why": "TiC requires monthly refreshes; an old file misstates today's contracts"
+    },
+    "outlier_rate": {
+      "definition": "Share of positive rates more than outlier_fold x above or below the median of their (code type, code, procedure code, service name, billing class, rate type) group (groups with >= outlier_min_group rates)",
+      "group": "accuracy",
+      "why": "Order-of-magnitude deviations usually mean unit errors (cents vs dollars, per-unit vs per-case) or misattributed codes; tolerance 5%"
+    },
+    "provider_validity": {
+      "definition": "Share of distinct NPIs that pass the check digit, exist in NPPES, are not deactivated and practise in the target state (NPPES primary or secondary address, or CMS DAC)",
+      "group": "completeness",
+      "why": "Invalid, retired or out-of-state providers inflate the network and point rates at people a CA contracting team cannot use"
+    },
+    "rate_type_usability": {
+      "definition": "Share of rate rows whose negotiated_type converts directly to dollars (negotiated, fee schedule, derived)",
+      "group": "accuracy",
+      "why": "Percentage-of-charges and per-diem rates cannot be compared as dollar amounts without a base that the file does not provide"
+    },
+    "referential_integrity": {
+      "definition": "Share of rate rows whose provider reference resolves to an NPI",
+      "group": "validity",
+      "why": "A rate that cannot be tied to a provider is unusable for provider-level benchmarking"
+    },
+    "schema_validity": {
+      "definition": "Share of price records that parse and carry every required field (code, code type, rate, rate type, billing class, expiration date)",
+      "group": "validity",
+      "why": "A record that cannot be parsed or lacks a required field cannot be priced or compared at all"
+    },
+    "specialty_code_coverage": {
+      "definition": "Share of benchmark (specialty, code) weight where a provider of that specialty (NPPES taxonomy -> HiLabs crosswalk) has a usable rate for that code",
+      "group": "completeness",
+      "why": "Contracting teams compare like with like: a cardiology code priced only for non-cardiologists does not support a cardiology benchmark"
+    },
+    "zero_invalid_rates": {
+      "definition": "Share of rate rows that are null, <= $0 or a known placeholder value",
+      "group": "accuracy",
+      "why": "$0 and placeholder rates are not real prices and drag averages down; tolerance 10% (score 0 at 10% bad)"
+    }
+  },
+  "rate_file_scores": {
+    "5bf4afa2cef9bc2a": {
+      "grade": "B",
+      "total": 0.8871
+    }
+  },
+  "rate_files_scored": 1,
+  "tolerances": {
+    "conflicting_rates": 0.1,
+    "exact_duplicates": 0.5,
+    "expired_rates": 0.1,
+    "outlier_rate": 0.05,
+    "zero_invalid_rates": 0.1
+  },
+  "weights": {
+    "code_coverage": 2.0,
+    "code_identifiability": 1.0,
+    "conflicting_rates": 1.0,
+    "exact_duplicates": 0.5,
+    "expired_rates": 1.0,
+    "file_freshness": 1.0,
+    "outlier_rate": 1.5,
+    "provider_validity": 1.5,
+    "rate_type_usability": 1.0,
+    "referential_integrity": 1.0,
+    "schema_validity": 1.0,
+    "specialty_code_coverage": 1.5,
+    "zero_invalid_rates": 1.5
+  }
+}

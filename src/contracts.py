@@ -43,6 +43,14 @@ RATES_SELECTED_COLUMNS = {
     "has_conflict": "bool",
 }
 
+RATES_COLUMNS = {
+    **{k: RATES_LONG_COLUMNS[k] for k in ("file_key", "in_network_idx", "negotiation_arrangement", "billing_code_type", "billing_code_type_version",
+                                          "billing_code", "name", "rate_idx", "price_idx", "provider_group_id", "negotiated_type",
+                                          "negotiated_rate", "expiration_date", "billing_class")},
+    "setting": "string",
+    **{k: RATES_LONG_COLUMNS[k] for k in ("service_code", "billing_code_modifier", "additional_information")},
+}
+
 FILE_HEADER_KEYS = (
     "file_key", "file_url", "reporting_entity_name", "reporting_entity_type", "version", "last_updated_on",
     "bytes_read", "bytes_total", "complete", "n_provider_references", "n_in_network_items", "n_negotiated_rates",

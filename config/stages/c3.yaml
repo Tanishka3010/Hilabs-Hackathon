@@ -1,14 +1,44 @@
 c3:
   benchmark_xlsx: Rate Benchmarking Individual Weights_Hackathon.xlsx
+  as_of_date: null
+  target_state: CA
+  coverage_billing_classes: [professional]
   outlier_fold: 10
-  placeholder_rates: [0.01, 99999, 999999]
+  outlier_min_group: 5
+  placeholder_rates: [0.01, 99999, 999999, 9999999]
+  usable_rate_types: [negotiated, fee schedule, derived]
+  open_ended_expiration: "9999-12-31"
+  tolerances:
+    zero_invalid_rates: 0.10
+    outlier_rate: 0.05
+    exact_duplicates: 0.50
+    conflicting_rates: 0.10
+    expired_rates: 0.10
+  freshness_days:
+    full_score: 31
+    zero_score: 365
+  grades:
+    A: 0.90
+    B: 0.80
+    C: 0.70
+    D: 0.60
   weights:
-    schema_validity: 1
-    code_coverage: 1
-    provider_coverage: 1
-    zero_invalid_rates: 1
-    outlier_rate: 1
-    rate_type_mix: 1
-    duplicates: 1
-    staleness: 1
-    referential_integrity: 1
+    schema_validity: 1.0
+    code_identifiability: 1.0
+    referential_integrity: 1.0
+    code_coverage: 2.0
+    specialty_code_coverage: 1.5
+    provider_validity: 1.5
+    zero_invalid_rates: 1.5
+    outlier_rate: 1.5
+    rate_type_usability: 1.0
+    exact_duplicates: 0.5
+    conflicting_rates: 1.0
+    file_freshness: 1.0
+    expired_rates: 1.0
+  index_weights:
+    index_schema_completeness: 1.0
+    index_id_consistency: 1.0
+    index_network_type_stated: 1.0
+    index_duplicate_entries: 0.5
+    index_freshness: 1.0

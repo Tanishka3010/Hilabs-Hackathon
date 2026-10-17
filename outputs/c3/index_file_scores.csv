@@ -1,0 +1,12 @@
+index_file,brand,plan_entries,total_score,grade,score_index_schema_completeness,score_index_duplicate_entries,score_index_freshness,score_index_id_consistency,score_index_network_type_stated,raw_index_schema_completeness,raw_index_duplicate_entries,raw_index_freshness,raw_index_id_consistency,raw_index_network_type_stated
+2026-09-28_ambetter_index (1).json,ambetter,1120,0.8135,B,1.0,1.0,1.0,1.0,0.1607,1.0,0.0,8,1.0,0.1607
+2026-09-28_fidelis_index (2).json,fidelis,94,0.7778,C,1.0,1.0,1.0,1.0,0.0,1.0,0.0,8,1.0,0.0
+2026-09-30_healthnet_index.json,healthnet,1693,0.9311,A,1.0,1.0,1.0,0.9084,0.7815,1.0,0.0,6,0.9084,0.7815
+2026-09-28_qualchoice_alf_plan_index.json,qualchoice,32,0.7778,C,1.0,1.0,1.0,1.0,0.0,1.0,0.0,8,1.0,0.0
+2026-09-28_qualchoice_arnold_and_blevins_index.json,qualchoice,1,0.7778,C,1.0,1.0,1.0,1.0,0.0,1.0,0.0,8,1.0,0.0
+2026-09-28_qualchoice_big_four_index.json,qualchoice,4,0.7778,C,1.0,1.0,1.0,1.0,0.0,1.0,0.0,8,1.0,0.0
+2026-09-28_qualchoice_city_of_fort_smith_index.json,qualchoice,4,0.7778,C,1.0,1.0,1.0,1.0,0.0,1.0,0.0,8,1.0,0.0
+2026-09-28_qualchoice_city_of_hot_springs_index.json,qualchoice,2,1.0,A,1.0,1.0,1.0,1.0,1.0,1.0,0.0,8,1.0,1.0
+2026-09-28_qualchoice_dillards_index.json,qualchoice,12,0.7778,C,1.0,1.0,1.0,1.0,0.0,1.0,0.0,8,1.0,0.0
+2026-09-28_qualchoice_index.json,qualchoice,308,0.6493,D,1.0,0.9968,1.0,0.0,0.4235,1.0,0.0032,8,0.0,0.4235
+2026-09-28_qualchoice_jv_manufacturing_index.json,qualchoice,5,0.7778,C,1.0,1.0,1.0,1.0,0.0,1.0,0.0,8,1.0,0.0
