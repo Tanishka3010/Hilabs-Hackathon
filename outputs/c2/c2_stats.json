@@ -1,0 +1,318 @@
+{
+  "brand_state_inference": {
+    "fidelis": {
+      "hios_ids": 88,
+      "state": "NY",
+      "support": 88
+    },
+    "healthnet": {
+      "hios_ids": 155,
+      "state": "CA",
+      "support": 154
+    },
+    "qualchoice": {
+      "hios_ids": 85,
+      "state": "AR",
+      "support": 85
+    }
+  },
+  "config": {
+    "eoa_as": "unknown",
+    "glued_prefixes": [
+      "CUS"
+    ],
+    "hsp_as": "unknown",
+    "ppo_epo_as": "conflict"
+  },
+  "conflicts_by_kind": {
+    "DATA_FLAG": 462,
+    "FILE_PLANS_OF_DIFFERENT_TYPES_SHARE_FILE": 3,
+    "STRONG_SIGNAL_DISAGREES": 55,
+    "UNRESOLVED_TOKEN": 130,
+    "WEAK_SIGNAL_DISAGREES": 1
+  },
+  "conflicts_in_scope_rows": 286,
+  "conflicts_rows": 596,
+  "costshare_validation": [
+    {
+      "majority": "PPO",
+      "precision": 0.9714,
+      "shape": 2,
+      "support": 35,
+      "types": {
+        "HMO": 1,
+        "PPO": 34
+      },
+      "validated": true
+    },
+    {
+      "majority": "HMO",
+      "precision": 0.8668,
+      "shape": 3,
+      "support": 518,
+      "types": {
+        "HMO": 449,
+        "PPO": 69
+      },
+      "validated": false
+    },
+    {
+      "majority": "PPO",
+      "precision": 0.912,
+      "shape": 4,
+      "support": 216,
+      "types": {
+        "HMO": 19,
+        "PPO": 197
+      },
+      "validated": false
+    }
+  ],
+  "data_flags": {
+    "ID_SHAPE_CONFLICT_EIN_TYPED_HIOS_VALUE": 154,
+    "ID_TYPE_CONFLICT_GROUP_WITH_HIOS": 308
+  },
+  "entity_rules_hits": {
+    "Health Net of California": 0,
+    "Life Insurance": 0
+  },
+  "family_validation": [
+    {
+      "family": "WholeCare",
+      "implied_type": "HMO",
+      "purity": 1.0,
+      "support": 34,
+      "types": {
+        "HMO": 34
+      },
+      "validated": true
+    },
+    {
+      "family": "SmartCare",
+      "implied_type": "HMO",
+      "purity": 1.0,
+      "support": 30,
+      "types": {
+        "HMO": 30
+      },
+      "validated": true
+    },
+    {
+      "family": "Full Network",
+      "implied_type": "HMO",
+      "purity": 1.0,
+      "support": 30,
+      "types": {
+        "HMO": 30
+      },
+      "validated": true
+    },
+    {
+      "family": "Salud",
+      "implied_type": "HMO",
+      "purity": 1.0,
+      "support": 26,
+      "types": {
+        "HMO": 26
+      },
+      "validated": true
+    },
+    {
+      "family": "SAL",
+      "implied_type": "HMO",
+      "purity": 1.0,
+      "support": 163,
+      "types": {
+        "HMO": 163
+      },
+      "validated": true
+    },
+    {
+      "family": "CalChoice",
+      "implied_type": "HMO",
+      "purity": 1.0,
+      "support": 32,
+      "types": {
+        "HMO": 32
+      },
+      "validated": true
+    },
+    {
+      "family": "SC",
+      "implied_type": "HMO",
+      "purity": 1.0,
+      "support": 230,
+      "types": {
+        "HMO": 230
+      },
+      "validated": true
+    },
+    {
+      "family": "EC",
+      "implied_type": "HMO",
+      "purity": 1.0,
+      "support": 85,
+      "types": {
+        "HMO": 85
+      },
+      "validated": true
+    },
+    {
+      "family": "CommunityCare",
+      "implied_type": "",
+      "purity": 0.0,
+      "support": 0,
+      "types": {},
+      "validated": false
+    },
+    {
+      "family": "Trio",
+      "implied_type": "",
+      "purity": 0.0,
+      "support": 0,
+      "types": {},
+      "validated": false
+    },
+    {
+      "family": "PureCare",
+      "implied_type": "",
+      "purity": 0.0,
+      "support": 0,
+      "types": {},
+      "validated": false
+    },
+    {
+      "family": "EnhancedCare",
+      "implied_type": "",
+      "purity": 0.0,
+      "support": 0,
+      "types": {},
+      "validated": false
+    },
+    {
+      "family": "Elect",
+      "implied_type": "",
+      "purity": 0.0,
+      "support": 0,
+      "types": {},
+      "validated": false
+    },
+    {
+      "family": "Select",
+      "implied_type": "",
+      "purity": 0.0,
+      "support": 0,
+      "types": {},
+      "validated": false
+    },
+    {
+      "family": "Open Access",
+      "implied_type": "",
+      "purity": 0.0,
+      "support": 0,
+      "types": {},
+      "validated": false
+    },
+    {
+      "family": "Mex",
+      "implied_type": "",
+      "purity": 0.0,
+      "support": 0,
+      "types": {},
+      "validated": false
+    }
+  ],
+  "files_by_label": {
+    "HMO": 1,
+    "MIXED": 3,
+    "OTHER/UNKNOWN": 24,
+    "PPO": 5
+  },
+  "files_total": 33,
+  "in_scope_by_confidence": {
+    "high": 1177,
+    "low": 130,
+    "medium": 5
+  },
+  "in_scope_by_decision_reason": {
+    "EOA_UNRESOLVED": 127,
+    "P1_PLAN_NAME_TOKEN": 1177,
+    "P1b_PLAN_NAME_GLUED_TOKEN": 1,
+    "P4_PRODUCT_FAMILY": 4,
+    "PPO_EPO_CONFLICT": 3
+  },
+  "in_scope_by_label": {
+    "HMO": 723,
+    "OTHER/UNKNOWN": 130,
+    "POS": 6,
+    "PPO": 453
+  },
+  "in_scope_files": 1,
+  "in_scope_plans": 1312,
+  "out_of_scope_plans_by_primary_reason": {
+    "INDIVIDUAL_MARKET": 58,
+    "OUT_OF_STATE": 1900
+  },
+  "plans_total": 3270,
+  "ppo_files": 1,
+  "ppo_files_labels": {
+    "MIXED": 1
+  },
+  "ppo_plans": 453,
+  "ppo_plans_by_confidence": {
+    "high": 452,
+    "medium": 1
+  },
+  "ppo_plans_distinct_names": 133,
+  "ppo_upper_bound_if_unresolved_were_ppo": 583,
+  "precedence": [
+    {
+      "confidence": "high",
+      "rank": "P1",
+      "rule": "Explicit single network token in the plan name (word-boundary match)",
+      "signal": "plan_name_token"
+    },
+    {
+      "confidence": "medium",
+      "rank": "P1b",
+      "rule": "Network token glued to a known prefix (e.g. CUSPPO)",
+      "signal": "plan_name_glued_token"
+    },
+    {
+      "confidence": "low",
+      "rank": "P1x",
+      "rule": "Explicit but unresolved token (EOA, HSP, PPO+EPO, multiple types): mapped only via config, never inferred from lower signals",
+      "signal": "plan_name_special_token"
+    },
+    {
+      "confidence": "high",
+      "rank": "P2",
+      "rule": "Network token in the in-network file name / description / URL path (all of the plan's files agree)",
+      "signal": "file_token"
+    },
+    {
+      "confidence": "medium",
+      "rank": "P3",
+      "rule": "Legal entity (issuer / sponsor) rule from config",
+      "signal": "entity"
+    },
+    {
+      "confidence": "medium",
+      "rank": "P4",
+      "rule": "Product-family name validated against explicit-token plans (support and purity thresholds)",
+      "signal": "family"
+    },
+    {
+      "confidence": "medium",
+      "rank": "P5",
+      "rule": "All of the plan's files are confidently single-type (bipartite plan-file graph)",
+      "signal": "propagation"
+    },
+    {
+      "confidence": "low",
+      "rank": "P6",
+      "rule": "Cost-share shape rule, only if validated on explicit-token plans",
+      "signal": "costshare"
+    }
+  ]
+}

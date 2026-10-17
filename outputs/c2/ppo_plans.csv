@@ -1,0 +1,454 @@
+plan_key,plan_name,plan_id,plan_id_type,confidence,decision_reason,file_keys,file_names
+718a979b7635c8ff,Bronze HDHP PPO 7200/0%,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d0cc95339996821c,Bronze HDHP PPO 7200/0% INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3325cab3c55a1e5c,Bronze PPO 5800/60,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+ae550e8ae836df5b,Bronze PPO 5800/60 INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+858c297a47a4f9b6,CA L CUS PPO 0/0/5600 MCOB (INP),941492636,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3aec06887b2aa851,CA L CUS PPO 0/0/5600 MCOB (INP),946000379,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+5008f5e13e9188ba,CA L CUS PPO 15/250/20% RAP,941156525,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f3842c964615bef0,CA L CUS PPO 15/250/20% RAP,941437728,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3675a6508e92f20e,CA L CUS PPO 15/250/20% RAP,942814979,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a440769bc187c0ea,CA L CUS PPO BRZ Alt 2 Aon NCA,230334400,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d2cffab8535e0e10,CA L CUS PPO BRZ Alt 2 Aon SCA,230334400,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+cccd72c0a73012a8,CA L CUS PPO BRZ Alt 2 Aon SCA,232470039,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+dc28951b78fd02ca,CA L CUS PPO BRZ Alt 2 Aon SCA,752921540,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+98665dc7ac49e7b2,CA L CUS PPO BRZ Plus Alt Aon NCA,223276290,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+2b37773c60deed2b,CA L CUS PPO BRZ Plus Alt Aon NCA,943024325,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a049014196e8676a,CA L CUS PPO BRZ Plus Alt Aon NCA,943197174,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+2fb9e49054886a8b,CA L CUS PPO BRZ Plus Alt Aon SCA,223276290,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+94890947e6fa62eb,CA L CUS PPO BRZ Plus Alt Aon SCA,262270219,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+111d075c98cbd7b9,CA L CUS PPO BRZ Plus Alt Aon SCA,943024325,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+97e7a071e7ad9cb2,CA L CUS PPO CONTRA COSTA COUNTY 10,946000509,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+6efc1e0fab5f891a,CA L CUS PPO COUNTY OF SANTA CLARA 200,946000533,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+1cd733d2a56b2fdc,CA L CUS PPO COUNTY OF SANTA CLARA Flex,946000533,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+601179eb7ac197fc,CA L CUS PPO City of  Pleasanton $10,946000397,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+edbf979833a29f0e,CA L CUS PPO City of Mountain View,946000379,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+302da839065e58ff,CA L CUS PPO City of Pleasanton $15,946000397,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+76ac31d12c9ea497,CA L CUS PPO HEQ HSA ED 0%/4000/4000,953414374,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a5d9a347fb00d26a,CA L CUS PPO HEQ HSA F ED 0%/3200/3200,951644018,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+4537c7017a20fe0a,CA L CUS PPO HEQ HSA I ED 0%/2000/2000,951644018,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+36746803cb9fcae0,CA L CUS PPO HN Retiree,954288333,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+87472eca72c38a6e,CA L CUS PPO HSA ED AI Industries,942932458,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+682862292a2b747c,CA L CUS PPO HSA ED BRZ Alt Aon NCA,263930592,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+c21134751c2edf37,CA L CUS PPO HSA ED BRZ Alt Aon NCA,873351290,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8e7eb0d595969f41,CA L CUS PPO HSA ED BRZ Alt Aon NCA,954081636,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d8445a3e0c2d3300,CA L CUS PPO HSA ED BRZ Alt Aon NCA,954148514,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8e43c6b8e79ed02a,CA L CUS PPO HSA ED BRZ Alt Aon SCA,263930592,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+6bf57b699deb9c1c,CA L CUS PPO HSA ED BRZ Alt Aon SCA,954148514,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+5c2b41b282342eab,CA L CUS PPO HSA ED BRZ Aon NCA,135369500,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+50e18523a31e43ce,CA L CUS PPO HSA ED BRZ Aon NCA,135570651,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+bbc363fa6881fb52,CA L CUS PPO HSA ED BRZ Aon NCA,200552719,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+7c5afc02fa1decbe,CA L CUS PPO HSA ED BRZ Aon NCA,311387980,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3c9e788b6522d67f,CA L CUS PPO HSA ED BRZ Aon NCA,363051915,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+2ba02f2404df0352,CA L CUS PPO HSA ED BRZ Aon NCA,820889816,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+1478738b426b84fd,CA L CUS PPO HSA ED BRZ Aon NCA,841246887,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+fe90d7a17b357cb4,CA L CUS PPO HSA ED BRZ Aon NCA,943027237,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+5232a32aeed38ad2,CA L CUS PPO HSA ED BRZ Aon NCA,952043126,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d5b0de5a24d4582b,CA L CUS PPO HSA ED BRZ Aon NCA PY,133324058,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+5a74b892416cfc43,CA L CUS PPO HSA ED BRZ Aon NCA PY,911325671,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+c9f813a50e9c5ccb,CA L CUS PPO HSA ED BRZ Aon NCA PY,954119509,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3c6cb95f07b671e6,CA L CUS PPO HSA ED BRZ Aon SCA,223276290,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+08961b593383a18d,CA L CUS PPO HSA ED BRZ Aon SCA,510347963,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8d69a7e8029a055b,CA L CUS PPO HSA ED BRZ Aon SCA,593305930,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f81b9f8738199261,CA L CUS PPO HSA ED BRZ Aon SCA,943024325,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+b3a85f62d7512926,CA L CUS PPO HSA ED BRZ Aon SCA,943027237,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+da1a9aa7f65bdfa5,CA L CUS PPO HSA ED BRZ Aon SCA,952043126,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+2cc80f2d00b32928,CA L CUS PPO HSA ED BRZ Aon SCA PY,133324058,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+77677c46208229b5,CA L CUS PPO HSA ED BRZ Aon SCA PY,911325671,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8bca8d2a971e39fa,CA L CUS PPO HSA ED STATER BROTH,952586175,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+bb2aff723e446151,CA L CUS PPO HSAF ED BRZ Plus Aon NCA,135369500,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8e574a7e7c80055d,CA L CUS PPO HSAF ED BRZ Plus Aon NCA,135570651,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3abf099a441c1739,CA L CUS PPO HSAF ED BRZ Plus Aon NCA,230334400,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+b1af17c6c050a854,CA L CUS PPO HSAF ED BRZ Plus Aon NCA,311387980,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+b93db87152edb63c,CA L CUS PPO HSAF ED BRZ Plus Aon NCA,363051915,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+06ece64c7730b5fe,CA L CUS PPO HSAF ED BRZ Plus Aon NCA,363555336,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+34929150ac5b910c,CA L CUS PPO HSAF ED BRZ Plus Aon NCA,521471842,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3f02a167b7ae9dbe,CA L CUS PPO HSAF ED BRZ Plus Aon NCA,593305930,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+0ca3848040a3d888,CA L CUS PPO HSAF ED BRZ Plus Aon NCA,820889816,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+b6d2ad719e909fa7,CA L CUS PPO HSAF ED BRZ Plus Aon NCA,841246887,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+bee9ab2104d1adc0,CA L CUS PPO HSAF ED BRZ Plus Aon NCA,873351290,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+60b2d140a67c007e,CA L CUS PPO HSAF ED BRZ Plus Aon NCA,952043126,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+5145eb8d92f567f0,CA L CUS PPO HSAF ED BRZ Plus Aon NCA,954148514,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+445e52fcbc65236c,CA L CUS PPO HSAF ED BRZ Plus Aon NCA PY,133324058,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+22dcf51820547d54,CA L CUS PPO HSAF ED BRZ Plus Aon NCA PY,911325671,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+84aa00ecd7a07e6b,CA L CUS PPO HSAF ED BRZ Plus Aon SCA,510347963,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+4dee1bc879e3edc6,CA L CUS PPO HSAF ED BRZ Plus Aon SCA,521261113,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+6c0299daa61491ed,CA L CUS PPO HSAF ED BRZ Plus Aon SCA,521471842,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+9c242e4339619d3a,CA L CUS PPO HSAF ED BRZ Plus Aon SCA,530196605,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+7fa9f4add0003fee,CA L CUS PPO HSAF ED BRZ Plus Aon SCA,952043126,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+4359ef7a0168532c,CA L CUS PPO HSAF ED BRZ Plus Aon SCA PY,911325671,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+78c8e6f187d27917,CA L CUS PPO HSAF ED BRZPlusAlt2 Aon NCA,530196605,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+e5b5f0e5e31c4116,CA L CUS PPO HSAF ED BRZPlusAlt2 Aon NCA,954081636,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+99bb6b0b7273aeb1,CA L CUS PPO HSAF ED BRZPlusAlt2 Aon SCA,530196605,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f67f8bafeee8270c,CA L CUS PPO HSAF ED HEQ  0%/3200/3200,954443964,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+b225f91a128961f8,CA L CUS PPO HSAF ED SVR Aon NCA,200552719,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+243ae804516c5f0f,CA L CUS PPO HSAF ED SVR Aon NCA,230334400,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+78c9fd6cab2c3a99,CA L CUS PPO HSAF ED SVR Aon NCA,263930592,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d4d84dec7d43ce3d,CA L CUS PPO HSAF ED SVR Aon NCA,363555336,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a2cecf14c033e2ee,CA L CUS PPO HSAF ED SVR Aon NCA,521261113,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+580e998b807f5d8f,CA L CUS PPO HSAF ED SVR Aon NCA,521471842,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a7d016f37ddd52bd,CA L CUS PPO HSAF ED SVR Aon NCA,591995548,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+535281c94630dc1f,CA L CUS PPO HSAF ED SVR Aon NCA,841246887,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+1ee9942fde0c5284,CA L CUS PPO HSAF ED SVR Aon NCA,943027237,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+29ea85d75f3b7841,CA L CUS PPO HSAF ED SVR Aon NCA,952043126,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+299fddfd85e00b8b,CA L CUS PPO HSAF ED SVR Aon SCA,223276290,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+7e5fa6b757ef6ecc,CA L CUS PPO HSAF ED SVR Aon SCA,263930592,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+2042e2e2798837cb,CA L CUS PPO HSAF ED SVR Aon SCA,873351290,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+cae8082ea211c5e5,CA L CUS PPO HSAF ED SVR Aon SCA,943027237,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+0c5f5fa91cfb66f8,CA L CUS PPO HSAF ED SVR Aon SCA,954148514,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+83f219cfa73771df,CA L CUS PPO HSAI ED BRZ Plus Aon NCA,135369500,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+085e06f9ec3f754a,CA L CUS PPO HSAI ED BRZ Plus Aon NCA,135570651,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+5f5b31235b8849ae,CA L CUS PPO HSAI ED BRZ Plus Aon NCA,230334400,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+10a6756522753b3a,CA L CUS PPO HSAI ED BRZ Plus Aon NCA,311387980,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+673e8d0c575ba49b,CA L CUS PPO HSAI ED BRZ Plus Aon NCA,363051915,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+7228356178c6281c,CA L CUS PPO HSAI ED BRZ Plus Aon NCA,521471842,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+4aaf2bd71a141345,CA L CUS PPO HSAI ED BRZ Plus Aon NCA,522242751,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+7e838ef6c62b59bf,CA L CUS PPO HSAI ED BRZ Plus Aon NCA,841246887,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a8d91c0a6c5ea0be,CA L CUS PPO HSAI ED BRZ Plus Aon NCA,873351290,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+2aaaee141ef3db8e,CA L CUS PPO HSAI ED BRZ Plus Aon NCA,952043126,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3c984e32cc12ee66,CA L CUS PPO HSAI ED BRZ Plus Aon NCA,954148514,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+6f530af346f7c1fc,CA L CUS PPO HSAI ED BRZ Plus Aon NCA PY,133324058,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+89841bfcb49084c0,CA L CUS PPO HSAI ED BRZ Plus Aon NCA PY,911325671,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+cf5337726e12ce6c,CA L CUS PPO HSAI ED BRZ Plus Aon NCA PY,954119509,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+1573f308eb86fcf6,CA L CUS PPO HSAI ED BRZ Plus Aon SCA,230334400,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+cbcf5f6efee053e9,CA L CUS PPO HSAI ED BRZ Plus Aon SCA,510347963,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+47f310e0020933e4,CA L CUS PPO HSAI ED BRZ Plus Aon SCA,521261113,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8e62d2e4e2fa3431,CA L CUS PPO HSAI ED BRZ Plus Aon SCA,521471842,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+875de6982458f37a,CA L CUS PPO HSAI ED BRZ Plus Aon SCA,522242751,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+cc1ed2b7138be151,CA L CUS PPO HSAI ED BRZ Plus Aon SCA,954148514,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+9610ca02132c0dd9,CA L CUS PPO HSAI ED BRZ Plus Aon SCA PY,911325671,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3cad08a5b4025e2d,CA L CUS PPO HSAI ED BRZPlusAlt2 Aon NCA,530196605,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+5c8f064b03f437c5,CA L CUS PPO HSAI ED BRZPlusAlt2 Aon NCA,954081636,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+0e4461d2679fe6ed,CA L CUS PPO HSAI ED BRZPlusAlt2 Aon SCA,530196605,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+392f9dba38f53a14,CA L CUS PPO HSAI ED HEQ  0%/2000/2000,954443964,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+187876817b6b19c3,CA L CUS PPO HSAI ED SVR Aon NCA,200552719,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+5b839197a88d9b7f,CA L CUS PPO HSAI ED SVR Aon NCA,363051915,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+42ba557b5573f533,CA L CUS PPO HSAI ED SVR Aon NCA,521261113,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+aa74bb9deb724a7b,CA L CUS PPO HSAI ED SVR Aon NCA,521471842,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+b0d2bd960d3465d3,CA L CUS PPO HSAI ED SVR Aon NCA,591995548,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+e668cb781aed65d4,CA L CUS PPO HSAI ED SVR Aon NCA,841246887,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+ff891d263214771a,CA L CUS PPO HSAI ED SVR Aon NCA,943197174,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+fb53092e78d49ba0,CA L CUS PPO HSAI ED SVR Aon NCA,952043126,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+deb13730330f6212,CA L CUS PPO HSAI ED SVR Aon NCA PY,133324058,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f98827a976c382c1,CA L CUS PPO HSAI ED SVR Aon SCA,223276290,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+4e76ef8adc952196,CA L CUS PPO HSAI ED SVR Aon SCA,521471842,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8efed0d63a47f8da,CA L CUS PPO HSAI ED SVR Aon SCA,952043126,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+2d413301c0e2080b,CA L CUS PPO HSAI ED SVR Aon SCA,954148514,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+63e56335fd2db787,CA L CUS PPO HSAI ED SVR Aon SCA PY,133324058,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3b46a240313e8d53,CA L CUS PPO PLT Alt Aon NCA,530196605,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+035f037190a49036,CA L CUS PPO PLT Alt Aon NCA,591995548,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d48a93cd56d970c5,CA L CUS PPO PLT Alt Aon NCA,841246887,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+aba1599815a9323c,CA L CUS PPO PLT Alt Aon NCA PY,133324058,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+909b6f8afbc7c3ee,CA L CUS PPO PLT Alt Aon SCA,521261113,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+884171042e2eeda1,CA L CUS PPO PLT Alt Aon SCA,530196605,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+654ba496746dcb04,CA L CUS PPO PLT Alt Aon SCA,954148514,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+eac64995a59f8df1,CA L CUS PPO PLT Alt Aon SCA PY,133324058,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+abb0fdebbf7c38c8,CA L CUS PPO SACRAMENTO CITY USD,946002491,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3a01e7d9a9998dec,CA L CUS PPO SAN BERNARDINO CUSD,952285577,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+627e9d5d5886c17a,CA L CUS PPO SVR Alt 1 Aon NCA,135570651,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+9ab612aa0add86ec,CA L CUS PPO SVR Alt 1 Aon NCA,530196605,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+9ebb5aefea30cc0b,CA L CUS PPO SVR Alt 1 Aon NCA,812608849,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+76865c7f36e10b29,CA L CUS PPO SVR Alt 1 Aon NCA,873351290,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+1029baa28002a22f,CA L CUS PPO SVR Alt 1 Aon NCA,954081636,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+29900c4ddac5c74f,CA L CUS PPO SVR Alt 1 Aon NCA PY,911325671,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+cdc016a5fdf6d66d,CA L CUS PPO SVR Alt 1 Aon SCA,530196605,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+1df28f003069c7b6,CA L CUS PPO SVR Alt 1 Aon SCA,752921540,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+724d80d3d175b402,CA L CUS PPO SVR Alt 1 Aon SCA,943024325,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+842b254ba5f1eea3,CA L CUS PPO SVR Alt 1 Aon SCA PY,911325671,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8f9f5ab6da6d138d,CA L CUS PPO SVR Alt 2 Aon NCA,135369500,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+63ce2a0f5d00b37f,CA L CUS PPO SVR Alt 2 Aon NCA,311387980,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+dd866f7c92279501,CA L CUS PPO SVR Alt 2 Aon NCA PY,954119509,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+122244ef0c628001,CA L CUS PPO SVR Alt 2 Aon SCA,311387980,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+ee45db3e2639ad38,CA L CUS PPO SVR Alt 2 Aon SCA,510347963,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8cb749924f370642,CA L CUS PPO Sonoma Cty Sup Cts,680453461,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a4e146eb78c657b4,CA L CUS PPO UC POST DOC,943067788,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+9f7d1c4fc11dcd32,CA L CUS PPO Victor Valley USD,956003414,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d130269fa16ebc08,CA L CUSPPO 15/250/20% RAP,901704765,ein,medium,P1b_PLAN_NAME_GLUED_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+0d8789e14e08c3fb,CA L PPO 0/0/6350 MCOB (INP),680453461,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+fcf2fe9be9dfa2b7,CA L PPO 0/0/6350 MCOB (INP),946000531,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+87809ffdfd19361c,CA L PPO 0/0/6350 MCOB (INP),946000533,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d695540b5d5dd1af,CA L PPO 0/1000/5000/20%,330383743,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+5a895d7fbff16e6f,CA L PPO 0/1000/5000/20%,431983451,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+69e723b661d337ad,CA L PPO 0/1000/5000/20%,952582951,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+4d61ab2fdb35cf38,CA L PPO 0/1000/5000/20%,954343903,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+ab0e0536cd02e346,CA L PPO 10/0/2000/10%,222321575,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+70cd15f481f371ce,CA L PPO 10/0/2000/10%,274817259,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+78bfda6af4183e44,CA L PPO 10/0/2000/10%,330885539,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+9fc55181cb31f148,CA L PPO 10/0/2000/10%,474726731,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f227bae8b9a1bac1,CA L PPO 10/0/2000/10%,831849288,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+b5ad8b4cb52e079b,CA L PPO 10/0/2000/10%,952038611,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+4d9ccf5ca86c9d0b,CA L PPO 10/250/3000/10%,330862428,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+36851b9edf6ed322,CA L PPO 10/250/3000/10%,951914801,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+9987317671e20f6a,CA L PPO 10/250/3000/10%,954113986,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+cb33616322066365,CA L PPO 10/250/3000/10%,954343903,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+91721a2de90f69e3,CA L PPO 10/250/3000/10%,954373573,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+5155ce3049e9da55,CA L PPO 15/250/2000/10%,952851662,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+fe378c8fc55b7b28,CA L PPO 15/500/3000/10%,953767134,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+98f5bd592bfd4fea,CA L PPO 15/500/3000/10%,954079692,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+701b39e9ee7938ce,CA L PPO 15/500/4000/20%,271478034,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+bb3ad1b8ba598548,CA L PPO 15/500/4000/20%,941375791,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+b106d178d8510695,CA L PPO 15/500/4000/20%,952760010,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d97eff82dd8bbc66,CA L PPO 15/500/4000/20%,954234738,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+136c23c3a8d912d8,CA L PPO 20/250/3000/10%,201940280,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+e5ceb7c632a70b52,CA L PPO 20/250/3000/10%,330959335,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8a57c20078203e1a,CA L PPO 20/250/3000/10%,611863218,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+06dc6d3a667fdc3f,CA L PPO 20/250/3000/10%,941156564,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+780261d36b7611c6,CA L PPO 20/250/3000/10%,952492124,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8fb0a78644208004,CA L PPO 20/250/3000/10%,954422635,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+1e009ee864ec312c,CA L PPO 20/250/4000/20%,950885570,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+4129c8d3fc9df9bd,CA L PPO 20/250/4000/20%,951952927,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8d289201cc5880b2,CA L PPO 20/250/4000/20%,952091661,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3a1cd7ac5dbd831d,CA L PPO 20/250/4000/20%,953544617,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f4856bd2e216c83d,CA L PPO 20/250/4000/20%,953856617,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+87580da5463c02f1,CA L PPO 20/250/4000/20%,953911712,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+57f32ea62e33be72,CA L PPO 20/250/4000/20%,954462657,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+118cd0210f1b7467,CA L PPO 20/500/4000/20%,141829406,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+2e34bbf77c66bec4,CA L PPO 20/500/4000/20%,263948856,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+1b5192361827c67a,CA L PPO 20/500/4000/20%,267068446,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+613708607894d081,CA L PPO 20/500/4000/20%,330248474,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+42ebf564e0916475,CA L PPO 20/500/4000/20%,330254740,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+12d68463d572ca0b,CA L PPO 20/500/4000/20%,330339314,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+4b043478a69a09b5,CA L PPO 20/500/4000/20%,330428662,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+5ab3e47e63419750,CA L PPO 20/500/4000/20%,616405450,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a8deb58934d68021,CA L PPO 20/500/4000/20%,823360117,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+5673f2eb6b621bd3,CA L PPO 20/500/4000/20%,831849288,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+b8448d443fdd52ca,CA L PPO 20/500/4000/20%,942283426,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+b9a9a22b6b9fdfaa,CA L PPO 20/500/4000/20%,943330258,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+de714effd2129a7a,CA L PPO 20/500/4000/20%,951690974,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+6bef0a4c918cd446,CA L PPO 20/500/4000/20%,952038611,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+c25502148cecbf7e,CA L PPO 20/500/4000/20%,952452787,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+c45b6e00df7137d2,CA L PPO 20/500/4000/20%,953016679,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+1bfe66e7b1c2ad5d,CA L PPO 20/500/4000/20%,953611147,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8d5fe713cffc8f22,CA L PPO 20/500/4000/20%,953680060,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a27088303ac219f1,CA L PPO 20/500/4000/20%,953939062,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+cea85c4021dad295,CA L PPO 20/500/4000/20%,954072827,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+455009a1daf92caf,CA L PPO 20/500/4000/20%,954338845,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+b2f4826bd20df64b,CA L PPO 20/500/4000/20%,954391326,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f5c240e04abf27ff,CA L PPO 20/500/4000/20%,954776959,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+92b9697f92dccf25,CA L PPO 20/500/4000/20%,980020050,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+25141585b9866532,CA L PPO 30/1000/3000/20%,202427476,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+0a0ea37b94dcfb67,CA L PPO 30/1000/3000/20%,330328537,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+2ef8a273664a6a6b,CA L PPO 30/1000/3000/20%,330775221,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+6149e437f4dfb0c1,CA L PPO 30/1000/3000/20%,330783037,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f6e1c817311a809b,CA L PPO 30/1000/3000/20%,461622036,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+1f28122e88d0fced,CA L PPO 30/1000/3000/20%,941562490,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f6a1cd762591b7b6,CA L PPO 30/1000/3000/20%,942209546,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+fd72902318b208fe,CA L PPO 30/1000/3000/20%,951644002,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+c07cd9ef7fb89122,CA L PPO 30/1000/3000/20%,952576490,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+4acefae0ac6da059,CA L PPO 30/1000/3000/20%,952685177,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+824703ef98cb3df5,CA L PPO 30/1000/3000/20%,952707464,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+6fd6cfdf5a846b11,CA L PPO 30/1000/3000/20%,952874772,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+30a64326365035ab,CA L PPO 30/1000/3000/20%,952920994,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+016389b91e67e7ac,CA L PPO 30/1000/3000/20%,953016525,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+6a4c209f04b43ae8,CA L PPO 30/1000/3000/20%,953021610,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+7032ae0cd0017a9d,CA L PPO 30/1000/3000/20%,953190060,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+117224ee884ba5b3,CA L PPO 30/1000/3000/20%,953544617,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+66583d70a6d29704,CA L PPO 30/1000/3000/20%,954373573,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3949fc238d70674a,CA L PPO 30/1000/3000/20%,954698018,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d0c4d59ede26add7,CA L PPO 30/1000/3000/20%,990113530,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+e66710fd03615a23,CA L PPO 30/1000/4000/20%,237006214,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8d5fc710b476b8c4,CA L PPO 30/1000/4000/20%,237255435,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+318d1e03eef2f912,CA L PPO 30/1000/4000/20%,261458269,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+9ba82f6c749b29ec,CA L PPO 30/1000/4000/20%,330255526,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+2bac7e4ab3c2c8da,CA L PPO 30/1000/4000/20%,330667541,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3ee8262ffe981325,CA L PPO 30/1000/4000/20%,330685692,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f44992c477e2c832,CA L PPO 30/1000/4000/20%,330882523,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+958441ecf3365fd7,CA L PPO 30/1000/4000/20%,330888725,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+64c820132ce7d1d3,CA L PPO 30/1000/4000/20%,330920566,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+ffd87db01a8e45c1,CA L PPO 30/1000/4000/20%,465056462,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+4ec71851c54697b2,CA L PPO 30/1000/4000/20%,473658571,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+e28f8e24df3f0f61,CA L PPO 30/1000/4000/20%,475487599,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+dd4032798620dee6,CA L PPO 30/1000/4000/20%,611670591,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+85880d68b1810f06,CA L PPO 30/1000/4000/20%,770562654,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+5548963cff8bed91,CA L PPO 30/1000/4000/20%,825389673,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+63e7d2b3f6c5b48d,CA L PPO 30/1000/4000/20%,851857009,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f07b6bed02b9e54a,CA L PPO 30/1000/4000/20%,935155181,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+c99b07e4844ae006,CA L PPO 30/1000/4000/20%,943105085,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+16d41c9fa3123dc9,CA L PPO 30/1000/4000/20%,952431216,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+abb77da4929e5048,CA L PPO 30/1000/4000/20%,952492124,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+539b450fe7d889c0,CA L PPO 30/1000/4000/20%,952623231,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+876a8cc2f904346a,CA L PPO 30/1000/4000/20%,952642747,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+893664f763ebd6d3,CA L PPO 30/1000/4000/20%,952830194,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+0331128291bd45d0,CA L PPO 30/1000/4000/20%,953068358,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+7e9ee11658934e85,CA L PPO 30/1000/4000/20%,953192374,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+03b088707f0cc292,CA L PPO 30/1000/4000/20%,953514215,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+14f756b25db2fea5,CA L PPO 30/1000/4000/20%,954443964,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+c634f97e096cd341,CA L PPO 30/1000/4000/20%,954577883,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+5a0fe3f3b4d7480f,CA L PPO 30/1000/4000/20%,954601958,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+ad265e09b99057a3,CA L PPO 30/1000/4000/20%,954887722,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+4e6fa32c15eeba4c,CA L PPO 30/2000/5000/30%,200566109,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+af06aeffe3922b94,CA L PPO 30/2000/5000/30%,205961382,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+dbb4dca587971539,CA L PPO 30/2000/5000/30%,274172943,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+9f1b01eca8001159,CA L PPO 30/2000/5000/30%,330248474,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a8bd28d04ba9cccf,CA L PPO 30/2000/5000/30%,330294654,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a7bd7c7a38148006,CA L PPO 30/2000/5000/30%,330764426,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+0b833c133852ad41,CA L PPO 30/2000/5000/30%,330976223,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f66ec1dca839e0ee,CA L PPO 30/2000/5000/30%,611670591,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+0151da7e9ff36b67,CA L PPO 30/2000/5000/30%,821509541,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+e69daeeae82fc8fd,CA L PPO 30/2000/5000/30%,935155181,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+577e7fe0264495b4,CA L PPO 30/2000/5000/30%,951864304,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+41ee5036f2a21446,CA L PPO 30/2000/5000/30%,952474633,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a701a333a6006ae5,CA L PPO 30/2000/5000/30%,952818024,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+bda088fb15d208c3,CA L PPO 30/2000/5000/30%,953246672,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+0868715f125db605,CA L PPO 30/2000/5000/30%,953609552,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+7c1b1f6a8b2260f7,CA L PPO 30/2000/5000/30%,953920489,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+de8c6328f4e8f036,CA L PPO 30/2000/5000/30%,953985121,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+47911704551677bb,CA L PPO 30/2000/5000/30%,954373573,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f3707a7830b677da,CA L PPO 30/2000/5000/30%,954433864,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+1d04ed110f3a4683,CA L PPO 30/2000/5000/30%,954708089,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8c45f8d47102e58b,CA L PPO 30/3000/5000/30%,208570246,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+e67f58c2a65a54af,CA L PPO 30/3000/5000/30%,273525747,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+188084495c74d4f7,CA L PPO 30/3000/5000/30%,274068760,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f7c86d35557f872a,CA L PPO 30/3000/5000/30%,330255526,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a603c683eaa4b191,CA L PPO 30/3000/5000/30%,330713412,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+777af43a10d2c435,CA L PPO 30/3000/5000/30%,463698015,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+680e439c905ee7ec,CA L PPO 30/3000/5000/30%,825389673,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+98d56821f720fbdc,CA L PPO 30/3000/5000/30%,941552238,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+9d670467144be95b,CA L PPO 30/3000/5000/30%,950314144,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+fe36a62431cd1380,CA L PPO 30/3000/5000/30%,951943396,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3cb2fc41cf50235d,CA L PPO 30/3000/5000/30%,952078320,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+4301b24220a774dd,CA L PPO 30/3000/5000/30%,952859818,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+db7057a8de71c66f,CA L PPO 30/3000/5000/30%,954458950,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3724f9be9fc20257,CA L PPO 30/3000/5000/30%,999999999,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+50e423079f673b48,CA L PPO 30/3000/6000/30%,203358284,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+31d7e55e5d574b31,CA L PPO 30/3000/6000/30%,208570246,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f0c3ed9cc88d0597,CA L PPO 30/3000/6000/30%,272540793,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+7add3eed0dabbc8d,CA L PPO 30/3000/6000/30%,330916112,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+328de67088cf81c1,CA L PPO 30/3000/6000/30%,800303376,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a16e6187ba8cd90a,CA L PPO 30/3000/6000/30%,822474379,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+94772ed0b02c0e04,CA L PPO 30/3000/6000/30%,911872221,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+41f82b7bee466c2e,CA L PPO 30/3000/6000/30%,951679949,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+9c26b9774b585149,CA L PPO 30/3000/6000/30%,954422635,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+6a5a76ede7af9577,CA L PPO 30/4000/6000/30%,330954254,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+b3ddf1453d194e46,CA L PPO 30/4000/6000/30%,616405450,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+eefb4a1b71138571,CA L PPO 30/4000/6000/30%,770562654,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+c21c4de72273127c,CA L PPO 30/4000/6000/30%,800838042,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+263b3327fa9d3401,CA L PPO 30/4000/6000/30%,951648203,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+e6b3e40671faf85d,CA L PPO 30/4000/6000/30%,953920489,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a26706b8c6a4758e,CA L PPO 30/4000/6000/30%,954443964,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+b355d3bc0edfc723,CA L PPO 30/4000/6000/30%,954797831,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+2af4c4c5c1566bec,CA L PPO 30/500/3000/10%,208570246,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+9590b59faf53cb48,CA L PPO 30/500/3000/10%,330458209,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+e4c754915ac083e8,CA L PPO 30/500/3000/10%,680189766,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+65aefb534fde7ce9,CA L PPO 30/500/3000/10%,800314696,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+68f51d029710c4a7,CA L PPO 30/500/3000/10%,951801674,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+5992e7452f2367eb,CA L PPO 30/500/3000/10%,952105804,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+ede1ead33a2300c4,CA L PPO 30/500/3000/10%,952644713,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+9166ad6fab59170f,CA L PPO 30/500/3000/10%,953911712,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+829d607ccfa3cddc,CA L PPO 30/500/3000/10%,953960025,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+6aa5b771e322ea01,CA L PPO 30/500/3000/10%,954631260,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+de657ecc3fc538d8,CA L PPO 30/500/3000/10%,954674219,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+293098b659b2ff2f,CA L PPO 30/500/3000/10%,992571177,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+da5e9c4dad05362a,CA L PPO 30/500/4000/30%,941247265,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+09a2b3eb8e6aa277,CA L PPO 30/500/4000/30%,952789166,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+abbf5507888eeebf,CA L PPO 30/500/4000/30%,953123103,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+820e3aa33a2b3074,CA L PPO 30/500/4000/30%,954070970,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+7293b927f845cd33,CA L PPO 30/750/5000/20%,141829406,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a20dd27c041d9898,CA L PPO 35/1000/5000/20%,823360117,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f8d39f463e165758,CA L PPO 35/1000/5000/20%,951952927,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+1944caeee44dc920,CA L PPO 35/1000/5000/20%,953929830,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+64b4de3b270889a9,CA L PPO 35/1000/5000/20%,954205099,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a3db09ccd1731c64,CA L PPO 35/1000/5000/20%,954446696,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3c8fb0fde8d85b68,CA L PPO 40/3500/7000/30%,133771735,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d9e8f3aa7f2cf30e,CA L PPO 40/3500/7000/30%,330920566,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3ebafd9c25615cd0,CA L PPO 40/3500/7000/30%,384009236,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+52a9063ce22f256d,CA L PPO 40/3500/7000/30%,810978734,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+199582616122a3ab,CA L PPO 40/3500/7000/30%,844562478,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+87798728e0cdfabc,CA L PPO 40/3500/7000/30%,941451515,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a31da2ab808ad09f,CA L PPO 40/3500/7000/30%,953246672,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3490807ba289c53b,CA L PPO 40/3500/7000/30%,954133816,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+ef5107b8262d2d95,CA L PPO 40/5000/7000/30%,953920489,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+9804830b41632a6e,CA L PPO 60/5000/9200/30%,330885539,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+311bc0a4324a7d93,CA L PPO 60/5000/9450/30%,473314684,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+96ea2821a6eb81e5,CA L PPO 60/5000/9450/30%,800418024,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+17d84ae8d6c1f88b,CA L PPO 60/5000/9450/30%,810581888,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+bf2815bc9587541e,CA L PPO 60/5000/9450/30%,951339930,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8d9b63bfc0ed63ff,CA L PPO 60/5000/9450/30%,954266314,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+ea096be377f3b59b,CA L PPO HEQ HSA ED 20%/3300/4000,942209546,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d737cb1e48761b5f,CA L PPO HSA ED 0%/4000/4000,200140370,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+ccac53f3461db603,CA L PPO HSA ED 0%/4000/4000,208876586,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+79c5641136351b9e,CA L PPO HSA ED 0%/4000/4000,330294654,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+32b7ed376086d647,CA L PPO HSA ED 0%/4000/4000,611670591,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d19013cfbef03292,CA L PPO HSA ED 0%/4000/4000,942266817,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+58840b237917946a,CA L PPO HSA ED 0%/4000/4000,954698018,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+cca23acab0cb4535,CA L PPO HSA ED 20%/3200/4000,330684113,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+87404ea8264522df,CA L PPO HSA ED 20%/3200/4000,474726731,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+2d88c402ace0942e,CA L PPO HSA ED 20%/3200/4000,953611147,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+55390dcbc44b3866,CA L PPO HSA ED 20%/3500/5000,810978734,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+1ff1e99698ab3ff8,CA L PPO HSA ED 20%/3500/5000,951952927,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+b2a19531a9cf4d82,CA L PPO HSA ED 20%/3500/5000,952586175,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+1092a40431353e41,CA L PPO HSA ED 20%/3500/5000,953275679,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+58dac971c6cb1bc7,CA L PPO HSA ED 20%/5000/6000,262533907,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+4c48975dd57ded18,CA L PPO HSA ED 20%/5000/6000,273525747,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+c279e9a25c58ffe9,CA L PPO HSA ED 20%/5000/6000,273716562,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+63f661face41c27e,CA L PPO HSA ED 20%/5000/6000,330713412,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+ad8b231bb22c62c5,CA L PPO HSA ED 20%/5000/6000,330983417,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+ae1ed45984b03e66,CA L PPO HSA ED 20%/5000/6000,770562654,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+708159c4eeb11bc3,CA L PPO HSA ED 20%/5000/6000,825389673,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+1938f3709c46629a,CA L PPO HSA ED 20%/5000/6000,941552238,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+2a87817d4d333d97,CA L PPO HSA ED 20%/5000/6000,952479925,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d06b74c3c7a675be,CA L PPO HSA ED 20%/5000/6000,952946788,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+19a9974477a3658a,CA L PPO HSA ED 20%/5000/6000,953027350,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+7a47383339dd973a,CA L PPO HSA ED 20%/5000/6000,953271616,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+adae83e7209d3453,CA L PPO HSA ED 20%/5000/6000,990113530,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+5fd6f2370cbb8309,CA L PPO HSA ED 20%/5000/6000,999999999,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+0b0249f50139d9c5,CA L PPO HSA ED 30%/3200/5000,611670591,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+dc95b924e938db28,CA L PPO HSA ED 30%/3200/5000,823360117,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+6792b15b7150cd32,CA L PPO HSA ED 30%/3200/5000,952627510,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+bbcb01b96ab9633c,CA L PPO HSA ED 30%/3200/5000,954242492,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+eb29d1903bd2a9df,CA L PPO HSA ED 30%/3200/5000,954266314,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a40a1c57af7cda06,CA L PPO HSA ED 30%/3200/5000,954620113,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+75591bd26e7a6b34,CA L PPO HSA ED 30%/3200/5000 RAP,941156525,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f87c0f097b8f372d,CA L PPO HSA ED 30%/3300/5000,953861159,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+e9a931641492ea84,CA L PPO HSA F ED 0%/3200/3200,330675730,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3aac915e8e2f72e1,CA L PPO HSA F ED 0%/3200/3200,474726731,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+c6e268da3139b1a0,CA L PPO HSA F ED 0%/3200/3200,943330258,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+0b1f9f6044f7468e,CA L PPO HSA F ED 0%/3200/3200,950642012,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8c4ef3ccc2b5e77d,CA L PPO HSA F ED 0%/3200/3200,951648203,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+97196ff5d972a8ad,CA L PPO HSA F ED 0%/3200/3200,952280159,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+69bcc30f6824756e,CA L PPO HSA F ED 0%/3200/3200,952685177,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+ac0facb7d8de61d4,CA L PPO HSA F ED 0%/3200/3200,953353056,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8056137b5d733524,CA L PPO HSA F ED 0%/3300/3300,330702205,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+dc4a7013613f8551,CA L PPO HSA F ED 0%/3300/3300,941562490,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d90e031475e527aa,CA L PPO HSA I ED 0%/1600/1600,956000749,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+b4dd248c6bb99bb7,CA L PPO HSA I ED 0%/2000/2000,201538255,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+07c73f6b4cdacdf1,CA L PPO HSA I ED 0%/2000/2000,330675730,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8870f2c45c517758,CA L PPO HSA I ED 0%/2000/2000,330702205,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+7e2f4e5817209f07,CA L PPO HSA I ED 0%/2000/2000,474726731,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3f9b2996d0be0f67,CA L PPO HSA I ED 0%/2000/2000,941562490,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+8488ddfa111b385d,CA L PPO HSA I ED 0%/2000/2000,943104650,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f28cfb93586c880d,CA L PPO HSA I ED 0%/2000/2000,943330258,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+6075b12d3d517136,CA L PPO HSA I ED 0%/2000/2000,951648203,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+610ae672aaaab8b1,CA L PPO HSA I ED 0%/2000/2000,952280159,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d91a0fff633fe399,CA L&T CUS PPO Cement Masons So Ca H&W,956042883,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+9d8547e476b9435b,CA T CUS CBA PPO MFOW WELFARE FUND,941254186,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+88630c4fd8209f5e,Gold HDHP PPO 1800/20%,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+febfbc793a152a17,Gold HDHP PPO 1800/20% INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f8303a77919314b0,Gold PPO 0/35,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+defa06e295c6b499,Gold PPO 0/35 INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+25cdbeede9a17fb3,Gold PPO 1000/35,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+94886f422323533d,Gold PPO 1000/35 INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+c958661b9209caed,Gold PPO 1500/20,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+cbf9f42d0c069dc1,Gold PPO 1500/20 INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+56ca96b32dc5ec7a,Gold PPO 350/25,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+cb6af7601061ea7b,Gold PPO 350/25 INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+bc2136a33412eace,Gold PPO 500/20,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3996a6d17cde80bd,Gold PPO 500/20 INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+eaa61d16a791daf2,Gold PPO 750/15,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+728d12bb6fce7d88,Gold PPO 750/15 INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+07fa41257c2a3f97,Platinum PPO 0/15,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+2bc4a809318b72d4,Platinum PPO 0/15 INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+b15e139e73641636,Platinum PPO 0/5,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+682e75474fcaedc5,Platinum PPO 0/5 INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+3bcb5c84073d4c62,Platinum PPO 250/15,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+65d8c80128536769,Platinum PPO 250/15 INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+fd1064f525245660,Silver HDHP PPO 1800/50%,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+a46fb3229d52e793,Silver HDHP PPO 1800/50% INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+439acfdaa5ab9f99,Silver PPO 1700/50,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+82258862659e2c3e,Silver PPO 1700/50 INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+f79dd7f3f63a192b,Silver PPO 2250/60,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+e22f032905b5da5a,Silver PPO 2250/60 INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+d17c7ad5b6b564d4,Silver PPO 2500/50,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+4a23ec3364c8a424,Silver PPO 2500/50 INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+c3822538d60fb3df,Silver PPO 2500/55,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json
+e4bd0d24d65bcc0c,Silver PPO 2500/55 INF,67138CA073,ein,high,P1_PLAN_NAME_TOKEN,5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json

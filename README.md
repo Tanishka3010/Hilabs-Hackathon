@@ -6,7 +6,7 @@ A reproducible pipeline over Centene's Transparency-in-Coverage (TiC) files. Sco
 |---|---|---|
 | `recon` | Streams every index file and profiles its schema, plans and file URLs | `outputs/c1/recon_report.md` |
 | `c1` | Parses all index files into plan × file, deduplicated file and plan tables | `outputs/c1/*.parquet`, `*.csv`, `c1_stats.json` |
-| `c2` | Classifies plans and files by network type (PPO/HMO/EPO/POS) | _in progress_ |
+| `c2` | Applies the scope filters and the network-type rule cascade to every plan and file | `outputs/c2/plan_classification.csv`, `file_classification.csv`, `ppo_plans.csv`, `ppo_files.csv`, `exclusions_summary.csv`, `conflicts.csv`, `c2_stats.json` |
 
 The logic and the reasons behind each decision are in [docs/logic_c1_c2.md](docs/logic_c1_c2.md). Unresolved data ambiguities are in [docs/open_questions.md](docs/open_questions.md).
 
@@ -36,13 +36,29 @@ Individual stages:
 ```bash
 .venv/bin/python -m src.run --stage c1
 ```
+```bash
+.venv/bin/python -m src.run --stage c2
+```
+Add the optional provider fingerprint (streams up to 40 MB of each ambiguous in-network file; results are cached in `outputs/c2/fingerprint_cache/`):
+```bash
+.venv/bin/python -m src.run --stage c2 --fingerprint
+```
 
 Useful options:
 - `--index-dir`, `--output-dir`, `--nppes-dir`, `--reference-dir` override the config paths.
 - `--workers N` sets the number of parallel processes.
 - `--probe-mb 0` turns off the recon probe. By default the probe streams the first 40 MB of the CA in-network file to check for network markers, so it needs internet access; if the file can't be reached, the report says so.
 
-Re-running overwrites every output deterministically: rows are sorted and keys are stable hashes.
+Running `c2` or `all` ends with a short summary (index files, unique plans, files before and after dedup, in-scope plans, PPO plans and files, and the count for each exclusion reason).
+
+Assumptions the organizers haven't confirmed are switches in `config/config.yaml` → `c2` (`eoa_as`, `ppo_epo_as`, `hsp_as`), so changing one never needs a code change. Re-running overwrites every output deterministically: rows are sorted and keys are stable hashes.
+
+## Current result (snapshot 2026-09-28/30)
+- 1,312 in-scope CA group plans, all Health Net.
+- **453 PPO plans** (452 high confidence, 1 medium).
+- Ruled out: 723 HMO and 6 POS. No EPO-only plans exist.
+- 130 unresolved: 127 EOA and 3 PPO+EPO.
+- **1 PPO rate file**, `healthnet-ca_in-network.json`. It's labelled `MIXED` because every CA network shares it, so PPO rates must be filtered inside it (C3).
 
 ## Tests
 ```bash

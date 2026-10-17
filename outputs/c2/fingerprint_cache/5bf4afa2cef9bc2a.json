@@ -1,0 +1,19 @@
+{
+  "business_name_prefixes": {
+    "(no prefix)": 4446,
+    "DIRECT NETWORK": 41,
+    "PPO": 89
+  },
+  "cap_mb": 40.0,
+  "n_npis": 3735,
+  "n_tins": 2888,
+  "network_name": {
+    "(empty)": 2825
+  },
+  "nppes_ca_share": null,
+  "nppes_note": "nppes_dir missing",
+  "provider_groups": 4576,
+  "provider_refs": 2825,
+  "status": "stopped at byte cap 40.0 MB",
+  "total_size": "bytes 0-41943039/701615514"
+}

@@ -7,3 +7,20 @@ recon:
   sample_size: 20
   probe_mb: 40
   probe_url_pattern: healthnet-ca_in-network
+c2:
+  eoa_as: unknown
+  ppo_epo_as: conflict
+  hsp_as: unknown
+  glued_prefixes: [CUS]
+  family_candidates: [WholeCare, SmartCare, Full Network, Salud, SAL, CalChoice, SC, EC, CommunityCare, Trio, PureCare, EnhancedCare, Elect, Select, Open Access, Mex]
+  family_min_support: 5
+  family_min_purity: 1.0
+  costshare_min_support: 20
+  costshare_min_precision: 0.95
+  brand_state_min_share: 0.9
+  entity_rules:
+    - {pattern: "Life Insurance", implies: PPO}
+    - {pattern: "Health Net of California", implies: HMO}
+  fingerprint:
+    cap_mb: 40
+    max_groups: 200000

@@ -1,0 +1,13 @@
+level,reason_code,count,kept
+file,OUT_OF_STATE,31,False
+file,INDIVIDUAL_MARKET,1,False
+file,MIXED_CONTAINS_PPO,1,True
+plan,OUT_OF_STATE,1900,False
+plan,HMO,723,False
+plan,PPO,453,True
+plan,EOA_UNRESOLVED,127,False
+plan,INDIVIDUAL_MARKET,58,False
+plan,POS,6,False
+plan,PPO_EPO_CONFLICT,3,False
+plan_any_scope_reason,OUT_OF_STATE,1900,False
+plan_any_scope_reason,INDIVIDUAL_MARKET,1214,False
