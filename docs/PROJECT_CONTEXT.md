@@ -8,7 +8,7 @@ The detailed logic is in four documents:
 - [logic_c4.md](logic_c4.md) (C4)
 - [open_questions.md](open_questions.md)
 
-*Last updated 2026-10-18. Branch `feat/quality-c3` holds all the latest work (see §9).*
+*Last updated 2026-10-18. Branch `feat/location-c5` holds all the latest work (see §9).*
 
 ---
 
@@ -28,7 +28,7 @@ Provider types: Type 1 (individual) and Type 2 (organisation) NPIs.
 | C2 | Identify the PPO plans and rate files; explain how HMO, EPO and POS were ruled out | **Done**, organizer answers applied |
 | C3 | Define PTD quality and completeness metrics, score every file used, justify each metric | **Done**: 13 rate-file metrics and 5 index-file metrics |
 | C4 | Extract rates for every PPO provider; when a provider has several rates for one code, say which is kept and why | **Done** |
-| C5 | Map TINs and NPIs to their practising address, without relying on NPPES alone | Not started (stub `src/c5_provider_location.py`; reference loaders ready) |
+| C5 | Map TINs and NPIs to their practising address, without relying on NPPES alone | **First version done** (NPPES + DAC + rate-file names): 216 NPIs (5.8%) verified; organisations wait on facility sources |
 | C6 | Build the provider rate file (NPI, TIN, address, billing code, specialty, rate), as Excel | Not started |
 | C7 (optional) | Cost-effectiveness metrics vs similar providers | Not started |
 
@@ -92,7 +92,7 @@ Scoring weights (logic and metrics track): Logic 40, Metrics 35, Structure 25. E
 | `src/c3_quality.py` | C3 metrics (DuckDB), scoring, index scorecard |
 | `src/reference_data.py` | Loaders: benchmark xlsx (3 sheets), NUCC, DAC, NPPES, practice locations, and the `npi_is_valid` check digit |
 | `src/contracts.py` | Column contracts for the rate tables |
-| `src/c5_provider_location.py` | **Stub**, to be built |
+| `src/c5_provider_location.py` | C5: address candidates, normalising, confidence scoring, verification, TIN–NPI–address links |
 | `src/run.py` | CLI entry point and summary print |
 | `docs/` | `logic_c1_c2.md`, `logic_c3.md`, `logic_c4.md`, `open_questions.md`, `work_split.md` (the two-person split, **abandoned**: one person now does everything), this file, and a Word summary `HiLabs_PTD_C1_C2_Summary.docx` |
 
@@ -250,6 +250,39 @@ The **as-of date** is the latest date seen in the inputs (2026-10-06), not the r
 
 **Outputs:** `outputs/c3/file_scores.csv`, `metric_values.csv`, `metric_details.json`, `index_file_scores.csv`, `c3_stats.json`.
 
+## 7b. C5: provider addresses (first version)
+
+Full logic: [logic_c5.md](logic_c5.md).
+
+**Sources and trust weights:**
+- DAC (national file, clinicians only, with group practice names): 0.7;
+- NPPES primary address: 0.5 × recency;
+- NPPES secondary locations: 0.4 × recency.
+
+Recency factor from `Last Update Date`: within 1 year 1.0, 1–3 years 0.7, older 0.4.
+
+**Method:**
+- **Address key** = normalised street (suite removed, street words abbreviated) + ZIP5.
+- **Confidence** = 1 − Π(1 − weight) over the sources reporting the address.
+- **Verified** = at least 2 independent source families (NPPES, DAC) agree, and the address is in CA.
+- **Best address order:** in CA → verified → confidence → recency.
+
+**TIN–NPI–address link.** Each pair's addresses are re-ranked so TIN-specific evidence comes first:
+- the DAC group practice name matches the TIN's business name (9 pairs);
+- the NPPES organisation name matches it (1,325 pairs).
+
+NPPES hides the EIN, so names are the only bridge.
+
+**Results:**
+- 3,726 of 3,735 NPIs have an address; 3,611 have one in CA.
+- **216 verified (5.8%)**, all individuals; 65% of DAC clinicians agree with NPPES.
+- TINs verified: 211 of 2,888.
+- Status counts: unverified single source 2,911, unverified multiple 484, out of state only 115, deactivated 7, no address 2.
+
+**Outputs:** `outputs/c5/address_candidates.parquet`, `npi_addresses.csv`, `provider_locations.csv`, `tin_npi_address.csv`, `c5_stats.json`.
+
+**Next:** add the CMS POS file, the CA HCAI facility list, the IRS EO BMF (CA, linked by TIN) and the Census geocoder as new sources with their own weights. Each download needs the user's OK.
+
 ## 8. Reference-data loaders (`src/reference_data.py`)
 
 - **Benchmark workbook** with three sheets:
@@ -271,7 +304,8 @@ The **as-of date** is the latest date seen in the inputs (2026-10-06), not the r
 | `main` | C1, C2, scaffold, `work_split.md` (milestone branches), and the teammate's original reference loaders (commits `901eac9`, `2a25193` by `nsb5257`) |
 | `feat/reference-data` | Fixes to the reference loaders (NPI scope, status column, check digit, caches, tests) |
 | `chore/add-duckdb` | Adds duckdb to `requirements.txt` |
-| `feat/quality-c3` | **Everything above plus C3, C4 extraction and C4 selection, and the docs. The latest branch.** `main` can fast-forward to it |
+| `feat/quality-c3` | Everything above plus C3, C4 extraction and C4 selection, and the docs |
+| `feat/location-c5` | **`feat/quality-c3` + C5 (first version). The latest branch.** `main` can fast-forward to it |
 
 The user asked to **keep the work on the branch and not touch `main`** until told otherwise. No PR has been opened; the `gh` CLI isn't installed.
 
@@ -298,7 +332,7 @@ Commit messages end with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com
 
 ## 12. What's next
 
-1. **C5 (provider addresses).** Build a location table per NPI × TIN with candidate addresses from:
+1. **C5 next step: add sources for organisations.** C5 v1 already builds and scores candidate addresses per NPI × TIN. Still to add:
    - CMS DAC (needs the national file for out-of-state checks);
    - the NPPES primary address, with confidence lowered by the age of `last_update_date`;
    - NPPES secondary practice locations;
