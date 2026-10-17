@@ -71,7 +71,7 @@ Assumptions the organizers haven't confirmed are switches in `config/config.yaml
 - Ruled out: 723 HMO, 127 EOA (a separate network, confirmed by the organizers) and 6 POS. No EPO-only plans exist.
 - **1 PPO rate file**, `healthnet-ca_in-network.json`. It's labelled `MIXED` because every CA network shares it, so PPO rates must be filtered inside it (C3).
 
-- C3: the CA rate file scores **0.887 (grade B)** on 11 of 13 metrics. The 2 NPPES-based metrics need the NPPES file. Its weak points are benchmark coverage on professional rates (68% of benchmark weight), procedure-code identifiability (75%) and outliers (1.6%). See [docs/logic_c3.md](docs/logic_c3.md).
+- C3: the CA rate file scores **0.857 (grade B)** on all 13 metrics. Its weak points are specialty-matched coverage (49% of benchmark weight), benchmark coverage on professional rates (68%), procedure-code identifiability (75%) and outliers (1.6%). 96.7% of its NPIs are valid, active and in CA. See [docs/logic_c3.md](docs/logic_c3.md).
 
 ## Tests
 ```bash

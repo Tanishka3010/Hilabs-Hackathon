@@ -1,12 +1,13 @@
 # C3: grading PTD file quality and completeness
 
-**Result.** The Health Net CA in-network file (the only PPO rate file) scores **0.887, grade B**, on the 11 metrics that can be scored today. Its weak points:
+**Result.** The Health Net CA in-network file (the only PPO rate file) scores **0.857, grade B**, on all 13 metrics. Its weak points:
 
+- **Specialty-matched coverage:** 49% of benchmark weight is priced by a provider of the right specialty.
 - **Benchmark coverage:** professional rates cover 23% of the benchmark codes (68% of their weight).
 - **Procedure-code identifiability:** 25% of prices carry only a revenue code.
 - **Outliers:** 1.56% of prices.
 
-The two NPPES-based metrics are wired up and tested, but they need the NPPES file in `raw/nppes/`. Until then they are reported as *not scored*, never guessed. All 11 index files are graded too.
+Providers are sound: 96.7% of NPIs are valid, active and located in CA. All 11 index files are graded too. If the NPPES file is missing, the two NPPES-based metrics are reported as *not scored* (never guessed), and the total uses the other 11.
 
 Reproduce:
 
@@ -65,8 +66,8 @@ The total is the **weighted mean of the scored metrics** (weights in `config/sta
 | 2 | `code_identifiability` (validity) | Price rows with a standard procedure code (as defined in §2) ÷ all rows | A bare revenue code (RC 636 "drugs") can't be compared across payers or providers | share | 1.0 | 0.752 → 0.75 |
 | 3 | `referential_integrity` (validity) | Price rows whose provider group resolves to at least one NPI ÷ all rows | A rate that can't be tied to a provider is useless for provider-level rates | share | 1.0 | 1.000 → 1.00 |
 | 4 | `code_coverage` (completeness) | Benchmark weight of codes with at least one usable **professional** rate ÷ total benchmark weight. Code weight = Σ over specialties of specialty weight × (code weight ÷ that specialty's total). Usable means > $0, not a placeholder, a dollar rate type, and not expired | A file only supports benchmarking if it prices the codes that drive spend. Weighting stops rare codes from counting as much as common ones. The benchmark covers *individual* providers, so facility rates don't count | share | 2.0 | 0.681 → 0.68 (134 of 583 codes; any billing class: 203 codes, 0.753) |
-| 5 | `specialty_code_coverage` (completeness) | Benchmark weight of (specialty, code) cells where an NPI of that specialty (NPPES taxonomy → HiLabs crosswalk) has a usable rate for that code ÷ total weight | Contracting compares like with like: a cardiology code priced only for non-cardiologists doesn't support a cardiology benchmark | share | 1.5 | not scored: NPPES needed |
-| 6 | `provider_validity` (completeness) | Distinct NPIs that pass the check digit, **and** are in NPPES, **and** are not deactivated, **and** practise in CA (NPPES primary or secondary address, or DAC) ÷ distinct NPIs | Invalid, retired or out-of-state NPIs inflate the network and attach rates to providers a CA team can't use | share | 1.5 | not scored: NPPES needed (check digit: 3,734 of 3,735 valid) |
+| 5 | `specialty_code_coverage` (completeness) | Benchmark weight of (specialty, code) cells where an NPI of that specialty (NPPES taxonomy → HiLabs crosswalk) has a usable rate for that code ÷ total weight | Contracting compares like with like: a cardiology code priced only for non-cardiologists doesn't support a cardiology benchmark | share | 1.5 | 0.493 → 0.49 (2,089 NPIs map to a benchmark specialty) |
+| 6 | `provider_validity` (completeness) | Distinct NPIs that pass the check digit, **and** are in NPPES, **and** are not deactivated, **and** practise in CA (NPPES primary or secondary address, or DAC) ÷ distinct NPIs | Invalid, retired or out-of-state NPIs inflate the network and attach rates to providers a CA team can't use | share | 1.5 | 0.967 → 0.97 (3,611 of 3,735 usable: 1 fails the check digit, 2 not in NPPES, 7 deactivated, 124 not located in CA by any source) |
 | 7 | `zero_invalid_rates` (accuracy) | Rows with a null rate, a rate ≤ $0, or a placeholder (0.01, 99999, 999999, 9999999) ÷ all rows | These aren't prices, and they drag averages down | tolerance 10% | 1.5 | 0.000 → 1.00 |
 | 8 | `outlier_rate` (accuracy) | Positive rates more than 10× above or below their group median ÷ positive rates in groups of at least 5. A group is code type + code + procedure code + service name + billing class + rate type | Order-of-magnitude gaps usually mean unit errors (cents vs dollars, per unit vs per case) or misattributed codes. A 10× band on a ratio scale ignores normal price spread | tolerance 5% | 1.5 | 0.0156 → 0.69 (22,499 of 1,444,075) |
 | 9 | `rate_type_usability` (accuracy) | Rows whose `negotiated_type` is negotiated, fee schedule or derived ÷ all rows | Percentage-of-charges and per-diem rates can't be turned into dollars without a base the file doesn't give | share | 1.0 | 1.000 → 1.00 (46 fee-schedule, rest negotiated) |
@@ -86,7 +87,12 @@ The total is the **weighted mean of the scored metrics** (weights in `config/sta
 3. **Outliers concentrate in revenue code `23` (home-health episode groups).** One group's median is $121.63, yet its rates span $1.45 to $7,380.48. That looks like a mix of per-visit and per-episode pricing.
 4. **Conflicts.** 4,194 provider contexts carry several rates. The widest is RC `370` (anesthesia) for one NPI and TIN: $233.81 vs $2,391.92 (examples in `metric_details.json`).
 5. **Metadata.** The file URL says 2026-09-30, but its `last_updated_on` is 2026-10-06, after the index that points to it. That's recorded as `url_date_matches_content = false`.
-6. **NPIs.** 3,734 of 3,735 pass the NPI check digit. NPPES status and location come once the NPPES file is added.
+6. **Providers.**
+    - 3,733 of 3,735 NPIs exist in NPPES; 7 are deactivated and 10 reactivated.
+    - The NPPES primary address is CA for 3,601. The others are in OR (21), WA (11), NV (9), TX (8) and elsewhere. Adding NPPES secondary locations and DAC brings the CA-located count to 3,611.
+    - The file is dominated by **organisations**: 3,054 Type 2 NPIs vs 672 Type 1. That fits its facility-rate profile.
+7. **Specialty-matched coverage is about half the benchmark weight (0.49).** Several specialties get no specialty-matched coverage at all, including Cardiothoracic Surgery (035) and the dental specialties (201–203). This file can't support a specialty-level benchmark for them.
+8. **NPPES addresses are stale, as the brief warns.** 1,211 of the 3,733 NPIs were last updated in 2019 or earlier, and 2,290 (61%) have had no update since 2023. C5 has to use more than NPPES (see `last_update_date` in the reference cache).
 
 ## 5. Index files (also used, also graded)
 
@@ -110,6 +116,7 @@ The metrics are on the same 0–1 scale, with weights in `c3.index_weights`:
 | qualchoice_city_of_hot_springs | 2 | 1.000 | A |
 
 ## 6. Limitations
-- **NPPES metrics.** `provider_validity` and `specialty_code_coverage` need `raw/nppes/npidata_pfile_*.csv` (and `pl_pfile`). Until then they're not scored, and the total uses the other 11 metrics.
+- **NPPES metrics.** `provider_validity` and `specialty_code_coverage` need `raw/nppes/npidata_pfile_*.csv` (and `pl_pfile`). The first run streams 9.85 million NPPES rows (about 30 s) and caches the 3,733 that matter.
+- **DAC is CA-only here.** The national DAC file isn't in the repo, so the committed CA-only cache is used. DAC can confirm a CA location, but it can't reveal an out-of-state DAC address.
 - **No external price reference.** Outliers are measured against the file's own medians. A Medicare fee schedule would add an external check but isn't among the provided data.
 - **Rates aren't filtered to PPO plans.** All CA networks share this file and nothing in it ties a price to a network, so the metrics describe the file as a whole (see open question Q3).

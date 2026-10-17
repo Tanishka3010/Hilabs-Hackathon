@@ -1,2 +1,2 @@
 file_key,file_name,complete_file,rows,total_score,grade,metrics_scored,score_schema_validity,score_code_identifiability,score_referential_integrity,score_code_coverage,score_specialty_code_coverage,score_provider_validity,score_zero_invalid_rates,score_outlier_rate,score_rate_type_usability,score_exact_duplicates,score_conflicting_rates,score_file_freshness,score_expired_rates
-5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json,True,1500288,0.8871,B,11,1.0,0.7517,1.0,0.6812,,,1.0,0.6884,1.0,0.983,0.9502,1.0,1.0
+5bf4afa2cef9bc2a,2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json,True,1500288,0.8567,B,13,1.0,0.7517,1.0,0.6812,0.4932,0.9668,1.0,0.6884,1.0,0.983,0.9502,1.0,1.0

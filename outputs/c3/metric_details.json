@@ -71,7 +71,7 @@
           "max_rate": 2391.92,
           "min_rate": 233.81,
           "n_rates": 2,
-          "name": "Anesthesia General",
+          "name": "MOD SED SAME PHYS/QHP 5/>YRS",
           "negotiated_type": "negotiated",
           "npi": 1730171265,
           "service_code": "22",
@@ -87,7 +87,7 @@
           "max_rate": 2391.92,
           "min_rate": 233.81,
           "n_rates": 2,
-          "name": "MOD SED SAME PHYS/QHP 5/>YRS",
+          "name": "MOD SED SVC PRV SM PHYS PER",
           "negotiated_type": "negotiated",
           "npi": 1730171265,
           "service_code": "22",
@@ -119,7 +119,7 @@
           "max_rate": 2391.92,
           "min_rate": 233.81,
           "n_rates": 2,
-          "name": "MOD SED SVC PRV SM PHYS PER",
+          "name": "Anesthesia General",
           "negotiated_type": "negotiated",
           "npi": 1730171265,
           "service_code": "22",
@@ -187,7 +187,7 @@
           "max_rate": 7380.48,
           "median": 121.63499999999999,
           "min_rate": 1.45,
-          "name": "EARLY - COMMUNITY, MMTA - CA",
+          "name": "LATE - COMMUNITY, MMTA - END",
           "outliers": 60,
           "procedure_code": null
         },
@@ -198,7 +198,7 @@
           "max_rate": 7380.48,
           "median": 121.63499999999999,
           "min_rate": 1.45,
-          "name": "EARLY - COMMUNITY, MS REHAB",
+          "name": "EARLY - COMMUNITY, MMTA - CA",
           "outliers": 60,
           "procedure_code": null
         },
@@ -220,19 +220,8 @@
           "max_rate": 7380.48,
           "median": 121.63499999999999,
           "min_rate": 1.45,
-          "name": "LATE - COMMUNITY, MMTA - END",
+          "name": "EARLY - COMMUNITY, MS REHAB",
           "outliers": 60,
-          "procedure_code": null
-        },
-        {
-          "billing_class": "institutional",
-          "billing_code": "23",
-          "billing_code_type": "RC",
-          "max_rate": 7380.48,
-          "median": 121.63499999999999,
-          "min_rate": 1.45,
-          "name": "LATE - COMMUNITY, WOUND - LO",
-          "outliers": 45,
           "procedure_code": null
         },
         {
@@ -248,12 +237,23 @@
         },
         {
           "billing_class": "institutional",
+          "billing_code": "23",
+          "billing_code_type": "RC",
+          "max_rate": 7380.48,
+          "median": 121.63499999999999,
+          "min_rate": 1.45,
+          "name": "LATE - COMMUNITY, WOUND - LO",
+          "outliers": 45,
+          "procedure_code": null
+        },
+        {
+          "billing_class": "institutional",
           "billing_code": "420",
           "billing_code_type": "RC",
           "max_rate": 144638.65,
           "median": 12893.66,
           "min_rate": 51.57,
-          "name": "SELF CARE MNGMENT TRAINING",
+          "name": "THERAPEUTIC ACTIVITIES",
           "outliers": 44,
           "procedure_code": null
         }
@@ -261,9 +261,13 @@
     },
     "provider_validity": {
       "check_digit_valid": 3734,
+      "deactivated": 7,
       "distinct_npis": 3735,
       "distinct_tins": 2888,
-      "status": "unavailable: NPPES file missing"
+      "in_nppes": 3733,
+      "in_target_state": 3611,
+      "not_in_nppes": 2,
+      "usable": 3611
     },
     "rate_type_usability": {
       "fee schedule": 46,
@@ -280,7 +284,19 @@
       "rows_missing_required": 0
     },
     "specialty_code_coverage": {
-      "status": "unavailable: NPPES file missing"
+      "lowest_specialties": {
+        "035": 0.0,
+        "045": 0.0,
+        "046": 0.0,
+        "052": 0.0,
+        "072": 0.0,
+        "080": 0.0,
+        "201": 0.0,
+        "202": 0.0,
+        "203": 0.0,
+        "PEDML": 0.0
+      },
+      "npis_with_benchmark_specialty": 2089
     },
     "zero_invalid_rates": {
       "null": 0,
