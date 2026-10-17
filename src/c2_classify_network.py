@@ -7,6 +7,7 @@ import pandas as pd
 from src.common import join_sorted, load_config, log, setup_logging, write_json
 
 NETWORK_TYPES = ("PPO", "HMO", "EPO", "POS")
+FINAL_TYPES = NETWORK_TYPES + ("EOA",)
 SPECIAL_TOKENS = ("HSP", "EOA")
 UNKNOWN = "OTHER/UNKNOWN"
 TARGET_STATE = "CA"
@@ -25,7 +26,7 @@ US_STATES = set(
 PRECEDENCE = [
     ("P1", "plan_name_token", "Explicit single network token in the plan name (word-boundary match)", "high"),
     ("P1b", "plan_name_glued_token", "Network token glued to a known prefix (e.g. CUSPPO)", "medium"),
-    ("P1x", "plan_name_special_token", "Explicit but unresolved token (EOA, HSP, PPO+EPO, multiple types): mapped only via config, never inferred from lower signals", "low"),
+    ("P1x", "plan_name_special_token", "Special token (EOA, HSP, PPO+EPO, multiple types): mapped only via config (high confidence when the organizers confirmed it), never inferred from lower signals", "high if organizer-confirmed else low"),
     ("P2", "file_token", "Network token in the in-network file name / description / URL path (all of the plan's files agree)", "high"),
     ("P3", "entity", "Legal entity (issuer / sponsor) rule from config", "medium"),
     ("P4", "family", "Product-family name validated against explicit-token plans (support and purity thresholds)", "medium"),
@@ -162,12 +163,12 @@ def apply_scope(plans, plan_files, fsig, cfg2):
 
 
 def validate_families(df, candidates, min_support, min_purity):
-    base = df[(df["scope_verdict"] == "IN_SCOPE") & df["name_label"].isin(NETWORK_TYPES)]
+    base = df[(df["scope_verdict"] == "IN_SCOPE") & df["explicit_label"].isin(FINAL_TYPES)]
     rows = []
     for term in candidates:
         rx = word_re(term)
         hit = base[base["plan_name"].map(lambda n: bool(rx.search(n or "")))]
-        c = Counter(hit["name_label"])
+        c = Counter(hit["explicit_label"])
         n = sum(c.values())
         top, k = (c.most_common(1)[0] if c else ("", 0))
         purity = k / n if n else 0.0
@@ -177,10 +178,10 @@ def validate_families(df, candidates, min_support, min_purity):
 
 
 def validate_costshare(df, min_support, min_precision):
-    base = df[(df["scope_verdict"] == "IN_SCOPE") & df["name_label"].isin(NETWORK_TYPES) & (df["costshare_shape"] > 0)]
+    base = df[(df["scope_verdict"] == "IN_SCOPE") & df["explicit_label"].isin(FINAL_TYPES) & (df["costshare_shape"] > 0)]
     rows = []
     for shape, g in base.groupby("costshare_shape"):
-        c = Counter(g["name_label"])
+        c = Counter(g["explicit_label"])
         top, k = c.most_common(1)[0]
         prec = k / len(g)
         rows.append({"shape": int(shape), "support": len(g), "types": dict(c), "majority": top, "precision": round(prec, 4),
@@ -200,17 +201,31 @@ def entity_signal(issuer, sponsor, rules):
     return hits[0] if len(hits) == 1 else ("MULTI:" + "+".join(hits) if hits else "")
 
 
+def config_mapping(token, key, default, cfg2):
+    m = (cfg2.get(key) or default).upper()
+    if m not in FINAL_TYPES:
+        return None
+    confirmed = key in (cfg2.get("organizer_confirmed") or [])
+    return m, "high" if confirmed else "low", f"P1x_{token}_AS_{m}_{'ORGANIZER_CONFIRMED' if confirmed else 'BY_CONFIG'}"
+
+
 def special_mapping(label, cfg2):
     if label == "EOA":
-        m = (cfg2.get("eoa_as") or "unknown").upper()
-        return (m, "low", "P1x_EOA_MAPPED_BY_CONFIG") if m in NETWORK_TYPES else (UNKNOWN, "low", "EOA_UNRESOLVED")
+        return config_mapping("EOA", "eoa_as", "unknown", cfg2) or (UNKNOWN, "low", "EOA_UNRESOLVED")
     if label == "HSP":
-        m = (cfg2.get("hsp_as") or "unknown").upper()
-        return (m, "low", "P1x_HSP_MAPPED_BY_CONFIG") if m in NETWORK_TYPES else (UNKNOWN, "low", "HSP_UNRESOLVED")
+        return config_mapping("HSP", "hsp_as", "unknown", cfg2) or (UNKNOWN, "low", "HSP_UNRESOLVED")
     if label == "PPO+EPO":
-        m = (cfg2.get("ppo_epo_as") or "conflict").upper()
-        return (m, "low", "P1x_PPO_EPO_MAPPED_BY_CONFIG") if m in NETWORK_TYPES else (UNKNOWN, "low", "PPO_EPO_CONFLICT")
+        return config_mapping("PPO_EPO", "ppo_epo_as", "conflict", cfg2) or (UNKNOWN, "low", "PPO_EPO_CONFLICT")
     return UNKNOWN, "low", "MULTI_NETWORK_TOKEN_CONFLICT"
+
+
+def explicit_label(name_label, cfg2):
+    if name_label in NETWORK_TYPES:
+        return name_label
+    if name_label:
+        lab = special_mapping(name_label, cfg2)[0]
+        return lab if lab in FINAL_TYPES else ""
+    return ""
 
 
 def decide(r, cfg2, use_prop=True):
@@ -242,7 +257,7 @@ def propagate(df, plan_files):
     file_conf = {}
     for fk, pks in file_plans.items():
         labs = {first[p]["pre_label"] for p in pks if p in first}
-        confident = all(p in first and first[p]["pre_label"] in NETWORK_TYPES and CONF_RANK[first[p]["pre_conf"]] >= 2 for p in pks)
+        confident = all(p in first and first[p]["pre_label"] in FINAL_TYPES and CONF_RANK[first[p]["pre_conf"]] >= 2 for p in pks)
         file_conf[fk] = labs.pop() if confident and len(labs) == 1 else ""
     out = {}
     for pk, fks in plan_files.items():
@@ -293,7 +308,7 @@ def classify_files(files, fsig, df, plan_files, file_conf):
         ins = [recs[p] for p in pks if recs[p]["scope_verdict"] == "IN_SCOPE"]
         pool = ins if ins else [recs[p] for p in pks]
         lab = Counter(p["network_label"] for p in pool)
-        typed = sorted(t for t in lab if t in NETWORK_TYPES)
+        typed = sorted(t for t in lab if t in FINAL_TYPES)
         n_unk = lab.get(UNKNOWN, 0)
         s = sig.get(f.file_key, {})
         if s.get("file_token_label") in NETWORK_TYPES and typed in ([], [s["file_token_label"]]):
@@ -318,7 +333,7 @@ def classify_files(files, fsig, df, plan_files, file_conf):
             "network_label": label, "confidence": conf, "decision_reason": reason,
             "n_plans": len(pks), "n_in_scope_plans": len(ins),
             "n_ppo_plans": sum(1 for p in ins if p["network_label"] == "PPO"),
-            "n_non_ppo_plans": sum(1 for p in ins if p["network_label"] in NETWORK_TYPES and p["network_label"] != "PPO"),
+            "n_non_ppo_plans": sum(1 for p in ins if p["network_label"] in FINAL_TYPES and p["network_label"] != "PPO"),
             "n_unknown_plans": sum(1 for p in ins if p["network_label"] == UNKNOWN),
             "label_counts": "|".join(f"{k}={v}" for k, v in sorted(lab.items())),
             "file_tokens": s.get("file_tokens", ""), "file_token_label": s.get("file_token_label", ""),
@@ -345,6 +360,7 @@ def run(cfg, fingerprint=False):
     df["name_label"] = df["plan_name"].map(lambda n: token_label(find_tokens(n)))
     df["glued_tokens"] = df["plan_name"].map(lambda n: "+".join(find_glued(n, grx)))
     df["glued_label"] = df["plan_name"].map(lambda n: token_label(find_glued(n, grx)))
+    df["explicit_label"] = df["name_label"].map(lambda l: explicit_label(l, cfg2))
     flab = dict(zip(fsig["file_key"], fsig["file_token_label"]))
     df["file_signal"] = df["plan_key"].map(lambda pk: (lambda s: s.pop() if len(s) == 1 else "")({flab.get(k, "") for k in plan_files.get(pk, [])}) if plan_files.get(pk) else "")
     df["entity_signal"] = [entity_signal(i, s, cfg2.get("entity_rules")) for i, s in zip(df["issuer_name"], df["plan_sponsor_name"])]
@@ -365,7 +381,7 @@ def run(cfg, fingerprint=False):
     df["is_target_ppo"] = (df["scope_verdict"] == "IN_SCOPE") & (df["network_label"] == TARGET_NETWORK)
     df = df.drop(columns=["pre_label", "pre_conf"])
     df["final_reason_code"] = df.apply(lambda r: r["scope_reason"] if r["scope_verdict"] != "IN_SCOPE" else (
-        "PPO" if r["is_target_ppo"] else {"HMO": "HMO", "EPO": "EPO", "POS": "POS"}.get(r["network_label"], r["decision_reason"])), axis=1)
+        "PPO" if r["is_target_ppo"] else {"HMO": "HMO", "EPO": "EPO", "POS": "POS", "EOA": "EOA"}.get(r["network_label"], r["decision_reason"])), axis=1)
     df["file_keys"] = df["plan_key"].map(lambda pk: "|".join(plan_files.get(pk, [])))
     fcls = classify_files(files, fsig, df, plan_files, file_conf)
     if fingerprint:
@@ -402,16 +418,16 @@ def run(cfg, fingerprint=False):
         excl.append({"level": "file", "reason_code": code, "count": n, "kept": code in ("PPO", "MIXED_CONTAINS_PPO")})
     pd.DataFrame(excl).sort_values(["level", "count", "reason_code"], ascending=[True, False, True]).to_csv(c2_dir / "exclusions_summary.csv", index=False)
     ins = pc[pc["scope_verdict"] == "IN_SCOPE"]
-    eoa_like = ins[ins["decision_reason"].isin(["EOA_UNRESOLVED", "PPO_EPO_CONFLICT", "HSP_UNRESOLVED", "MULTI_NETWORK_TOKEN_CONFLICT", "NO_NETWORK_EVIDENCE"])]
+    unresolved = ins[ins["decision_reason"].isin(["EOA_UNRESOLVED", "PPO_EPO_CONFLICT", "HSP_UNRESOLVED", "MULTI_NETWORK_TOKEN_CONFLICT", "NO_NETWORK_EVIDENCE"])]
     stats = {
-        "config": {k: cfg2.get(k) for k in ("eoa_as", "ppo_epo_as", "hsp_as", "glued_prefixes")},
+        "config": {k: cfg2.get(k) for k in ("eoa_as", "ppo_epo_as", "hsp_as", "organizer_confirmed", "glued_prefixes")},
         "plans_total": int(len(pc)), "files_total": int(len(fcls)),
         "in_scope_plans": int(len(ins)), "out_of_scope_plans_by_primary_reason": dict(Counter(pc.loc[pc.scope_verdict != "IN_SCOPE", "scope_reason"])),
         "in_scope_by_label": dict(Counter(ins["network_label"])), "in_scope_by_decision_reason": dict(Counter(ins["decision_reason"])),
         "in_scope_by_confidence": dict(Counter(ins["confidence"])),
         "ppo_plans": int(len(ppo_plans)), "ppo_plans_by_confidence": dict(Counter(ppo_plans["confidence"])),
         "ppo_plans_distinct_names": int(ppo_plans["plan_name"].nunique()),
-        "ppo_upper_bound_if_unresolved_were_ppo": int(len(ppo_plans) + len(eoa_like)),
+        "ppo_upper_bound_if_unresolved_were_ppo": int(len(ppo_plans) + len(unresolved)),
         "ppo_files": int(len(ppo_files)), "ppo_files_labels": dict(Counter(ppo_files["network_label"])),
         "in_scope_files": int((fcls.scope_verdict == "IN_SCOPE").sum()), "files_by_label": dict(Counter(fcls["network_label"])),
         "conflicts_rows": int(len(conf_df)), "conflicts_by_kind": dict(Counter(k for ks in conf_df["conflict_kind"] for k in ks.split("|"))),

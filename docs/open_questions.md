@@ -2,21 +2,18 @@
 
 Each item below is something the data leaves ambiguous. Until it's answered, the pipeline does **not** guess. The "Current handling" line on each item says what the code does in the meantime. Evidence comes from `outputs/c1/recon_report.md` (index snapshot 2026-09-28/30).
 
-## Q1. What network is Health Net `EOA`?
-- **Evidence:** 127 CA group plan entries (49 distinct names) carry `EOA` and no PPO or HMO token. Examples: `CA L EOA 20/0/1500`, `CA L EC EOA 30/20%/2500`, `CA L CUS EOA City of La Verne GF`.
-- **Why it matters:** if EOA is a PPO-type (open-access) product, the PPO plan count rises from 453 to 580 (583 if the 3 PPO+EPO plans are PPO too).
-- **Hint in the data:** 55 of the 127 EOA entries also carry the `EC` prefix (e.g. `CA L EC EOA 30/20%/2500`). Elsewhere `EC` appears only on HMO plans (85 of 85), which suggests EOA may be HMO-based. This is recorded as a conflict, not used to decide.
-- **Current handling:** labelled `OTHER/UNKNOWN`, reason code `EOA_UNRESOLVED`, excluded from PPO and listed in `conflicts.csv`. Switch: `c2.eoa_as: unknown|ppo|hmo`.
+## Q1. What network is Health Net `EOA`? (answered)
+- **Answer from the organizers (2026-10-17):** EOA is a separate network, not PPO.
+- **Handling:** 127 plans labelled `EOA` (`eoa_as: eoa`, organizer-confirmed, high confidence) and excluded from PPO. Because EOA is now its own network, the `EC` prefix (on HMO and EOA plans) is no longer accepted as an HMO family marker.
 
-## Q2. Plans named both PPO and EPO
-- **Evidence:** `CA L CUS PPO CA IRONWORKERS FWP EPO$15`, `CA L CUS PPO CA IRONWORKERS FWP-EPO$10`, `CA L CUS PPO SACRAMENTO CITY USD- EPO`.
-- **Question:** is this a PPO plan with an EPO option, or an EPO plan running on the PPO network?
-- **Current handling:** `OTHER/UNKNOWN`, reason code `PPO_EPO_CONFLICT`, not counted as PPO. Switch: `c2.ppo_epo_as: conflict|ppo|epo`.
+## Q2. Plans named both PPO and EPO (answered)
+- **Answer from the organizers (2026-10-17):** they count as PPO.
+- **Handling:** the 3 plans (`CA L CUS PPO CA IRONWORKERS FWP EPO$15`, `… FWP-EPO$10`, `CA L CUS PPO SACRAMENTO CITY USD- EPO`) are labelled PPO (`ppo_epo_as: ppo`, organizer-confirmed, high confidence). The PPO network is now 456 plans.
 
 ## Q3. A single CA in-network file for every CA group network
 - **Evidence:** all 1,312 Health Net CA plan entries (HMO 719, PPO 452, EOA 127, POS 6, other 8) point to `2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json` (about 702 MB).
 - **Question:** is a "PPO network file" expected to exist, or should the PPO network be carved out of this file (C3) using plan-level membership and/or in-file provider attributes?
-- **Current handling:** the file is labelled `MIXED` and is the only row in `outputs/c2/ppo_files.csv` (`requires_in_file_network_filter = True`), with the 453 PPO plans in `outputs/c2/ppo_plans.csv`.
+- **Current handling:** the file is labelled `MIXED` and is the only row in `outputs/c2/ppo_files.csv` (`requires_in_file_network_filter = True`), with the 456 PPO plans in `outputs/c2/ppo_plans.csv`.
 
 ## Q4. What do the in-file network markers mean?
 - **Evidence:** in the first 40 MB of the CA file, `provider_references[].network_name` is always empty (2,825 of 2,825). About 2% of TIN `business_name` values carry prefixes such as `PPO: Los Angeles County`, `Direct Network: San Diego`, `DIRECT NETWORK: AMBETTER PPO` and `DIRECT NETWORK: AMBETTER HMO`.

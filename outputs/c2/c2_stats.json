@@ -17,22 +17,24 @@
     }
   },
   "config": {
-    "eoa_as": "unknown",
+    "eoa_as": "eoa",
     "glued_prefixes": [
       "CUS"
     ],
     "hsp_as": "unknown",
-    "ppo_epo_as": "conflict"
+    "organizer_confirmed": [
+      "eoa_as",
+      "ppo_epo_as"
+    ],
+    "ppo_epo_as": "ppo"
   },
   "conflicts_by_kind": {
     "DATA_FLAG": 462,
     "FILE_PLANS_OF_DIFFERENT_TYPES_SHARE_FILE": 3,
-    "STRONG_SIGNAL_DISAGREES": 55,
-    "UNRESOLVED_TOKEN": 130,
     "WEAK_SIGNAL_DISAGREES": 1
   },
-  "conflicts_in_scope_rows": 286,
-  "conflicts_rows": 596,
+  "conflicts_in_scope_rows": 156,
+  "conflicts_rows": 466,
   "costshare_validation": [
     {
       "majority": "PPO",
@@ -47,10 +49,11 @@
     },
     {
       "majority": "HMO",
-      "precision": 0.8668,
+      "precision": 0.7184,
       "shape": 3,
-      "support": 518,
+      "support": 625,
       "types": {
+        "EOA": 107,
         "HMO": 449,
         "PPO": 69
       },
@@ -58,10 +61,11 @@
     },
     {
       "majority": "PPO",
-      "precision": 0.912,
+      "precision": 0.8678,
       "shape": 4,
-      "support": 216,
+      "support": 227,
       "types": {
+        "EOA": 11,
         "HMO": 19,
         "PPO": 197
       },
@@ -149,13 +153,14 @@
     },
     {
       "family": "EC",
-      "implied_type": "HMO",
-      "purity": 1.0,
-      "support": 85,
+      "implied_type": "",
+      "purity": 0.6071,
+      "support": 140,
       "types": {
+        "EOA": 55,
         "HMO": 85
       },
-      "validated": true
+      "validated": false
     },
     {
       "family": "CommunityCare",
@@ -230,22 +235,21 @@
   },
   "files_total": 33,
   "in_scope_by_confidence": {
-    "high": 1177,
-    "low": 130,
+    "high": 1307,
     "medium": 5
   },
   "in_scope_by_decision_reason": {
-    "EOA_UNRESOLVED": 127,
     "P1_PLAN_NAME_TOKEN": 1177,
     "P1b_PLAN_NAME_GLUED_TOKEN": 1,
-    "P4_PRODUCT_FAMILY": 4,
-    "PPO_EPO_CONFLICT": 3
+    "P1x_EOA_AS_EOA_ORGANIZER_CONFIRMED": 127,
+    "P1x_PPO_EPO_AS_PPO_ORGANIZER_CONFIRMED": 3,
+    "P4_PRODUCT_FAMILY": 4
   },
   "in_scope_by_label": {
+    "EOA": 127,
     "HMO": 723,
-    "OTHER/UNKNOWN": 130,
     "POS": 6,
-    "PPO": 453
+    "PPO": 456
   },
   "in_scope_files": 1,
   "in_scope_plans": 1312,
@@ -258,13 +262,13 @@
   "ppo_files_labels": {
     "MIXED": 1
   },
-  "ppo_plans": 453,
+  "ppo_plans": 456,
   "ppo_plans_by_confidence": {
-    "high": 452,
+    "high": 455,
     "medium": 1
   },
-  "ppo_plans_distinct_names": 133,
-  "ppo_upper_bound_if_unresolved_were_ppo": 583,
+  "ppo_plans_distinct_names": 136,
+  "ppo_upper_bound_if_unresolved_were_ppo": 456,
   "precedence": [
     {
       "confidence": "high",
@@ -279,9 +283,9 @@
       "signal": "plan_name_glued_token"
     },
     {
-      "confidence": "low",
+      "confidence": "high if organizer-confirmed else low",
       "rank": "P1x",
-      "rule": "Explicit but unresolved token (EOA, HSP, PPO+EPO, multiple types): mapped only via config, never inferred from lower signals",
+      "rule": "Special token (EOA, HSP, PPO+EPO, multiple types): mapped only via config (high confidence when the organizers confirmed it), never inferred from lower signals",
       "signal": "plan_name_special_token"
     },
     {

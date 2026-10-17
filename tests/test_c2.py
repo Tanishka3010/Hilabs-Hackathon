@@ -54,15 +54,26 @@ def test_url_state(fname, state):
 
 
 @pytest.mark.parametrize("label,cfg,expected", [
-    ("EOA", {"eoa_as": "unknown"}, (c2.UNKNOWN, "EOA_UNRESOLVED")),
-    ("EOA", {"eoa_as": "ppo"}, ("PPO", "P1x_EOA_MAPPED_BY_CONFIG")),
-    ("PPO+EPO", {"ppo_epo_as": "conflict"}, (c2.UNKNOWN, "PPO_EPO_CONFLICT")),
-    ("PPO+EPO", {"ppo_epo_as": "epo"}, ("EPO", "P1x_PPO_EPO_MAPPED_BY_CONFIG")),
-    ("MULTI:HMO+PPO", {}, (c2.UNKNOWN, "MULTI_NETWORK_TOKEN_CONFLICT")),
+    ("EOA", {"eoa_as": "unknown"}, (c2.UNKNOWN, "low", "EOA_UNRESOLVED")),
+    ("EOA", {"eoa_as": "eoa", "organizer_confirmed": ["eoa_as"]}, ("EOA", "high", "P1x_EOA_AS_EOA_ORGANIZER_CONFIRMED")),
+    ("EOA", {"eoa_as": "ppo"}, ("PPO", "low", "P1x_EOA_AS_PPO_BY_CONFIG")),
+    ("PPO+EPO", {"ppo_epo_as": "conflict"}, (c2.UNKNOWN, "low", "PPO_EPO_CONFLICT")),
+    ("PPO+EPO", {"ppo_epo_as": "ppo", "organizer_confirmed": ["ppo_epo_as"]}, ("PPO", "high", "P1x_PPO_EPO_AS_PPO_ORGANIZER_CONFIRMED")),
+    ("PPO+EPO", {"ppo_epo_as": "epo"}, ("EPO", "low", "P1x_PPO_EPO_AS_EPO_BY_CONFIG")),
+    ("MULTI:HMO+PPO", {}, (c2.UNKNOWN, "low", "MULTI_NETWORK_TOKEN_CONFLICT")),
 ])
 def test_special_mapping(label, cfg, expected):
-    lab, _, reason = c2.special_mapping(label, cfg)
-    assert (lab, reason) == expected
+    assert c2.special_mapping(label, cfg) == expected
+
+
+def test_family_purity_counts_eoa_as_its_own_network():
+    cfg2 = {"eoa_as": "eoa"}
+    df = pd.DataFrame({"plan_name": ["CA L EC HMO 1", "CA L EC HMO 2", "CA L EC EOA 3", "CA L SC HMO 4", "CA L SC HMO 5"], "scope_verdict": ["IN_SCOPE"] * 5})
+    df["name_label"] = df["plan_name"].map(lambda n: c2.token_label(c2.find_tokens(n)))
+    df["explicit_label"] = df["name_label"].map(lambda l: c2.explicit_label(l, cfg2))
+    fams = {f["family"]: f for f in c2.validate_families(df, ["EC", "SC"], 2, 1.0)}
+    assert not fams["EC"]["validated"] and fams["EC"]["types"] == {"HMO": 2, "EOA": 1}
+    assert fams["SC"]["validated"] and fams["SC"]["implied_type"] == "HMO"
 
 
 def base_row(**kw):

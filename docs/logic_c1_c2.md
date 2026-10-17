@@ -38,7 +38,7 @@ Result on the snapshot:
 - 0 file-name collisions.
 
 ## 4. C2: the key fact that shapes everything
-The index has **one in-network file for all 1,312 Health Net CA group plans**: `2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json` (about 702 MB). HMO, PPO, POS and EOA plans all point to it. So:
+The index has **one in-network file for all 1,312 Health Net CA group plans**: `2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json` (about 702 MB). HMO, PPO, EOA and POS plans all point to it. So:
 - The **PPO network is identified at plan level.** There is no PPO-only file to pick.
 - The **PPO rate file is that single CA file, labelled `MIXED`.** C3 has to keep only PPO rates and providers inside it (`requires_in_file_network_filter = True` in `ppo_files.csv`).
 
@@ -84,13 +84,13 @@ Each signal is its own column in `plan_classification.csv`.
 | Cost-share shape | `costshare_shape`, `costshare_signal` | Counts the parts of the cost-share string (`30/500/4000/30%` = 4). A shape is used only if it reaches ≥95% precision on ≥20 explicit-token plans. | Only the 2-part shape passes (PPO 34/35); it decides 0 plans |
 | Fingerprint (`--fingerprint`) | `fp_*` in `file_classification.csv` | Streams `provider_references` of candidate files (byte cap 40 MB, group cap 200k); NPI/TIN sets, Jaccard, NPPES CA share; results cached. | CA file: `network_name` empty in 2,825/2,825 refs; `PPO:` prefix on 1.9% of groups; NPPES not provided |
 
-**Product-family validation** (`c2_stats.json` → `family_validation`):
+**Product-family validation** (`c2_stats.json` → `family_validation`). Purity is measured against every plan whose network is explicit, including EOA plans, which count as their own network:
 
 | family | support | types among explicit-token plans | accepted? |
 |---|---|---|---|
 | SC | 230 | HMO 230 | yes → HMO |
 | SAL | 163 | HMO 163 | yes → HMO |
-| EC | 85 | HMO 85 | yes → HMO |
+| EC | 140 | HMO 85, EOA 55 | **no**: it also appears on EOA plans, so it is a tier code, not a network marker |
 | WholeCare | 34 | HMO 34 | yes → HMO |
 | CalChoice | 32 | HMO 32 | yes → HMO |
 | SmartCare | 30 | HMO 30 | yes → HMO |
@@ -99,8 +99,8 @@ Each signal is its own column in `plan_classification.csv`.
 | CommunityCare, Trio, PureCare, EnhancedCare, Elect, Select, Open Access, Mex | 0 | not in data | no |
 
 Two checks back this up:
-- 598 of the 719 HMO-token plans also carry an accepted HMO family name.
-- **None of the 453 PPO plans carries any HMO family name.** The PPO/HMO split is consistent across both signals.
+- 513 of the 719 HMO-token plans also carry an accepted HMO family name.
+- **None of the 456 PPO plans carries any HMO family name.** The PPO/HMO split is consistent across both signals.
 
 ## 7. Stage C: decision precedence
 The same table is in code (`PRECEDENCE`, `decide()`) and in `c2_stats.json`. The first rule that fires decides.
@@ -109,7 +109,7 @@ The same table is in code (`PRECEDENCE`, `decide()`) and in `c2_stats.json`. The
 |---|---|---|---|
 | P1 | Exactly one network token in the plan name | high | `P1_PLAN_NAME_TOKEN` |
 | P1b | Token glued to a known prefix (no clean token present) | medium | `P1b_PLAN_NAME_GLUED_TOKEN` |
-| P1x | Explicit but unresolved token: EOA, HSP, PPO+EPO, several types. Mapped **only** by a config switch (`eoa_as`, `hsp_as`, `ppo_epo_as`), never filled in from lower signals, because the name itself says this is a distinct product. | low | `EOA_UNRESOLVED`, `HSP_UNRESOLVED`, `PPO_EPO_CONFLICT`, `MULTI_NETWORK_TOKEN_CONFLICT`, or `P1x_*_MAPPED_BY_CONFIG` |
+| P1x | Special token: EOA, HSP, PPO+EPO, several types. Mapped **only** by a config switch (`eoa_as`, `hsp_as`, `ppo_epo_as`), never filled in from lower signals, because the name itself says what the product is. Confidence is high when the organizers confirmed the mapping (`organizer_confirmed`), low otherwise; with no mapping the plan stays unresolved. | high (confirmed) / low | `P1x_EOA_AS_EOA_ORGANIZER_CONFIRMED`, `P1x_PPO_EPO_AS_PPO_ORGANIZER_CONFIRMED`; unmapped: `EOA_UNRESOLVED`, `HSP_UNRESOLVED`, `PPO_EPO_CONFLICT`, `MULTI_NETWORK_TOKEN_CONFLICT` |
 | P2 | All of the plan's files carry the same file-name token | high | `P2_FILE_TOKEN` |
 | P3 | Legal-entity rule | medium | `P3_LEGAL_ENTITY` |
 | P4 | Accepted product family | medium | `P4_PRODUCT_FAMILY` |
@@ -123,19 +123,20 @@ The fingerprint is file-level evidence only. It never labels a plan.
 
 | label | plans | distinct names | how decided |
 |---|---|---|---|
-| **PPO** | **453** | 133 | 452 P1 (high), 1 P1b (medium) |
+| **PPO** | **456** | 136 | 452 P1 (high), 3 P1x PPO+EPO confirmed as PPO (high), 1 P1b (medium) |
 | HMO | 723 | 286 | 719 P1 (high), 4 P4 via `SAL` (medium) |
+| EOA | 127 | 49 | P1x, confirmed by the organizers as a separate network (high) |
 | POS | 6 | 6 | P1 (high) |
-| OTHER/UNKNOWN | 130 | 52 | 127 `EOA_UNRESOLVED`, 3 `PPO_EPO_CONFLICT` |
 | EPO | 0 | 0 | no EPO-only plan exists |
+| OTHER/UNKNOWN | 0 | 0 | nothing left unresolved |
 
-**Strict PPO network: 453 plans.** If every unresolved plan turned out to be PPO, the upper bound would be **583** (`ppo_upper_bound_if_unresolved_were_ppo`).
+**PPO network: 456 plans.** The organizers confirmed two rules (2026-10-17): EOA is a separate network, not PPO, and plans named both PPO and EPO count as PPO.
 
 ## 8. How HMO, EPO and POS were ruled out
 - **HMO, 723 plans.** 719 carry the word HMO, e.g. `CA L SC HMO 40/500d/4500`, `WholeCare HMO Gold $50 INF`, `Salud HMO y Mas Gold $30`, `CA L CUS HMO AC Transit`. Another 4 have no type word but belong to the accepted HMO family `SAL`: `CA L SAL Mex 5/0/1500` (×3) and `CA L&T CUS SAL CEMENT MASONS CA H&W GF+`. No HMO plan carries a PPO token.
 - **POS, 6 plans.** All are custom employer plans with an explicit POS word: `CA L CUS POS County of Kern GF`, `… COUNTY OF SANTA CLARA`, `… City of Mountain View`, `… Oak Card Club`, `… Victor Valley USD`, `CA L CUS CBA POS CA Ironworkers`. `UC POST DOC` plans are **not** POS (tested), because `POST` fails the word boundary.
-- **EPO, 0 EPO-only plans.** EPO appears only in 3 names that also say PPO: `CA L CUS PPO CA IRONWORKERS FWP EPO$15`, `… FWP-EPO$10`, `CA L CUS PPO SACRAMENTO CITY USD- EPO`. They aren't counted as PPO (`PPO_EPO_CONFLICT`) because they could be EPO tiers riding on the PPO network. Set `ppo_epo_as: ppo` or `epo` once the organizers clarify.
-- **EOA, 127 plans (49 names), unresolved.** None has a PPO or HMO word. They're excluded from PPO and listed in `conflicts.csv`. There is one hint: 55 of them also carry the `EC` family prefix (e.g. `CA L EC EOA 30/20%/2500`), which elsewhere occurs only with HMO. That suggests EOA may be HMO-based, but it's recorded as a conflict (`family_signal=HMO`), not used to decide.
+- **EPO, 0 EPO-only plans.** EPO appears only in 3 names that also say PPO: `CA L CUS PPO CA IRONWORKERS FWP EPO$15`, `… FWP-EPO$10`, `CA L CUS PPO SACRAMENTO CITY USD- EPO`. The organizers confirmed these count as PPO (`ppo_epo_as: ppo`), so they are in the PPO network.
+- **EOA, 127 plans (49 names), ruled out as a separate network.** The organizers confirmed EOA is its own network, not PPO (`eoa_as: eoa`). None of these names has a PPO word. Example: `CA L EOA 20/0/1500`, `CA L EC EOA 30/20%/2500`.
 - **HSP:** does not occur.
 
 ## 9. File-level classification
@@ -143,19 +144,17 @@ For each of the 33 files, `file_classification.csv` gives the label, confidence,
 
 | file label | files | detail |
 |---|---|---|
-| **MIXED** (in scope) | 1 | `healthnet-ca`: PPO 453, HMO 723, POS 6, unknown 130; PPO share 34.5% |
+| **MIXED** (in scope) | 1 | `healthnet-ca`: PPO 456, HMO 723, EOA 127, POS 6; PPO share 34.8% |
 | out of scope | 32 | 31 `OUT_OF_STATE`, 1 `INDIVIDUAL_MARKET` (`ambetter-ca`) |
 
-`ppo_files.csv` holds that one CA file, with `requires_in_file_network_filter = True`. `ppo_plans.csv` holds the 453 plan keys that C3 should use to keep PPO rates only.
+`ppo_files.csv` holds that one CA file, with `requires_in_file_network_filter = True`. `ppo_plans.csv` holds the 456 plan keys that C3 should use to keep PPO rates only.
 
 ## 10. Conflict handling
-`conflicts.csv` lists 596 rows. 286 are in scope:
+`conflicts.csv` lists 466 rows. 156 are in scope:
 
 | kind (in scope) | rows |
 |---|---|
 | `DATA_FLAG`: ein-typed plan with a HIOS-shaped id | 154 |
-| `UNRESOLVED_TOKEN` (EOA / PPO+EPO) | 75 |
-| `UNRESOLVED_TOKEN` plus `STRONG_SIGNAL_DISAGREES` (EOA plan with HMO family `EC`) | 55 |
 | `WEAK_SIGNAL_DISAGREES`: `CA L CUS EC HMO FED's 30/50` has the 2-part cost-share shape (PPO) but the HMO token wins | 1 |
 | `FILE_PLANS_OF_DIFFERENT_TYPES_SHARE_FILE`: the MIXED CA file | 1 |
 
@@ -168,14 +167,14 @@ The remaining 310 rows are out of scope: 308 ID-type data flags (307 QualChoice,
 | Knox-Keene split: HMO = Health Net of California, PPO/EPO = Health Net Life | **Not testable.** `issuer_name` is `Healthnet, LLC` everywhere, and HIOS issuer `67138` covers HMO (120) and PPO (34) plans. |
 | `plan_id_type` implies market (EIN = group, HIOS = individual) | **Rejected.** 308 group plans are typed HIOS. |
 | "Health Net HSP" is an HMO-like product | **Not applicable.** HSP is absent. |
-| Product family names imply network type | **Confirmed for 8 families** (purity 1.0, support 26 to 230). |
-| Cost-share shape implies network type | **Mostly rejected.** 4-part shape is PPO only 91% of the time, 3-part is HMO 87%; only the 2-part shape passes (97%). |
+| Product family names imply network type | **Confirmed for 7 families** (purity 1.0, support 26 to 230). `EC` rejected: it appears on HMO and EOA plans. |
+| Cost-share shape implies network type | **Mostly rejected.** 4-part shape is PPO only 87% of the time, 3-part is HMO 72%; only the 2-part shape passes (97%). |
 | In-file `network_name` separates networks (TiC v2) | **Rejected on sample.** Empty in 2,825/2,825 provider references. |
 | TIN `business_name` prefixes tag networks | **Weak.** `PPO:` on 1.9% of groups, plus `Direct Network: …` (including `AMBETTER PPO/HMO`). Left for C3. |
 
 ## 12. Known limitations
 - All PPO evidence comes from plan names. If the issuer mislabels a plan name, it is misclassified.
-- 130 in-scope plans (about 10%) can't be resolved from public index data.
+- 130 plans (EOA and PPO+EPO) are classified by the organizers' answers, not by evidence in the public data.
 - The PPO rate file is shared with HMO/POS/EOA plans. Without network tags inside the file, separating PPO rates in C3 depends on provider- or arrangement-level evidence that may be incomplete.
 - The fingerprint reads only a byte-capped prefix of the 702 MB file, and the NPPES CA share needs `nppes_dir`.
 - Family names were validated against this snapshot only, and could drift in later snapshots.
@@ -188,6 +187,6 @@ To include the provider fingerprint:
 ```bash
 .venv/bin/python -m src.run --stage c2 --fingerprint
 ```
-To change how EOA or PPO+EPO plans are treated, edit `config/config.yaml` → `c2.eoa_as` / `c2.ppo_epo_as` / `c2.hsp_as` (`unknown|ppo|hmo|epo`) and re-run. The chosen settings are written into `c2_stats.json → config`.
+To change how EOA or PPO+EPO plans are treated, edit `config/config.yaml` → `c2.eoa_as` / `c2.ppo_epo_as` / `c2.hsp_as` (`unknown|ppo|hmo|epo|eoa`) and `c2.organizer_confirmed`, then re-run. Current setting: `eoa_as: eoa`, `ppo_epo_as: ppo`, both organizer-confirmed. The chosen settings are written into `c2_stats.json → config`.
 
 Open questions for the organizers are in [open_questions.md](open_questions.md).

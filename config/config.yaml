@@ -8,8 +8,9 @@ recon:
   probe_mb: 40
   probe_url_pattern: healthnet-ca_in-network
 c2:
-  eoa_as: unknown
-  ppo_epo_as: conflict
+  eoa_as: eoa
+  ppo_epo_as: ppo
+  organizer_confirmed: [eoa_as, ppo_epo_as]
   hsp_as: unknown
   glued_prefixes: [CUS]
   family_candidates: [WholeCare, SmartCare, Full Network, Salud, SAL, CalChoice, SC, EC, CommunityCare, Trio, PureCare, EnhancedCare, Elect, Select, Open Access, Mex]

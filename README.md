@@ -51,13 +51,12 @@ Useful options:
 
 Running `c2` or `all` ends with a short summary (index files, unique plans, files before and after dedup, in-scope plans, PPO plans and files, and the count for each exclusion reason).
 
-Assumptions the organizers haven't confirmed are switches in `config/config.yaml` → `c2` (`eoa_as`, `ppo_epo_as`, `hsp_as`), so changing one never needs a code change. Re-running overwrites every output deterministically: rows are sorted and keys are stable hashes.
+Assumptions the organizers haven't confirmed are switches in `config/config.yaml` → `c2` (`eoa_as`, `ppo_epo_as`, `hsp_as`), so changing one never needs a code change. The organizers confirmed `eoa_as: eoa` and `ppo_epo_as: ppo`. Re-running overwrites every output deterministically: rows are sorted and keys are stable hashes.
 
 ## Current result (snapshot 2026-09-28/30)
 - 1,312 in-scope CA group plans, all Health Net.
-- **453 PPO plans** (452 high confidence, 1 medium).
-- Ruled out: 723 HMO and 6 POS. No EPO-only plans exist.
-- 130 unresolved: 127 EOA and 3 PPO+EPO.
+- **456 PPO plans** (455 high confidence, 1 medium), including 3 PPO+EPO plans the organizers confirmed as PPO.
+- Ruled out: 723 HMO, 127 EOA (a separate network, confirmed by the organizers) and 6 POS. No EPO-only plans exist.
 - **1 PPO rate file**, `healthnet-ca_in-network.json`. It's labelled `MIXED` because every CA network shares it, so PPO rates must be filtered inside it (C3).
 
 ## Tests
