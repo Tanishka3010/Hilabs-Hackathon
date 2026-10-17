@@ -21,6 +21,8 @@ build/
 .idea/
 .pytest_cache/
 
-# Large downloaded inputs (NPPES, full PTD rate files) - never committed
+# Large downloaded inputs (NPPES, full PTD rate files, raw national DAC) - never committed
 raw/
 outputs/**/_cache/
+reference/DAC_National*
+
