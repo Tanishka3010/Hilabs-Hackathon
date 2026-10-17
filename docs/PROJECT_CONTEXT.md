@@ -28,7 +28,7 @@ Provider types: Type 1 (individual) and Type 2 (organisation) NPIs.
 | C2 | Identify the PPO plans and rate files; explain how HMO, EPO and POS were ruled out | **Done**, organizer answers applied |
 | C3 | Define PTD quality and completeness metrics, score every file used, justify each metric | **Done**: 13 rate-file metrics and 5 index-file metrics |
 | C4 | Extract rates for every PPO provider; when a provider has several rates for one code, say which is kept and why | **Done** |
-| C5 | Map TINs and NPIs to their practising address, without relying on NPPES alone | **First version done** (NPPES + DAC + rate-file names): 216 NPIs (5.8%) verified; organisations wait on facility sources |
+| C5 | Map TINs and NPIs to their practising address, without relying on NPPES alone | **Done**: 6 sources; 698 NPIs (18.7%) and 546 TINs (18.9%) verified; 41% of NPI–TIN pairs have TIN-specific evidence |
 | C6 | Build the provider rate file (NPI, TIN, address, billing code, specialty, rate), as Excel | Not started |
 | C7 (optional) | Cost-effectiveness metrics vs similar providers | Not started |
 
@@ -250,38 +250,46 @@ The **as-of date** is the latest date seen in the inputs (2026-10-06), not the r
 
 **Outputs:** `outputs/c3/file_scores.csv`, `metric_values.csv`, `metric_details.json`, `index_file_scores.csv`, `c3_stats.json`.
 
-## 7b. C5: provider addresses (first version)
+## 7b. C5: provider addresses
 
 Full logic: [logic_c5.md](logic_c5.md).
 
-**Sources and trust weights:**
-- DAC (national file, clinicians only, with group practice names): 0.7;
-- NPPES primary address: 0.5 × recency;
-- NPPES secondary locations: 0.4 × recency.
+**Sources** (weight, family):
 
-Recency factor from `Last Update Date`: within 1 year 1.0, 1–3 years 0.7, older 0.4.
+| Source | Weight | Family | Notes |
+|---|---|---|---|
+| CA licensed-facility list, by NPI | 0.8 | `ca_cdph` | **High trust: verifies alone** |
+| CA licensed-facility list, by name + ZIP | 0.6 | `ca_cdph` | |
+| CMS DAC (national file) | 0.7 | `cms_dac` | |
+| NPPES primary | 0.5 × recency | `nppes` | |
+| NPPES secondary | 0.4 × recency | `nppes` | |
+| IRS EO (CA) | 0.4 | `irs` | Linked by TIN = EIN |
+
+Recency factor: within 1 year 1.0, 1–3 years 0.7, older 0.4. The downloaded files live in `raw/sources/` (`health_facility_locations.csv`, `eo_ca.csv`). The national DAC file is in `reference/` (git-ignored).
+
+**Name matching:** word overlap after removing legal and generic words, stemming plurals, and, for facilities, removing the facility's city and county words plus generic place words. That last step was added after spot checks found place-name false matches.
 
 **Method:**
 - **Address key** = normalised street (suite removed, street words abbreviated) + ZIP5.
-- **Confidence** = 1 − Π(1 − weight) over the sources reporting the address.
-- **Verified** = at least 2 independent source families (NPPES, DAC) agree, and the address is in CA.
+- **Confidence** = 1 − Π(1 − weight).
+- **Verified** = in CA and (≥ 2 independent families agree, or on the CA licence register by NPI).
 - **Best address order:** in CA → verified → confidence → recency.
 
-**TIN–NPI–address link.** Each pair's addresses are re-ranked so TIN-specific evidence comes first:
-- the DAC group practice name matches the TIN's business name (9 pairs);
-- the NPPES organisation name matches it (1,325 pairs).
-
-NPPES hides the EIN, so names are the only bridge.
+**TIN–NPI–address link.** Each pair's addresses are re-ranked by TIN-specific evidence: the IRS address of the TIN, the DAC group name matching the TIN's business name, or the NPPES organisation name matching it.
 
 **Results:**
-- 3,726 of 3,735 NPIs have an address; 3,611 have one in CA.
-- **216 verified (5.8%)**, all individuals; 65% of DAC clinicians agree with NPPES.
-- TINs verified: 211 of 2,888.
-- Status counts: unverified single source 2,911, unverified multiple 484, out of state only 115, deactivated 7, no address 2.
+- 3,727 of 3,735 NPIs have an address; 3,613 in CA.
+- **698 verified (18.7%)**: 219 individuals and 479 organisations. 663 by two sources, 35 by the state register alone.
+- TINs verified: 546 of 2,888 (18.9%).
+- 1,564 of 3,780 pairs (41%) have TIN-specific evidence.
+- Status counts: unverified single source 2,344, unverified multiple 570, out of state only 114, deactivated 7, no address 2.
 
 **Outputs:** `outputs/c5/address_candidates.parquet`, `npi_addresses.csv`, `provider_locations.csv`, `tin_npi_address.csv`, `c5_stats.json`.
 
-**Next:** add the CMS POS file, the CA HCAI facility list, the IRS EO BMF (CA, linked by TIN) and the Census geocoder as new sources with their own weights. Each download needs the user's OK.
+**Could add:**
+- the CMS POS file (the user will download it manually, since data.cms.gov blocks scripts);
+- the Census geocoder;
+- the Health Net provider directory.
 
 ## 8. Reference-data loaders (`src/reference_data.py`)
 
@@ -332,14 +340,7 @@ Commit messages end with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com
 
 ## 12. What's next
 
-1. **C5 next step: add sources for organisations.** C5 v1 already builds and scores candidate addresses per NPI × TIN. Still to add:
-   - CMS DAC (needs the national file for out-of-state checks);
-   - the NPPES primary address, with confidence lowered by the age of `last_update_date`;
-   - NPPES secondary practice locations;
-   - the TIN business name and county tags in the rate file;
-   - optionally payer directory APIs or address standardisation.
-
-   Link TIN → NPI → address, score confidence, and flag conflicts. Report the share of NPIs and TINs linked to a verified address, which counts toward "coverage and linkage" (35 points).
+1. **C5 optional extras:** the CMS POS file (manual download into `raw/sources/`), Census batch geocoding, and the Health Net directory. Each plugs in as a new source with its own weight.
 2. **C6 (provider rate file, Excel).** Join `rates_selected` to addresses and specialty (NPPES taxonomy → NUCC / HiLabs crosswalk). One row per NPI, TIN, address and billing code, with columns NPI, TIN, Address, Billing Code, Specialty and Rate. 840k contexts may exceed Excel's row limit (1,048,576) once multiplied by addresses: plan to split by sheet or filter to procedure-coded rows, and document the choice.
 3. **The summary file and the shared summary doc** (claude.ai artifact `https://claude.ai/code/artifact/acdaa8c8-b12a-4364-8f9b-d25bb3d3dd88`) need C3, C4, C5 and C6 numbers. A refreshed Word copy goes in `docs/`.
 4. **Optional:** C7 cost-effectiveness metrics, a UI, and the video.

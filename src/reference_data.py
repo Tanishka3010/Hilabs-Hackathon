@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.common import log, stable_key
+from src.common import log, resolve_path, stable_key
 
 DEFAULT_FALLBACK_STATES = ["CA"]
 CHUNK_ROWS = 500_000
@@ -257,3 +257,39 @@ def load_all(cfg, npis=None, states=None):
         "nppes": load_nppes(cfg, npis, states),
         "pl": load_pl(cfg, npis, states),
     }
+
+
+CA_FACILITY_RENAME = {
+    "NPI": "npi", "FACID": "facid", "CCN": "ccn", "FACNAME": "facility_name", "BUSINESS_NAME": "business_name", "ADDRESS": "address_line1",
+    "CITY": "city", "ZIP": "zip", "COUNTY_NAME": "county", "FAC_TYPE_CODE": "fac_type", "LICENSE_STATUS_DESCRIPTION": "license_status",
+    "LICENSED_CERTIFIED": "licensed_certified", "LATITUDE": "latitude", "LONGITUDE": "longitude", "HCAI_ID": "hcai_id", "DATA_DATE": "data_date",
+}
+
+IRS_EO_RENAME = {"EIN": "ein", "NAME": "name", "STREET": "address_line1", "CITY": "city", "STATE": "state", "ZIP": "zip", "NTEE_CD": "ntee_cd"}
+
+
+def sources_dir(cfg):
+    return resolve_path((cfg.get("c5") or {}).get("sources_dir", "raw/sources"))
+
+
+def load_ca_facilities(cfg, active_only=True):
+    path = find_file(sources_dir(cfg), "health_facility_locations*.csv")
+    df = pd.read_csv(path, dtype=str, usecols=lambda c: c in CA_FACILITY_RENAME).rename(columns=CA_FACILITY_RENAME)
+    if active_only:
+        df = df[~df["license_status"].fillna("").str.upper().str.startswith("INACTIVE")]
+    df["state"] = "CA"
+    df = finish(df)
+    df["data_date"] = pd.to_datetime(df["data_date"], errors="coerce", format="%m/%d/%Y")
+    log.info("CA licensed facilities: %s rows, %s with NPI", f"{len(df):,}", f"{df['npi'].notna().sum():,}")
+    return df.reset_index(drop=True)
+
+
+def load_irs_eo(cfg, eins=None):
+    path = find_file(sources_dir(cfg), "eo_*.csv")
+    df = pd.read_csv(path, dtype=str, usecols=list(IRS_EO_RENAME)).rename(columns=IRS_EO_RENAME)
+    if eins is not None:
+        df = df[df["ein"].isin({str(e).replace("-", "").strip() for e in eins})]
+    df["state"] = df["state"].fillna("").str.upper()
+    df["zip"] = df["zip"].fillna("").str[:5]
+    log.info("IRS exempt organisations (%s): %s rows", path.name, f"{len(df):,}")
+    return df.reset_index(drop=True)

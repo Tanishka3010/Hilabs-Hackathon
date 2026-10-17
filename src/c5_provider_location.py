@@ -18,7 +18,7 @@ UNIT_RE = re.compile(r"\b(STE|SUITE|UNIT|APT|RM|ROOM|BLDG|BUILDING|FL|FLOOR|DEPT
 NAME_STOP = {"INC", "LLC", "LLP", "LP", "PC", "PA", "CORP", "CORPORATION", "CO", "COMPANY", "THE", "OF", "AND", "A", "AN", "MD", "DO",
              "MEDICAL", "GROUP", "PROFESSIONAL", "ASSOCIATES", "HEALTH", "CARE", "SERVICES", "CENTER", "CTR", "INCORPORATED"}
 PREFIX_RE = re.compile(r"^\s*([A-Za-z][A-Za-z /&\-]{1,40}):\s*")
-CANDIDATE_COLS = ["npi", "source", "source_family", "address_line1", "address_line2", "city", "state", "zip", "source_name", "source_date"]
+CANDIDATE_COLS = ["npi", "source", "source_family", "address_line1", "address_line2", "city", "state", "zip", "source_name", "source_date", "source_tin"]
 
 
 def clean(v):
@@ -43,14 +43,25 @@ def address_key(line1, line2, zip5):
     return f"{street}|{z}" if street and z else ""
 
 
-def name_tokens(name):
+GEO_STOP = {"COUNTY", "CALIFORNIA", "CA", "VALLEY", "CITY", "NORTH", "SOUTH", "EAST", "WEST", "CENTRAL", "SAN", "SANTA", "LOS", "LA", "EL", "DEL"}
+
+
+def stem(t):
+    return t[:-1] if len(t) > 4 and t.endswith("S") and not t.endswith("SS") else t
+
+
+def name_tokens(name, drop=frozenset()):
     s = PREFIX_RE.sub("", clean(name).upper())
-    return {t for t in re.sub(r"[^A-Z0-9 ]", " ", s).split() if t not in NAME_STOP and len(t) > 1}
+    return {stem(t) for t in re.sub(r"[^A-Z0-9 ]", " ", s).split() if t not in NAME_STOP and t not in drop and len(t) > 1}
 
 
-def name_similarity(a, b):
-    ta, tb = name_tokens(a), name_tokens(b)
+def name_similarity(a, b, drop=frozenset()):
+    ta, tb = name_tokens(a, drop), name_tokens(b, drop)
     return round(len(ta & tb) / len(ta | tb), 4) if ta and tb else 0.0
+
+
+def place_words(*places):
+    return frozenset(GEO_STOP | {w for p in places for w in re.sub(r"[^A-Z0-9 ]", " ", clean(p).upper()).split()})
 
 
 def recency_factor(update_date, as_of, c5):
@@ -63,7 +74,32 @@ def recency_factor(update_date, as_of, c5):
     return rf["recent"] if years <= c5["nppes_stale_years"] else rf["stale"]
 
 
-def build_candidates(nppes, pl, dac):
+def facility_candidates(fac, nppes, pl, npis, c5):
+    if fac is None or not len(fac):
+        return pd.DataFrame(columns=CANDIDATE_COLS)
+    by_npi = fac[fac["npi"].isin(npis)].assign(source="ca_facility", source_name=fac["facility_name"], source_date=fac["data_date"])
+    orgs = nppes[(nppes["entity_type"] == "2") & ~nppes["npi"].isin(set(by_npi["npi"].dropna().astype("int64")))][["npi", "org_name", "zip"]]
+    zips = pd.concat([orgs[["npi", "zip"]], pl[pl["npi"].isin(set(orgs["npi"]))][["npi", "zip"]]]).assign(zip=lambda d: d["zip"].map(clean).str[:5])
+    zips = zips.drop_duplicates().merge(orgs[["npi", "org_name"]], on="npi")
+    pool = fac[fac["npi"].isna()].assign(zip=lambda d: d["zip"].map(clean).str[:5])
+    m = zips.merge(pool.drop(columns=["npi"]), on="zip")
+    thr = float(c5["facility_name_match_threshold"])
+    if len(m):
+        m["sim"] = [name_similarity(o, f, place_words(city, county)) for o, f, city, county in zip(m["org_name"], m["facility_name"], m["city"], m["county"])]
+        m = m[m["sim"] >= thr]
+    by_name = m.assign(source="ca_facility_name_zip", source_name=m["facility_name"] if len(m) else "", source_date=m["data_date"] if len(m) else pd.NaT)
+    return pd.concat([by_npi.reindex(columns=CANDIDATE_COLS), by_name.reindex(columns=CANDIDATE_COLS)], ignore_index=True)
+
+
+def irs_candidates(irs, refs):
+    if irs is None or not len(irs):
+        return pd.DataFrame(columns=CANDIDATE_COLS)
+    pairs = refs[["npi", "tin"]].dropna().drop_duplicates().assign(ein=lambda d: d["tin"].str.replace("-", "", regex=False).str.strip())
+    m = pairs.merge(irs, on="ein")
+    return m.assign(source="irs_eo", source_name=m["name"], source_date=pd.NaT, source_tin=m["tin"]).reindex(columns=CANDIDATE_COLS)
+
+
+def build_candidates(nppes, pl, dac, extra=()):
     parts = []
     if len(nppes):
         n = nppes.assign(source="nppes_primary", source_name=nppes["org_name"].fillna("").where(nppes["entity_type"] == "2",
@@ -74,10 +110,11 @@ def build_candidates(nppes, pl, dac):
         parts.append(pl.assign(source="nppes_secondary", source_name="", source_date=pl["npi"].map(upd)))
     if len(dac):
         parts.append(dac.assign(source="dac", source_name=dac["facility_name"], source_date=pd.NaT))
+    parts += [e for e in extra if e is not None and len(e)]
     if not parts:
         return pd.DataFrame(columns=CANDIDATE_COLS + ["address_key", "unit"])
     c = pd.concat([p.reindex(columns=CANDIDATE_COLS) for p in parts], ignore_index=True)
-    for col in ("address_line1", "address_line2", "city", "state", "zip", "source_name"):
+    for col in ("address_line1", "address_line2", "city", "state", "zip", "source_name", "source_tin"):
         c[col] = c[col].map(clean)
     c["state"] = c["state"].str.upper()
     c["zip"] = c["zip"].str[:5]
@@ -106,13 +143,18 @@ def score_addresses(cand, nppes, c5, as_of):
             "n_source_families": g["source_family"].nunique(), "confidence": round(1 - conf, 4),
             "nppes_last_update": g.loc[g["source"].str.startswith("nppes"), "source_date"].max(),
             "dac_facility_names": "|".join(sorted({n for n in g.loc[g["source"] == "dac", "source_name"] if n})),
+            "registry_names": "|".join(sorted({n for n in g.loc[g["source"].isin(["ca_facility", "ca_facility_name_zip", "irs_eo"]), "source_name"] if n})),
+            "irs_tins": "|".join(sorted({t for t in g.loc[g["source"] == "irs_eo", "source_tin"] if t})),
+            "high_trust": bool(g["source"].isin(c5.get("high_trust_sources") or []).any()),
             "in_target_state": first["state"] == c5["target_state"].upper(),
             "nppes_status": status.get(npi, "not_in_nppes"),
         })
     a = pd.DataFrame(rows)
     if a.empty:
         return a
-    a["verified"] = (a["n_source_families"] >= int(c5["min_agreeing_sources"])) & a["in_target_state"]
+    two = a["n_source_families"] >= int(c5["min_agreeing_sources"])
+    a["verified"] = (two | a["high_trust"]) & a["in_target_state"]
+    a["verification_basis"] = [("two_independent_sources" if t else "state_license_register") if v else "" for v, t in zip(a["verified"], two)]
     a = a.sort_values(["npi", "in_target_state", "verified", "confidence", "nppes_last_update", "address_key"],
                       ascending=[True, False, False, False, False, True], na_position="last")
     a["rank"] = a.groupby("npi").cumcount() + 1
@@ -173,10 +215,12 @@ def link_tin_npi_address(refs, addr, nppes, c5):
                          "link_evidence": "no_address", "org_name_similarity": org_sim, "dac_name_similarity": 0.0})
             continue
         sims = [max((name_similarity(f, n) for f in fs.split("|") for n in tin_names if f), default=0.0) for fs in g["dac_facility_names"]]
-        g = g.assign(dac_name_similarity=sims, tin_specific=[s >= thr for s in sims])
+        irs_hit = [tin in str(t).split("|") for t in g["irs_tins"]]
+        g = g.assign(dac_name_similarity=sims, irs_hit=irs_hit, tin_specific=[s >= thr or h for s, h in zip(sims, irs_hit)])
         g = g.sort_values(["tin_specific", "rank"], ascending=[False, True])
         for i, a in enumerate(g.itertuples(index=False), start=1):
-            ev = ["dac_group_name_matches_tin" if a.tin_specific else "", "nppes_org_name_matches_tin" if org_sim >= thr else "",
+            ev = ["dac_group_name_matches_tin" if a.dac_name_similarity >= thr else "", "irs_address_for_tin" if a.irs_hit else "",
+                  "nppes_org_name_matches_tin" if org_sim >= thr else "",
                   "verified_address" if a.verified else ""]
             rows.append({"tin": tin, "npi": npi, "tin_business_names": "|".join(tin_names), "address_id": a.address_id, "pair_rank": i,
                          "link_evidence": "+".join(e for e in ev if e) or "npi_address_only", "org_name_similarity": org_sim,
@@ -207,7 +251,18 @@ def run(cfg):
     nppes = nppes.drop_duplicates("npi").assign(npi=lambda d: d["npi"].astype("int64"))
     for df in (pl, dac):
         df["npi"] = df["npi"].astype("int64")
-    cand = build_candidates(nppes, pl, dac)
+    try:
+        fac = rd.load_ca_facilities(cfg)
+    except FileNotFoundError as e:
+        log.warning("c5: CA facility list unavailable (%s)", e)
+        fac = None
+    try:
+        irs = rd.load_irs_eo(cfg, eins=set(refs["tin"].dropna()))
+    except FileNotFoundError as e:
+        log.warning("c5: IRS EO file unavailable (%s)", e)
+        irs = None
+    extra = [facility_candidates(fac, nppes, pl, npis, c5), irs_candidates(irs, refs)]
+    cand = build_candidates(nppes, pl, dac, extra)
     addr = score_addresses(cand, nppes, c5, as_of)
     prov = provider_summary(npis, addr, nppes, c5)
     links = link_tin_npi_address(refs, addr, nppes, c5)
@@ -218,7 +273,7 @@ def run(cfg):
     tins = links.groupby("tin").agg(any_address=("address_id", lambda s: s.notna().any()),
                                     verified=("link_evidence", lambda s: s.str.contains("verified_address").any()))
     pairs = links.groupby(["tin", "npi"]).agg(any_address=("address_id", lambda s: s.notna().any()),
-                                              tin_specific=("link_evidence", lambda s: s.str.contains("matches_tin").any()))
+                                              tin_specific=("link_evidence", lambda s: s.str.contains("matches_tin|irs_address_for_tin").any()))
     stats = {
         "as_of_date": as_of.isoformat(), "npis": len(npis), "tins": int(refs["tin"].nunique()), "npi_tin_pairs": int(len(pairs)),
         "address_candidates": int(len(cand)), "candidates_by_source": cand["source"].value_counts().to_dict(),
@@ -227,6 +282,7 @@ def run(cfg):
         "npis_with_any_address": int((prov["n_addresses"] > 0).sum()),
         "npis_with_in_state_address": int((prov["best_state"] == c5["target_state"]).sum()),
         "npis_with_verified_address": int((prov["location_status"] == "verified").sum()),
+        "verified_npis_by_basis": addr[(addr["rank"] == 1) & addr["verified"]]["verification_basis"].value_counts().to_dict() if len(addr) else {},
         "share_npis_verified": round((prov["location_status"] == "verified").mean(), 4),
         "verified_by_entity_type": prov.assign(v=prov["location_status"] == "verified").groupby("entity_type")["v"].agg(["sum", "count"]).to_dict("index"),
         "tins_with_any_address": int(tins["any_address"].sum()), "tins_with_verified_address": int(tins["verified"].sum()),
@@ -234,7 +290,8 @@ def run(cfg):
         "npi_tin_pairs_with_tin_specific_address": int(pairs["tin_specific"].sum()),
         "link_evidence": links["link_evidence"].value_counts().to_dict(),
         "addresses_per_npi": prov["n_addresses"].describe().round(2).to_dict(),
-        "config": {k: c5[k] for k in ("min_agreeing_sources", "source_weights", "recency_factors", "nppes_stale_years", "name_match_threshold")},
+        "config": {k: c5.get(k) for k in ("min_agreeing_sources", "source_weights", "source_family", "high_trust_sources", "recency_factors",
+                                            "nppes_stale_years", "name_match_threshold", "facility_name_match_threshold")},
     }
     write_json(stats, out / "c5_stats.json")
     log.info("c5: %d NPIs, %d with an address, %d verified (%.1f%%); TINs verified %d of %d", stats["npis"], stats["npis_with_any_address"],

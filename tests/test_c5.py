@@ -107,7 +107,7 @@ def test_statuses_out_of_state_deactivated_missing(built):
     assert prov.loc[5, "location_status"] == "no_address" and prov.loc[5, "nppes_status"] == "not_in_nppes"
 
 
-def test_tin_specific_address_comes_first(built):
+def test_tin_specific_address_comes_first_dac(built):
     _, addr, _, links = built
     pine = addr[(addr["npi"] == 1) & addr["address_line1"].str.contains("Pine")].iloc[0]["address_id"]
     first_for_bay = links[(links["tin"] == "11-1") & (links["pair_rank"] == 1)].iloc[0]
@@ -116,3 +116,53 @@ def test_tin_specific_address_comes_first(built):
     assert first_for_lee["link_evidence"] == "dac_group_name_matches_tin+verified_address"
     acme = links[links["tin"] == "22-2"]
     assert acme["link_evidence"].str.contains("nppes_org_name_matches_tin").all()
+
+
+def facility_frame():
+    return pd.DataFrame([
+        {"npi": 2, "facility_name": "ACME CLINIC", "business_name": "ACME HOLDINGS", "address_line1": "9 OAK ROAD", "city": "LOS ANGELES",
+         "county": "LOS ANGELES", "state": "CA", "zip": "90001", "data_date": pd.Timestamp("2026-10-16")},
+        {"npi": None, "facility_name": "OAKLAND SURGERY CENTER", "business_name": "", "address_line1": "1 Bay St", "city": "OAKLAND",
+         "county": "ALAMEDA", "state": "CA", "zip": "94601", "data_date": pd.Timestamp("2026-10-16")},
+        {"npi": None, "facility_name": "OAKLAND HEALTH CENTER", "business_name": "", "address_line1": "5 Lake St", "city": "OAKLAND",
+         "county": "ALAMEDA", "state": "CA", "zip": "94601", "data_date": pd.Timestamp("2026-10-16")},
+    ])
+
+
+def test_registry_and_irs_sources_verify_and_link():
+    nppes = pd.concat([nppes_frame(), pd.DataFrame([
+        {"npi": 6, "entity_type": "2", "org_name": "OAKLAND SURGERY CENTER LLC", "first_name": "", "last_name": "", "address_line1": "1 Bay Street",
+         "address_line2": "", "city": "Oakland", "state": "CA", "zip": "94601", "last_update_date": pd.Timestamp("2015-01-01"),
+         "nppes_status": "active", "taxonomy_code": "261QA1903X"},
+        {"npi": 7, "entity_type": "2", "org_name": "OAKLAND DIALYSIS INC", "first_name": "", "last_name": "", "address_line1": "8 Pine St",
+         "address_line2": "", "city": "Oakland", "state": "CA", "zip": "94601", "last_update_date": pd.Timestamp("2015-01-01"),
+         "nppes_status": "active", "taxonomy_code": "261QE0700X"}])], ignore_index=True)
+    pl = pd.DataFrame(columns=["npi", "address_line1", "address_line2", "city", "state", "zip"])
+    refs = pd.DataFrame([{"npi": 2, "tin": "22-2222222", "business_name": "Acme"}, {"npi": 7, "tin": "77-7777777", "business_name": "Oakland Dialysis"}])
+    irs = pd.DataFrame([{"ein": "777777777", "name": "OAKLAND DIALYSIS INC", "address_line1": "8 PINE STREET", "city": "OAKLAND", "state": "CA", "zip": "94601"}])
+    fac = c5m.facility_candidates(facility_frame(), nppes, pl, {2, 6, 7}, C5)
+    assert set(fac["source"]) == {"ca_facility", "ca_facility_name_zip"}
+    named = fac[fac["source"] == "ca_facility_name_zip"]
+    assert named["npi"].tolist() == [6] and named["source_name"].tolist() == ["OAKLAND SURGERY CENTER"]
+    cand = c5m.build_candidates(nppes, pl, pd.DataFrame(columns=["npi"]), [fac, c5m.irs_candidates(irs, refs)])
+    addr = c5m.score_addresses(cand, nppes, C5, AS_OF)
+    best = addr[addr["rank"] == 1].set_index("npi")
+    assert best.loc[2, "verified"] and best.loc[2, "verification_basis"] == "two_independent_sources"
+    assert best.loc[6, "verified"] and best.loc[6, "sources"] == "ca_facility_name_zip|nppes_primary"
+    assert best.loc[7, "verified"] and "irs_eo" in best.loc[7, "sources"]
+    links = c5m.link_tin_npi_address(refs, addr, nppes, C5)
+    assert "irs_address_for_tin" in links[links["npi"] == 7].iloc[0]["link_evidence"]
+
+
+def test_state_register_alone_verifies():
+    nppes = nppes_frame().iloc[[1]].assign(address_line1="99 Other Rd", zip="90009")
+    fac = c5m.facility_candidates(facility_frame().iloc[[0]], nppes, pd.DataFrame(columns=["npi", "zip"]), {2}, C5)
+    addr = c5m.score_addresses(c5m.build_candidates(nppes, pd.DataFrame(), pd.DataFrame(), [fac]), nppes, C5, AS_OF)
+    best = addr[addr["rank"] == 1].iloc[0]
+    assert best["sources"] == "ca_facility" and best["verified"] and best["verification_basis"] == "state_license_register"
+
+
+def test_place_names_do_not_make_a_name_match():
+    drop = c5m.place_words("SANTA MARIA", "SANTA BARBARA")
+    assert c5m.name_similarity("THE ENDOSCOPY CENTER OF SANTA MARIA LLC", "SANTA MARIA HEALTH CENTER", drop) == 0.0
+    assert c5m.name_similarity("KAISER FOUNDATION HOSPITALS", "KAISER FOUNDATION HOSPITAL - FREMONT", c5m.place_words("FREMONT")) == 1.0

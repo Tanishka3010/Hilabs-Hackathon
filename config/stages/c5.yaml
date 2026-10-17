@@ -1,5 +1,6 @@
 c5:
   target_state: CA
+  sources_dir: raw/sources
   min_agreeing_sources: 2
   nppes_stale_years: 3
   recency_factors:
@@ -8,13 +9,21 @@ c5:
     recent: 0.7
     stale: 0.4
   source_weights:
+    ca_facility: 0.8
     dac: 0.7
+    ca_facility_name_zip: 0.6
     nppes_primary: 0.5
     nppes_secondary: 0.4
+    irs_eo: 0.4
   source_family:
+    ca_facility: ca_cdph
+    ca_facility_name_zip: ca_cdph
     dac: cms_dac
     nppes_primary: nppes
     nppes_secondary: nppes
+    irs_eo: irs
+  high_trust_sources: [ca_facility]
   name_match_threshold: 0.5
+  facility_name_match_threshold: 0.6
 reference_data:
   fallback_states: [CA, NV, OR, AZ]
