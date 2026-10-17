@@ -1,5 +1,6 @@
 index_dir: DATA
-nppes_dir: data/nppes
+nppes_dir: raw/nppes
+ptd_dir: raw/ptd
 reference_dir: reference
 output_dir: outputs
 workers: 4

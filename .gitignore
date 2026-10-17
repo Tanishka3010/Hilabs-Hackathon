@@ -20,3 +20,7 @@ build/
 .vscode/
 .idea/
 .pytest_cache/
+
+# Large downloaded inputs (NPPES, full PTD rate files) - never committed
+raw/
+outputs/**/_cache/

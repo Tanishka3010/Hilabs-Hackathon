@@ -2,10 +2,18 @@ import argparse
 import json
 import sys
 
-from src import c0_recon, c1_parse_index, c2_classify_network
+from src import c0_recon, c1_parse_index, c2_classify_network, c3_quality, c4_extract_rates, c5_provider_location
 from src.common import load_config, setup_logging
 
-STAGES = {"recon": [c0_recon], "c1": [c1_parse_index], "c2": [c2_classify_network], "all": [c0_recon, c1_parse_index, c2_classify_network]}
+STAGES = {
+    "recon": [c0_recon],
+    "c1": [c1_parse_index],
+    "c2": [c2_classify_network],
+    "c4": [c4_extract_rates],
+    "c3": [c3_quality],
+    "c5": [c5_provider_location],
+    "all": [c0_recon, c1_parse_index, c2_classify_network, c4_extract_rates, c3_quality, c5_provider_location],
+}
 
 
 def print_summary(cfg):
@@ -33,6 +41,7 @@ def main(argv=None):
     ap.add_argument("--config")
     ap.add_argument("--index-dir")
     ap.add_argument("--nppes-dir")
+    ap.add_argument("--ptd-dir")
     ap.add_argument("--reference-dir")
     ap.add_argument("--output-dir")
     ap.add_argument("--workers", type=int)
@@ -40,7 +49,7 @@ def main(argv=None):
     ap.add_argument("--fingerprint", action="store_true")
     a = ap.parse_args(argv)
     setup_logging()
-    cfg = load_config(a.config, {"index_dir": a.index_dir, "nppes_dir": a.nppes_dir, "reference_dir": a.reference_dir,
+    cfg = load_config(a.config, {"index_dir": a.index_dir, "nppes_dir": a.nppes_dir, "ptd_dir": a.ptd_dir, "reference_dir": a.reference_dir,
                                  "output_dir": a.output_dir, "workers": a.workers})
     if a.probe_mb is not None:
         cfg.setdefault("recon", {})["probe_mb"] = a.probe_mb

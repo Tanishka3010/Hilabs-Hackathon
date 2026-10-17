@@ -7,6 +7,7 @@ A reproducible pipeline over Centene's Transparency-in-Coverage (TiC) files. Sco
 | `recon` | Streams every index file and profiles its schema, plans and file URLs | `outputs/c1/recon_report.md` |
 | `c1` | Parses all index files into plan × file, deduplicated file and plan tables | `outputs/c1/*.parquet`, `*.csv`, `c1_stats.json` |
 | `c2` | Applies the scope filters and the network-type rule cascade to every plan and file | `outputs/c2/plan_classification.csv`, `file_classification.csv`, `ppo_plans.csv`, `ppo_files.csv`, `exclusions_summary.csv`, `conflicts.csv`, `c2_stats.json` |
+| `c4` / `c3` / `c5` | Rate extraction, file quality score, provider location (in progress; see [docs/work_split.md](docs/work_split.md)) | `outputs/c4`, `outputs/c3`, `outputs/c5` |
 
 The logic and the reasons behind each decision are in [docs/logic_c1_c2.md](docs/logic_c1_c2.md). Unresolved data ambiguities are in [docs/open_questions.md](docs/open_questions.md).
 
@@ -17,13 +18,15 @@ python3 -m venv .venv
 ```
 
 ## Expected data layout
-All paths are set in `config/config.yaml`, relative to the repo root, and each one can be overridden on the command line.
+All paths are set in `config/config.yaml`, relative to the repo root, and each one can be overridden on the command line. Per-stage settings live in `config/stages/*.yaml`, which are merged automatically.
 ```
-DATA/                 index_dir      the 11 Centene TiC index JSON files (read-only)
-data/nppes/           nppes_dir      NPPES monthly files (needed only for --fingerprint, later)
-reference/            reference_dir  NUCC taxonomy, HiLabs benchmark xlsx, CMS DAC (not used by C1/C2)
+DATA/                 index_dir      the 11 Centene TiC index JSON files (read-only, committed)
+raw/nppes/            nppes_dir      NPPES npidata_pfile_*.csv and pl_pfile_*.csv (git-ignored)
+raw/ptd/              ptd_dir        full in-network rate files, downloaded and cached (git-ignored)
+reference/            reference_dir  NUCC taxonomy, HiLabs benchmark xlsx, CMS DAC
 outputs/              output_dir     generated; safe to delete and regenerate
 ```
+Large inputs go in `raw/`, not `data/`: on macOS `data/` and `DATA/` are the same folder.
 
 ## Run
 ```bash

@@ -1,0 +1,8 @@
+c4:
+  download: true
+  max_mb: 0
+  default_context:
+    billing_class: professional
+    modifier: ""
+    place_of_service: "11"
+  rate_type_preference: [negotiated, fee schedule, derived]

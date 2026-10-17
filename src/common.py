@@ -10,7 +10,7 @@ import pandas as pd
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-PATH_KEYS = ("index_dir", "nppes_dir", "reference_dir", "output_dir")
+PATH_KEYS = ("index_dir", "nppes_dir", "ptd_dir", "reference_dir", "output_dir")
 INDEX_NAME_RE = re.compile(
     r"^(?P<date>\d{4}-\d{2}-\d{2})_(?P<brand>[a-z]+)(?:_(?P<sub>[a-z0-9_]+?))?_index(?:\s*\(\d+\))?\.json$",
     re.I,
@@ -34,6 +34,9 @@ def load_config(path=None, overrides=None):
     cfg_path = resolve_path(path) if path else ROOT / "config" / "config.yaml"
     cfg = yaml.safe_load(cfg_path.read_text()) if cfg_path.exists() else {}
     cfg = cfg or {}
+    for extra in sorted((cfg_path.parent / "stages").glob("*.yaml")):
+        for k, v in (yaml.safe_load(extra.read_text()) or {}).items():
+            cfg.setdefault(k, v)
     for k, v in (overrides or {}).items():
         if v is not None:
             cfg[k] = v

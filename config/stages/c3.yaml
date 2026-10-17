@@ -1,0 +1,14 @@
+c3:
+  benchmark_xlsx: Rate_Benchmarking_Individual_Weights_Hackathon.xlsx
+  outlier_fold: 10
+  placeholder_rates: [0.01, 99999, 999999]
+  weights:
+    schema_validity: 1
+    code_coverage: 1
+    provider_coverage: 1
+    zero_invalid_rates: 1
+    outlier_rate: 1
+    rate_type_mix: 1
+    duplicates: 1
+    staleness: 1
+    referential_integrity: 1
