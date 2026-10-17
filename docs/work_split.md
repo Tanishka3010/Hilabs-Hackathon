@@ -2,8 +2,8 @@
 
 C1 and C2 are done and on `main`. The remaining work is split so that **each person owns separate files**. Two people never edit the same file, so merges can't conflict.
 
-- **Person A: Rates.** Streams the CA rate file and delivers C4 (PPO rates for every provider, with the rate-selection rule).
-- **Person B: Quality and providers.** Delivers C3 (file quality score) and the provider-location work (NPPES plus other sources).
+- **Person A: Rates.** Streams the CA rate file and delivers C4 (PPO rates for every provider, with the rate-selection rule). Branches: `feat/rates-reader` → `feat/rates-c4`.
+- **Person B: Quality and providers.** Delivers C3 (file quality score) and the provider-location work (NPPES plus other sources). Branches: `feat/reference-data` → `feat/quality-c3` → `feat/location-c5`.
 
 The only point where their work meets is a fixed **data contract** (`src/contracts.py`, described below): A writes those tables, and B reads them.
 
@@ -81,30 +81,84 @@ Large inputs live in `raw/`, not `data/`. On macOS the filesystem ignores case, 
 3. `c5_provider_location.py`: location confidence from DAC, NPPES (lowered as the last update ages), `pl_pfile`, and in-file TIN names or county tags. Flag disagreements.
 4. `docs/logic_c3.md`, `docs/logic_c5.md` and tests.
 
-## 6. Git routine (prevents conflicts)
+## 6. Branching and merging plan
 
-Each person works on their own branch and opens a PR into `main`:
+The branches are **not** independent the whole way. C3 (B) is computed on the rate tables that A extracts. So nobody keeps one long branch. Each person works in **short branches, one per milestone**, and merges at two fixed sync points:
 
-```bash
-git switch -c feat/rates-c4
+- **M1:** A's sample rate tables reach `main`.
+- **M2:** A's full-file rates reach `main`.
+
+```mermaid
+gitGraph
+  commit id: "scaffold"
+  branch feat/rates-reader
+  branch feat/reference-data
+  checkout feat/rates-reader
+  commit id: "A1 reader"
+  commit id: "A1 sample tables"
+  checkout main
+  merge feat/rates-reader id: "M1"
+  branch feat/rates-c4
+  checkout feat/reference-data
+  commit id: "B1 loaders"
+  checkout main
+  merge feat/reference-data
+  branch feat/quality-c3
+  checkout feat/rates-c4
+  commit id: "A2 full file"
+  commit id: "A2 PPO filter + C4 rule"
+  checkout feat/quality-c3
+  commit id: "B2 metrics on sample"
+  checkout main
+  merge feat/rates-c4 id: "M2"
+  checkout feat/quality-c3
+  merge main id: "B2 rebase on M2"
+  commit id: "B2 scores on full file"
+  checkout main
+  merge feat/quality-c3
+  branch feat/location-c5
+  commit id: "B3 location"
+  checkout main
+  merge feat/location-c5
+  commit id: "final integration"
 ```
-```bash
-git switch -c feat/quality-c3-c5
-```
 
-Pull other people's merged work at least once a day:
+### When each branch is created and merged
 
-```bash
-git fetch origin && git rebase origin/main
-```
+| Branch | Owner | Create it from `main` | Merge it into `main` when | What the other person does then |
+|---|---|---|---|---|
+| `feat/rates-reader` (A1) | A | Now, from the scaffold | The reader works and the contract tables for the first ~50 MB of the CA file are written (**M1**) | B can switch C3 from the synthetic sample to real-shaped tables |
+| `feat/reference-data` (B1) | B | Now, from the scaffold | The NPPES, benchmark xlsx, NUCC and DAC loaders work, with tests | Nothing; A doesn't use these |
+| `feat/rates-c4` (A2) | A | Right after M1 is merged | Full-file extraction, the PPO filter inside the MIXED file and the rate-selection rule are done, with `docs/logic_c4.md` (**M2**) | B rebases B2 onto `main` and re-runs C3 on the full file |
+| `feat/quality-c3` (B2) | B | After **both** M1 and B1 are on `main` | All 9 metrics score the sample; after M2, they also score the full file, with `docs/logic_c3.md` | — |
+| `feat/location-c5` (B3) | B | After B2 is merged | Location confidence is done, with `docs/logic_c5.md` | — |
+| final integration | whoever merges last | After every branch above is merged | — | README, summary doc, `--stage all`, full test run (§7) |
 
-Other rules:
-- Commit only your own files: run `git status` before committing, and never `git add -A` with someone else's files in your working copy.
-- Don't commit `raw/` or large intermediates. `outputs/c4/<file_key>/rates_long.parquet` may be large; if it's over about 50 MB, commit a sample and add the full file to `.gitignore` through a frozen-file PR.
-- Merge order: A's milestone A1 first, then B's C3 once it reads real tables, then the rest in any order.
+A1 and B1 start on the same day, and neither waits for the other. Before M1, B2's work can begin on the synthetic sample in `tests/test_contracts.py`.
 
-## 7. Final integration (done once, by one person, after both PRs merge)
+### Rules that keep merges conflict-free
 
-- Update `README.md` (stages table and current results) and the shared summary doc.
-- Run `--stage all` and `pytest` on `main`.
-- Unfreeze the frozen files only after both branches are merged.
+1. **Always create a new branch from the latest `main`**, never from your previous feature branch:
+   ```bash
+   git switch main && git pull origin main && git switch -c feat/<next-branch>
+   ```
+2. **Merge as soon as a milestone works**, without waiting until everything is finished. Small, frequent merges keep conflicts away.
+3. **Rebase onto `main` every day, and always right after M1 or M2 lands:**
+   ```bash
+   git fetch origin && git rebase origin/main
+   ```
+   On a branch that is already pushed, publish the rebased branch with:
+   ```bash
+   git push --force-with-lease
+   ```
+4. **Commit only your own files** (see §1). Check `git status` before every commit, and add files by path rather than with `git add -A`.
+5. **Open a PR for every merge into `main`.** The other person skims it (a 5-minute check that only owned files changed and `pytest` passes), then it's merged with "Rebase and merge" or "Squash and merge".
+6. **Frozen-file changes** (§1) go in their own tiny PR, merged before either person depends on them.
+7. **Never commit `raw/` or large intermediates.** If `rates_long.parquet` is over about 50 MB, commit a sample and add the full file to `.gitignore` in a frozen-file PR.
+
+## 7. Final integration (done once, by one person, after every branch is merged)
+
+1. Branch `chore/final-integration` from the latest `main`.
+2. Update `README.md` (stages table and current results) and the shared summary doc.
+3. Run `--stage all` and `pytest` on a clean checkout, then merge.
+4. Unfreeze the frozen files only after this merge.
