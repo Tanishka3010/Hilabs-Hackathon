@@ -1,5 +1,5 @@
 c3:
-  benchmark_xlsx: Rate_Benchmarking_Individual_Weights_Hackathon.xlsx
+  benchmark_xlsx: Rate Benchmarking Individual Weights_Hackathon.xlsx
   outlier_fold: 10
   placeholder_rates: [0.01, 99999, 999999]
   weights:

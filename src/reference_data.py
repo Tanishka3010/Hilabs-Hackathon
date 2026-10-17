@@ -1,161 +1,22 @@
-"""
-reference_data.py  —  Person B: loaders for every reference dataset.
-
-Each public function takes `cfg` (the merged config dict) and returns a
-DataFrame.  Heavy files (NPPES npidata ~11 GB, pl_pfile ~120 MB, DAC ~230 MB)
-are filtered to California and cached as parquet so re-runs are instant.
-
-This module is **owned by Person B** (see docs/work_split.md §1).
-"""
-
-from __future__ import annotations
-
-import glob
 from pathlib import Path
 
-import numpy as np
-import openpyxl
 import pandas as pd
 
-from src.common import log
+from src.common import log, stable_key
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
+DEFAULT_FALLBACK_STATES = ["CA"]
+CHUNK_ROWS = 500_000
 
-def _find_file(directory: Path, pattern: str) -> Path:
-    """Return the single file matching *pattern* inside *directory*."""
-    hits = sorted(directory.glob(pattern))
-    if not hits:
-        raise FileNotFoundError(f"No file matching '{pattern}' in {directory}")
-    if len(hits) > 1:
-        log.warning("Multiple files match '%s' in %s – using %s", pattern, directory, hits[0].name)
-    return hits[0]
+NUCC_RENAME = {
+    "Code": "taxonomy_code",
+    "Grouping": "grouping",
+    "Classification": "classification",
+    "Specialization": "specialization",
+    "Display Name": "display_name",
+    "Section": "section",
+}
 
-
-def _cached(path: Path, builder, *, force: bool = False) -> pd.DataFrame:
-    """Return parquet at *path* if it exists, else call *builder* → df, save, return."""
-    if path.exists() and not force:
-        log.info("cache hit  → %s", path)
-        return pd.read_parquet(path)
-    df = builder()
-    path.parent.mkdir(parents=True, exist_ok=True)
-    df.to_parquet(path, index=False)
-    log.info("cache miss → wrote %s  (%s rows)", path, f"{len(df):,}")
-    return df
-
-
-# ───────────────────────────────────────────────────────────────────────────
-# 1.  NUCC Taxonomy
-# ───────────────────────────────────────────────────────────────────────────
-
-def load_nucc(cfg: dict) -> pd.DataFrame:
-    """
-    Load the NUCC taxonomy CSV.
-
-    Returns columns:
-        taxonomy_code, grouping, classification, specialization,
-        display_name, section
-    """
-    ref_dir: Path = cfg["reference_dir"]
-    path = _find_file(ref_dir, "nucc_taxonomy*.*")
-    log.info("Loading NUCC taxonomy from %s", path.name)
-
-    df = pd.read_csv(path, dtype=str).fillna("")
-
-    # Normalise column names coming from the public NUCC CSV
-    rename = {
-        "Code": "taxonomy_code",
-        "Grouping": "grouping",
-        "Classification": "classification",
-        "Specialization": "specialization",
-        "Display Name": "display_name",
-        "Section": "section",
-    }
-    df = df.rename(columns=rename)
-
-    # Keep only the columns we need (extras like Definition, Notes are dropped)
-    keep = [c for c in rename.values() if c in df.columns]
-    df = df[keep]
-
-    log.info("NUCC: %s taxonomy codes loaded", f"{len(df):,}")
-    return df
-
-
-# ───────────────────────────────────────────────────────────────────────────
-# 2.  Benchmark workbook  (three sheets)
-# ───────────────────────────────────────────────────────────────────────────
-
-def load_benchmark_taxonomy_xwalk(cfg: dict) -> pd.DataFrame:
-    """
-    Sheet 'Taxonomy-Spec Xwalk': maps taxonomy codes to HiLabs specialty codes.
-
-    Returns columns: spec_type, spec_cd, spec_descr, taxonomy_code
-    """
-    path = _benchmark_path(cfg)
-    df = pd.read_excel(path, sheet_name="Taxonomy-Spec Xwalk", dtype=str).fillna("")
-    df.columns = ["spec_type", "spec_cd", "spec_descr", "taxonomy_code"]
-    log.info("Benchmark Taxonomy-Spec Xwalk: %s rows", f"{len(df):,}")
-    return df
-
-
-def load_benchmark_specialty_weights(cfg: dict) -> pd.DataFrame:
-    """
-    Sheet 'Specialty Weights': how important each specialty is.
-
-    Returns columns: spec_cd, specialty, specialty_weight
-    """
-    path = _benchmark_path(cfg)
-    df = pd.read_excel(path, sheet_name="Specialty Weights")
-    df.columns = ["spec_cd", "specialty", "specialty_weight"]
-    df["spec_cd"] = df["spec_cd"].astype(str)
-    log.info("Benchmark Specialty Weights: %s rows", f"{len(df):,}")
-    return df
-
-
-def load_benchmark_codes(cfg: dict) -> pd.DataFrame:
-    """
-    Sheet 'Spec-Proc Weights': billing codes (PROC_CD) ranked per specialty.
-
-    Returns columns: spec_cd, spec_description, billing_code,
-                     spec_proc_rank, spec_proc_weight
-    """
-    path = _benchmark_path(cfg)
-    df = pd.read_excel(path, sheet_name="Spec-Proc Weights")
-    df.columns = ["spec_cd", "spec_description", "billing_code",
-                   "spec_proc_rank", "spec_proc_weight"]
-    df["spec_cd"] = df["spec_cd"].astype(str)
-    df["billing_code"] = df["billing_code"].astype(str)
-    log.info("Benchmark codes: %s rows, %s unique billing codes",
-             f"{len(df):,}", f"{df['billing_code'].nunique():,}")
-    return df
-
-
-def _benchmark_path(cfg: dict) -> Path:
-    ref_dir: Path = cfg["reference_dir"]
-    name = cfg.get("c3", {}).get("benchmark_xlsx", "")
-    if name:
-        # config might store the name with underscores; the actual file has spaces
-        # try exact match first, then glob
-        exact = ref_dir / name
-        if exact.exists():
-            return exact
-    return _find_file(ref_dir, "*Benchmarking*Hackathon*.xlsx")
-
-
-# ───────────────────────────────────────────────────────────────────────────
-# 3.  CMS DAC  (Doctors and Clinicians)
-# ───────────────────────────────────────────────────────────────────────────
-
-_DAC_USECOLS = [
-    "NPI", "Provider Last Name", "Provider First Name", "Cred",
-    "pri_spec", "sec_spec_all",
-    "Facility Name", "org_pac_id",
-    "adr_ln_1", "adr_ln_2", "City/Town", "State", "ZIP Code",
-    "Telephone Number",
-]
-
-_DAC_RENAME = {
+DAC_RENAME = {
     "NPI": "npi",
     "Provider Last Name": "last_name",
     "Provider First Name": "first_name",
@@ -172,68 +33,7 @@ _DAC_RENAME = {
     "Telephone Number": "phone",
 }
 
-
-def load_dac(cfg: dict, *, state: str = "CA", force: bool = False) -> pd.DataFrame:
-    """
-    Load CMS DAC, filtered to *state* (default CA).
-
-    The raw CSV is ~230 MB; the CA-only parquet cache is ~5–10 MB.
-    """
-    ref_dir: Path = cfg["reference_dir"]
-    cache = ref_dir / f"dac_{state.lower()}.parquet"
-
-    def _build():
-        path = _find_file(ref_dir, "DAC_*ownloadable*.csv")
-        log.info("Streaming DAC from %s  (filtering to state=%s) …", path.name, state)
-        chunks = pd.read_csv(
-            path,
-            usecols=_DAC_USECOLS,
-            dtype=str,
-            chunksize=200_000,
-        )
-        parts = []
-        for chunk in chunks:
-            chunk = chunk[chunk["State"] == state]
-            parts.append(chunk)
-        df = pd.concat(parts, ignore_index=True)
-        df = df.rename(columns=_DAC_RENAME)
-        df["npi"] = pd.to_numeric(df["npi"], errors="coerce").astype("Int64")
-        df["zip"] = df["zip"].str[:5]       # keep only 5-digit zip
-        df = df.fillna("")
-        return df
-
-    df = _cached(cache, _build, force=force)
-    log.info("DAC (%s): %s rows, %s unique NPIs", state, f"{len(df):,}", f"{df['npi'].nunique():,}")
-    return df
-
-
-# ───────────────────────────────────────────────────────────────────────────
-# 4.  NPPES  npidata  (main NPI registry)
-# ───────────────────────────────────────────────────────────────────────────
-
-_NPPES_USECOLS = [
-    "NPI",
-    "Entity Type Code",
-    "Employer Identification Number (EIN)",
-    "Provider Organization Name (Legal Business Name)",
-    "Provider Last Name (Legal Name)",
-    "Provider First Name",
-    "Provider Credential Text",
-    "Provider First Line Business Practice Location Address",
-    "Provider Second Line Business Practice Location Address",
-    "Provider Business Practice Location Address City Name",
-    "Provider Business Practice Location Address State Name",
-    "Provider Business Practice Location Address Postal Code",
-    "Provider Business Practice Location Address Telephone Number",
-    "Provider Enumeration Date",
-    "Last Update Date",
-    "NPI Deactivation Date",
-    "NPI Reactivation Date",
-    "Healthcare Provider Taxonomy Code_1",
-    "Healthcare Provider Primary Taxonomy Switch_1",
-]
-
-_NPPES_RENAME = {
+NPPES_RENAME = {
     "NPI": "npi",
     "Entity Type Code": "entity_type",
     "Employer Identification Number (EIN)": "ein",
@@ -255,66 +55,7 @@ _NPPES_RENAME = {
     "Healthcare Provider Primary Taxonomy Switch_1": "taxonomy_primary",
 }
 
-
-def load_nppes(cfg: dict, *, state: str = "CA", force: bool = False) -> pd.DataFrame:
-    """
-    Load NPPES npidata, filtered to *state* practice location and active
-    (no deactivation date, or has a reactivation date).
-
-    The raw CSV is ~11 GB; the CA-only parquet cache is ~40–60 MB.
-    Only the ~20 columns we need are read (out of 330).
-    """
-    nppes_dir: Path = cfg["nppes_dir"]
-    cache = nppes_dir / f"nppes_{state.lower()}.parquet"
-
-    def _build():
-        path = _find_file(nppes_dir, "npidata_pfile_*.csv")
-        log.info("Streaming NPPES npidata from %s  (filtering to state=%s) — this may take a few minutes …", path.name, state)
-        chunks = pd.read_csv(
-            path,
-            usecols=_NPPES_USECOLS,
-            dtype=str,
-            chunksize=500_000,
-            low_memory=False,
-        )
-        parts = []
-        rows_total = 0
-        for i, chunk in enumerate(chunks):
-            rows_total += len(chunk)
-            # Filter to state
-            chunk = chunk[
-                chunk["Provider Business Practice Location Address State Name"] == state
-            ]
-            # Filter to active: no deactivation, or reactivated
-            deactivated = chunk["NPI Deactivation Date"].notna() & (chunk["NPI Deactivation Date"] != "")
-            reactivated = chunk["NPI Reactivation Date"].notna() & (chunk["NPI Reactivation Date"] != "")
-            chunk = chunk[~deactivated | reactivated]
-            parts.append(chunk)
-            if (i + 1) % 10 == 0:
-                log.info("  … %s rows scanned, %s CA rows so far",
-                         f"{rows_total:,}", f"{sum(len(p) for p in parts):,}")
-        df = pd.concat(parts, ignore_index=True)
-        df = df.rename(columns=_NPPES_RENAME)
-        df["npi"] = pd.to_numeric(df["npi"], errors="coerce").astype("Int64")
-        df["zip"] = df["zip"].str[:5]
-        # Parse dates
-        for col in ("last_update_date", "deactivation_date", "reactivation_date", "enumeration_date"):
-            df[col] = pd.to_datetime(df[col], errors="coerce")
-        df = df.fillna({c: "" for c in df.select_dtypes("object").columns})
-        return df
-
-    df = _cached(cache, _build, force=force)
-    log.info("NPPES (%s): %s rows, %s unique NPIs, entity types: %s",
-             state, f"{len(df):,}", f"{df['npi'].nunique():,}",
-             df["entity_type"].value_counts().to_dict() if "entity_type" in df.columns else "?")
-    return df
-
-
-# ───────────────────────────────────────────────────────────────────────────
-# 5.  NPPES  pl_pfile  (practice locations — secondary addresses)
-# ───────────────────────────────────────────────────────────────────────────
-
-_PL_RENAME = {
+PL_RENAME = {
     "NPI": "npi",
     "Provider Secondary Practice Location Address- Address Line 1": "address_line1",
     "Provider Secondary Practice Location Address-  Address Line 2": "address_line2",
@@ -324,56 +65,195 @@ _PL_RENAME = {
     "Provider Secondary Practice Location Address - Telephone Number": "phone",
 }
 
+NPPES_DATE_COLS = ("enumeration_date", "last_update_date", "deactivation_date", "reactivation_date")
 
-def load_pl(cfg: dict, *, state: str = "CA", force: bool = False) -> pd.DataFrame:
-    """
-    Load NPPES practice-locations file (secondary addresses), filtered to *state*.
 
-    The raw CSV is ~120 MB; the CA-only parquet cache is ~5–10 MB.
-    """
-    nppes_dir: Path = cfg["nppes_dir"]
-    cache = nppes_dir / f"pl_{state.lower()}.parquet"
+def npi_is_valid(npi):
+    s = str(npi).strip() if npi is not None else ""
+    if len(s) != 10 or not s.isdigit() or s[0] not in "12":
+        return False
+    total = 24
+    for i, ch in enumerate(reversed(s[:9])):
+        d = int(ch)
+        if i % 2 == 0:
+            d *= 2
+            d = d - 9 if d > 9 else d
+        total += d
+    return (10 - total % 10) % 10 == int(s[9])
 
-    def _build():
-        path = _find_file(nppes_dir, "pl_pfile_*.csv")
-        log.info("Streaming NPPES pl_pfile from %s  (filtering to state=%s) …", path.name, state)
-        usecols = list(_PL_RENAME.keys())
-        chunks = pd.read_csv(
-            path,
-            usecols=usecols,
-            dtype=str,
-            chunksize=200_000,
-        )
-        parts = []
-        for chunk in chunks:
-            chunk = chunk[
-                chunk["Provider Secondary Practice Location Address - State Name"] == state
-            ]
-            parts.append(chunk)
-        df = pd.concat(parts, ignore_index=True)
-        df = df.rename(columns=_PL_RENAME)
-        df["npi"] = pd.to_numeric(df["npi"], errors="coerce").astype("Int64")
-        df["zip"] = df["zip"].str[:5]
-        df = df.fillna("")
-        return df
 
-    df = _cached(cache, _build, force=force)
-    log.info("PL (%s): %s rows, %s unique NPIs", state, f"{len(df):,}", f"{df['npi'].nunique():,}")
+def find_file(directory, pattern):
+    hits = sorted(Path(directory).glob(pattern))
+    if not hits:
+        raise FileNotFoundError(f"no file matching '{pattern}' in {directory}")
+    if len(hits) > 1:
+        log.warning("several files match '%s' in %s, using %s", pattern, directory, hits[-1].name)
+    return hits[-1]
+
+
+def ref_settings(cfg):
+    return cfg.get("reference_data") or {}
+
+
+def target_npis(cfg):
+    paths = sorted((cfg["output_dir"] / "c4").glob("*/provider_refs.parquet"))
+    if not paths:
+        return None
+    npis = set()
+    for p in paths:
+        npis.update(int(n) for n in pd.read_parquet(p, columns=["npi"])["npi"].dropna())
+    log.info("reference scope: %s NPIs from %d provider_refs file(s)", f"{len(npis):,}", len(paths))
+    return frozenset(npis)
+
+
+def resolve_scope(cfg, npis=None, states=None):
+    if npis is None:
+        npis = target_npis(cfg)
+    if npis:
+        npis = frozenset(int(n) for n in npis)
+        return npis, None, f"npis-{stable_key(','.join(map(str, sorted(npis))), 12)}"
+    states = sorted({s.upper() for s in (states or ref_settings(cfg).get("fallback_states") or DEFAULT_FALLBACK_STATES)})
+    log.warning("reference scope: no provider_refs yet, falling back to states %s", states)
+    return None, states, "states-" + "-".join(states)
+
+
+def scope_mask(chunk, npi_col, state_col, npis, states):
+    if npis is not None:
+        return pd.to_numeric(chunk[npi_col], errors="coerce").isin(npis)
+    return chunk[state_col].fillna("").str.upper().isin(states)
+
+
+def cache_path(cfg, name):
+    return cfg["output_dir"] / "_cache" / "reference" / name
+
+
+def cached(path, builder, force=False):
+    if path.exists() and not force:
+        log.info("cache hit %s", path.name)
+        return pd.read_parquet(path)
+    df = builder()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(path, index=False)
+    log.info("cache write %s (%s rows)", path.name, f"{len(df):,}")
     return df
 
 
-# ───────────────────────────────────────────────────────────────────────────
-# Convenience: load everything at once
-# ───────────────────────────────────────────────────────────────────────────
+def stream_filtered(path, rename, npis, states, chunk_rows=CHUNK_ROWS):
+    npi_col = next(k for k, v in rename.items() if v == "npi")
+    state_col = next(k for k, v in rename.items() if v == "state")
+    parts, scanned = [], 0
+    for chunk in pd.read_csv(path, usecols=list(rename), dtype=str, chunksize=chunk_rows):
+        scanned += len(chunk)
+        parts.append(chunk[scope_mask(chunk, npi_col, state_col, npis, states)])
+    df = pd.concat(parts, ignore_index=True) if parts else pd.DataFrame(columns=list(rename))
+    log.info("streamed %s: %s rows scanned, %s kept", path.name, f"{scanned:,}", f"{len(df):,}")
+    return finish(df.rename(columns=rename))
 
-def load_all(cfg: dict) -> dict[str, pd.DataFrame]:
-    """Return a dict of all reference frames, keyed by short name."""
+
+def finish(df):
+    df["npi"] = pd.to_numeric(df["npi"], errors="coerce").astype("Int64")
+    df["state"] = df["state"].fillna("").str.strip().str.upper()
+    df["zip"] = df["zip"].fillna("").str.strip().str[:5]
+    return df
+
+
+def nppes_status(df):
+    deact, react = df["deactivation_date"], df["reactivation_date"]
+    status = pd.Series("active", index=df.index)
+    status[deact.notna()] = "deactivated"
+    status[deact.notna() & react.notna() & (react >= deact)] = "reactivated"
+    return status
+
+
+def load_nucc(cfg):
+    path = find_file(cfg["reference_dir"], "nucc_taxonomy*.csv")
+    df = pd.read_csv(path, dtype=str).fillna("").rename(columns=NUCC_RENAME)
+    df = df[[c for c in NUCC_RENAME.values() if c in df.columns]]
+    log.info("NUCC: %s taxonomy codes", f"{len(df):,}")
+    return df
+
+
+def benchmark_path(cfg):
+    name = (cfg.get("c3") or {}).get("benchmark_xlsx", "")
+    exact = cfg["reference_dir"] / name if name else None
+    return exact if exact and exact.exists() else find_file(cfg["reference_dir"], "*Benchmarking*Hackathon*.xlsx")
+
+
+def load_benchmark_taxonomy_xwalk(cfg):
+    df = pd.read_excel(benchmark_path(cfg), sheet_name="Taxonomy-Spec Xwalk", dtype=str).fillna("")
+    df.columns = ["spec_type", "spec_cd", "spec_descr", "taxonomy_code"]
+    log.info("benchmark taxonomy xwalk: %s rows", f"{len(df):,}")
+    return df
+
+
+def load_benchmark_specialty_weights(cfg):
+    df = pd.read_excel(benchmark_path(cfg), sheet_name="Specialty Weights", dtype={"Spec Code": str})
+    df.columns = ["spec_cd", "specialty", "specialty_weight"]
+    log.info("benchmark specialty weights: %s rows", f"{len(df):,}")
+    return df
+
+
+def load_benchmark_codes(cfg):
+    df = pd.read_excel(benchmark_path(cfg), sheet_name="Spec-Proc Weights", dtype={"SPEC_CD": str, "PROC_CD": str})
+    df.columns = ["spec_cd", "spec_description", "billing_code", "spec_proc_rank", "spec_proc_weight"]
+    log.info("benchmark codes: %s rows, %s unique billing codes", f"{len(df):,}", f"{df['billing_code'].nunique():,}")
+    return df
+
+
+def load_dac(cfg, npis=None, states=None, force=False):
+    ref = cfg["reference_dir"]
+    npis, states, tag = resolve_scope(cfg, npis, states)
+    raw = sorted(ref.glob("DAC_*ownloadable*.csv"))
+    if raw:
+        df = cached(cache_path(cfg, f"dac_{tag}.parquet"), lambda: stream_filtered(raw[-1], DAC_RENAME, npis, states, 200_000), force)
+        df["dac_source"] = "national_file"
+    else:
+        legacy = ref / "dac_ca.parquet"
+        if not legacy.exists():
+            raise FileNotFoundError(f"neither DAC_*ownloadable*.csv nor dac_ca.parquet in {ref}")
+        log.warning("DAC national file not found; using CA-only legacy cache %s (out-of-state DAC rows unavailable)", legacy.name)
+        df = pd.read_parquet(legacy)
+        df = df[df["npi"].isin(npis)] if npis is not None else df[df["state"].isin(states)]
+        df = df.reset_index(drop=True)
+        df["dac_source"] = "legacy_ca_only"
+    log.info("DAC (%s): %s rows, %s NPIs, states %s", tag, f"{len(df):,}", f"{df['npi'].nunique():,}", df["state"].value_counts().head(5).to_dict())
+    return df
+
+
+def load_nppes(cfg, npis=None, states=None, force=False):
+    nppes_dir = cfg["nppes_dir"]
+    npis, states, tag = resolve_scope(cfg, npis, states)
+
+    def build():
+        df = stream_filtered(find_file(nppes_dir, "npidata_pfile_*[0-9].csv"), NPPES_RENAME, npis, states)
+        for c in NPPES_DATE_COLS:
+            df[c] = pd.to_datetime(df[c], errors="coerce", format="%m/%d/%Y")
+        df["nppes_status"] = nppes_status(df)
+        return df
+
+    df = cached(cache_path(cfg, f"nppes_{tag}.parquet"), build, force)
+    log.info("NPPES (%s): %s rows, status %s, states %s", tag, f"{len(df):,}", df["nppes_status"].value_counts().to_dict(),
+             df["state"].value_counts().head(5).to_dict())
+    return df
+
+
+def load_pl(cfg, npis=None, states=None, force=False):
+    nppes_dir = cfg["nppes_dir"]
+    npis, states, tag = resolve_scope(cfg, npis, states)
+    df = cached(cache_path(cfg, f"pl_{tag}.parquet"),
+                lambda: stream_filtered(find_file(nppes_dir, "pl_pfile_*[0-9].csv"), PL_RENAME, npis, states, 200_000), force)
+    log.info("PL (%s): %s rows, %s NPIs", tag, f"{len(df):,}", f"{df['npi'].nunique():,}")
+    return df
+
+
+def load_all(cfg, npis=None, states=None):
+    npis, states, _ = resolve_scope(cfg, npis, states)
     return {
         "nucc": load_nucc(cfg),
         "benchmark_codes": load_benchmark_codes(cfg),
         "benchmark_spec_weights": load_benchmark_specialty_weights(cfg),
         "benchmark_tax_xwalk": load_benchmark_taxonomy_xwalk(cfg),
-        "dac": load_dac(cfg),
-        "nppes": load_nppes(cfg),
-        "pl": load_pl(cfg),
+        "dac": load_dac(cfg, npis, states),
+        "nppes": load_nppes(cfg, npis, states),
+        "pl": load_pl(cfg, npis, states),
     }

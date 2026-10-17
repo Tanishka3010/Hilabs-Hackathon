@@ -1,3 +1,5 @@
 c5:
   nppes_stale_years: 3
   min_agreeing_sources: 2
+reference_data:
+  fallback_states: [CA, NV, OR, AZ]
