@@ -9,16 +9,12 @@ from src.common import duck, log, sql_str, write_json
 
 EXCEL_MAX_ROWS = 1_048_575
 
-EXCEL_COLUMNS = [
-    ("npi", "NPI", 12), ("tin", "TIN", 12), ("provider_name", "Provider Name", 34), ("address", "Address", 46), ("city", "City", 18),
-    ("state", "State", 6), ("zip", "ZIP", 8), ("address_status", "Address Status", 14), ("billing_code_type", "Billing Code Type", 10),
-    ("billing_code", "Billing Code", 11), ("procedure_code", "Procedure Code", 11), ("associated_code", "Associated Code", 11),
-    ("service_label", "Service Name", 40), ("billing_class", "Billing Class", 13), ("setting", "Setting", 11),
-    ("place_of_service", "Place of Service", 10), ("billing_code_modifier", "Modifier", 9), ("negotiation_arrangement", "Arrangement", 11),
-    ("network_label", "Network Label", 13), ("specialty", "Specialty", 30), ("rate", "Rate", 11), ("rate_type", "Rate Type", 12),
-]
-TEXT_COLUMNS = {"zip", "tin", "billing_code", "procedure_code", "associated_code", "place_of_service"}
-# The columns that make an Excel row unique (checked on every run; see grain_check).
+# The deliverable (brief, deliverable 1): one row per NPI x TIN x address x billing code, with exactly these columns.
+EXCEL_COLUMNS = [("npi", "NPI", 12), ("tin", "TIN", 12), ("address", "Address", 60), ("billing_code", "Billing Code", 12),
+                 ("specialty", "Specialty", 40), ("rate", "Rate", 12)]
+TEXT_COLUMNS = {"tin", "billing_code"}
+DELIVERABLE_KEY = ["npi", "tin", "address", "billing_code"]
+# The detail file keeps every rate context; it is unique on this grain (checked on every run).
 GRAIN = ["npi", "tin", "address_id", "billing_code_type", "billing_code", "associated_code", "service_key", "billing_class", "setting",
          "place_of_service", "billing_code_modifier", "negotiation_arrangement"]
 
@@ -55,6 +51,8 @@ def pair_addresses(links, addr, prov):
                            for v, sg, aid, ins, n in zip(l["verified"], strength.fillna(""), l["address_id"], l["in_target_state"].fillna(False), l["npi"])]
     parts = [l["address_line1"].fillna(""), l["address_line2"].fillna("")]
     l["address"] = [", ".join(x for x in (a1, a2) if x and str(x) != "nan") for a1, a2 in zip(*parts)]
+    l["full_address"] = [", ".join(x for x in (a, c, f"{st if isinstance(st, str) else ''} {z if isinstance(z, str) else ''}".strip()) if isinstance(x, str) and x)
+                         for a, c, st, z in zip(l["address"], l["city"], l["state"], l["zip"])]
     l["tin"] = l["tin"].fillna("")
     return l.drop(columns=["in_target_state"], errors="ignore")
 
@@ -82,7 +80,7 @@ def build_long(con, out_path):
     con.execute(f"""
         COPY (
             SELECT r.npi, r.tin, r.tin_type, coalesce(p.provider_name, '') AS provider_name, coalesce(p.entity_type, '') AS entity_type,
-                   a.address_id, coalesce(a.address, '') AS address, a.address_line1, a.address_line2, a.units, a.city, a.state, a.zip, a.county,
+                   a.address_id, coalesce(a.address, '') AS address, coalesce(a.full_address, '') AS full_address, a.address_line1, a.address_line2, a.units, a.city, a.state, a.zip, a.county,
                    a.latitude, a.longitude, coalesce(a.address_status, 'no_address') AS address_status, a.verification_basis,
                    a.confidence AS address_confidence, a.sources AS address_sources, a.link_evidence, a.pair_rank,
                    r.billing_code_type, r.billing_code, r.procedure_code, r.associated_code, r.service_key, r.name AS service_names,
@@ -103,6 +101,38 @@ def build_long(con, out_path):
         ) TO {sql_str(out_path)} (FORMAT parquet, COMPRESSION zstd)""")
 
 
+def build_deliverable(con, detail_q, out_parquet, out_csv):
+    """Collapses the detail rows to the brief's grain: one row per NPI x TIN x address x billing code.
+    A billing code can carry several rates for one provider (different associated code, place of service, modifier, setting or
+    arrangement). One is kept by a fixed rule:
+      1. prefer the base contract: fee-for-service, no associated code, no modifier;
+      2. among the rates left, take the lower median (position ceil(n/2) of the sorted distinct rates), as C4 does for ties.
+    Every rate context stays in provider_rate_detail.parquet."""
+    con.execute(f"""
+        COPY (
+            WITH d AS (
+                SELECT npi, coalesce(tin, '') AS tin, full_address AS address, billing_code, specialty, rate,
+                       (CASE WHEN coalesce(negotiation_arrangement, 'ffs') = 'ffs' THEN 0 ELSE 1 END) * 4
+                     + (CASE WHEN associated_code IS NULL THEN 0 ELSE 1 END) * 2
+                     + (CASE WHEN billing_code_modifier IS NULL THEN 0 ELSE 1 END) AS pref
+                FROM {detail_q} WHERE npi_valid),
+            best AS (SELECT * FROM d QUALIFY pref = min(pref) OVER (PARTITION BY npi, tin, address, billing_code)),
+            rates AS (SELECT npi, tin, address, billing_code, any_value(specialty) AS specialty, list_sort(list(DISTINCT rate)) AS rs
+                      FROM best GROUP BY npi, tin, address, billing_code)
+            SELECT npi, tin, address, billing_code, specialty, rs[CAST(ceil(len(rs) / 2.0) AS INTEGER)] AS rate
+            FROM rates ORDER BY npi, tin, address, billing_code
+        ) TO {sql_str(out_parquet)} (FORMAT parquet, COMPRESSION zstd)""")
+    con.execute(f"COPY (SELECT * FROM read_parquet({sql_str(out_parquet)})) TO {sql_str(out_csv)} (HEADER, DELIMITER ',')")
+    q = f"read_parquet({sql_str(out_parquet)})"
+    dup = con.execute(f"SELECT count(*) FROM (SELECT {', '.join(DELIVERABLE_KEY)} FROM {q} GROUP BY ALL HAVING count(*) > 1)").fetchone()[0]
+    if dup:
+        raise ValueError(f"c6: {dup} duplicate (NPI, TIN, address, billing code) keys in the rate file")
+    rows, multi = con.execute(f"""SELECT (SELECT count(*) FROM {q}),
+                                         (SELECT count(*) FROM (SELECT 1 FROM {detail_q} WHERE npi_valid
+                                          GROUP BY npi, coalesce(tin, ''), full_address, billing_code HAVING count(DISTINCT rate) > 1))""").fetchone()
+    return {"rows": int(rows), "duplicate_keys": 0, "keys_with_several_context_rates": int(multi)}
+
+
 def grain_check(con, q):
     """Rows must be unique on the documented grain (NPI x TIN x address x billing code x the rate context shown in the Excel)."""
     key = ", ".join(f"coalesce(CAST({c} AS VARCHAR), '')" for c in GRAIN)
@@ -115,27 +145,16 @@ def grain_check(con, q):
             "rows_sharing_npi_tin_address_code": int(base[1])}
 
 
-def write_excel(con, parquet_path, xlsx_path, max_rows, about_rows, summary_rows):
+def write_excel(con, parquet_path, xlsx_path, max_rows):
+    """The rate file as Excel: only the six required columns, split into sheets under Excel's row limit."""
     wb = xlsxwriter.Workbook(str(xlsx_path), {"constant_memory": True, "strings_to_numbers": False, "strings_to_urls": False})
     bold = wb.add_format({"bold": True, "bg_color": "#DDEBF7", "border": 1})
     money = wb.add_format({"num_format": "#,##0.00"})
     text = wb.add_format({"num_format": "@"})
-    about = wb.add_worksheet("About")
-    about.set_column(0, 0, 34)
-    about.set_column(1, 1, 120)
-    for i, (k, v) in enumerate(about_rows):
-        about.write(i, 0, k, bold if i == 0 or not v else None)
-        about.write(i, 1, v)
-    summ = wb.add_worksheet("Summary")
-    summ.set_column(0, 0, 52)
-    summ.set_column(1, 1, 24)
-    for i, (k, v) in enumerate(summary_rows):
-        summ.write(i, 0, k, bold if i == 0 else None)
-        summ.write(i, 1, v)
     cols = [c for c, _, _ in EXCEL_COLUMNS]
     i_npi = cols.index("npi")
     sheets, ws, row, last_npi = [], None, 0, None
-    reader = con.execute(f"SELECT {', '.join(cols)} FROM read_parquet({sql_str(parquet_path)}) WHERE npi_valid").to_arrow_reader(200_000)
+    reader = con.execute(f"SELECT {', '.join(cols)} FROM read_parquet({sql_str(parquet_path)})").to_arrow_reader(200_000)
     for batch in reader:
         # column-wise conversion once per batch; None (missing) becomes an empty cell, numbers and text keep their types
         data = [batch.column(j).to_pylist() for j in range(len(cols))]
@@ -178,7 +197,7 @@ def summary_metrics(cfg, long_stats):
         "share_npis_verified_or_corroborated_address": c5.get("share_npis_verified_or_corroborated"),
         "share_tins_verified_address": c5.get("share_tins_verified"),
         "share_tins_verified_or_corroborated_address": c5.get("share_tins_verified_or_corroborated"),
-        "share_tins_with_tin_specific_verified_address": c5.get("share_tins_tin_specific_verified"),
+        "share_tins_all_npis_verified": c5.get("share_tins_all_npis_verified"),
         "index_files_parsed": c1.get("index_files_parsed"),
         "unique_plans": c1.get("unique_plans"),
         "in_network_files_raw_to_unique": f"{c1.get('in_network_file_entries_raw')} -> {c1.get('unique_file_urls_normalized')}",
@@ -197,7 +216,7 @@ def summary_metrics(cfg, long_stats):
         "npis_with_verified_address": c5.get("npis_with_verified_address"),
         "npis_with_corroborated_address": c5.get("npis_with_corroborated_address"),
         "tins_with_verified_address": c5.get("tins_with_verified_address"),
-        "tins_with_tin_specific_verified_address": c5.get("tins_with_tin_specific_verified_address"),
+        "tins_all_npis_verified": c5.get("tins_all_npis_verified"),
         "rate_file_rows_npi_tin_address_code": long_stats.get("rows"),
         "rate_file_npis": long_stats.get("npis"),
         "rate_file_npis_with_specialty": long_stats.get("npis_with_specialty"),
@@ -211,23 +230,23 @@ def summary_metrics(cfg, long_stats):
 
 
 HEADLINE = ("share_npis_verified_address", "share_npis_verified_or_corroborated_address", "share_tins_verified_address",
-            "share_tins_verified_or_corroborated_address", "share_tins_with_tin_specific_verified_address")
+            "share_tins_verified_or_corroborated_address", "share_tins_all_npis_verified")
 
 
 def write_summary_md(path, metrics, long_stats, sheets):
     lines = ["# Run summary", "", f"Generated by `python -m src.run --stage all` on data as of {metrics.get('as_of_date')}.", "",
              "## Headline: provider linkage", "",
-             "Shares are per NPI and per TIN. *Verified* = two sources linked to the provider by an identifier (NPI or EIN) agree, or the CA licence register lists it. "
+             "Shares are per NPI and per TIN. A TIN is linked to a verified address when at least one of its NPIs is; *all NPIs verified* is the stricter depth measure. *Verified* = two sources linked to the provider by an identifier (NPI or EIN) agree, or the CA licence register lists it. "
              "*Corroborated* = NPPES agrees with a site found by a name + ZIP search (weaker, because the search used the NPPES ZIP).", "",
              "| Metric | Value |", "|---|---|"]
     lines += [f"| {k.replace('_', ' ')} | {metrics.get(k)} |" for k in HEADLINE]
     lines += ["", "## All run metrics", "", "| Metric | Value |", "|---|---|"]
     lines += [f"| {k.replace('_', ' ')} | {v} |" for k, v in metrics.items() if k not in HEADLINE]
     lines += ["", "## Provider rate file", "",
-              f"- `outputs/c6/provider_rate_file.xlsx`: {long_stats.get('rows', 0):,} rows across {len(sheets)} sheet(s) ({', '.join(f'{n:,}' for n in sheets)}), plus About and Summary sheets.",
-              "- `outputs/c6/provider_rate_file.parquet`: the same rows with every evidence column (address sources, confidence, coordinates, rate range, selection rule, HiLabs specialty, all service names).",
-              f"- Grain check: {long_stats.get('grain', {})}",
-              "", "Rows by address status (row-weighted; large multi-site organisations dominate):", ""]
+              f"- `outputs/c6/provider_rate_file.xlsx` and `.csv`: {long_stats.get('rows', 0):,} rows, one per NPI x TIN x address x billing code, with the columns NPI, TIN, Address, Billing Code, Specialty, Rate (Excel: {len(sheets)} sheet(s)).",
+              f"- Grain check: {long_stats.get('deliverable', {})}",
+              f"- `outputs/c6/provider_rate_detail.parquet`: {long_stats.get('detail_rows', 0):,} rows with every rate context and evidence column (address status and sources, associated code, place of service, selection rule, ...).",
+              "", "Detail rows by address status (row-weighted; large multi-site organisations dominate):", ""]
     lines += [f"- {k}: {v:,}" for k, v in (long_stats.get("rows_by_address_status") or {}).items()]
     path.write_text("\n".join(lines) + "\n")
 
@@ -262,41 +281,30 @@ def run(cfg):
     con.register("prov", attrs)
     rate_npis = con.execute("SELECT DISTINCT npi FROM rates").df()["npi"]
     con.register("npi_check", pd.DataFrame({"npi": rate_npis, "npi_valid": [rd.npi_is_valid(n) for n in rate_npis]}))
-    long_path = out / "provider_rate_file.parquet"
-    build_long(con, long_path)
-    q = f"read_parquet({sql_str(long_path)})"
+    detail_path = out / "provider_rate_detail.parquet"
+    build_long(con, detail_path)
+    q = f"read_parquet({sql_str(detail_path)})"
     grain = grain_check(con, q)
+    rate_path, csv_path = out / "provider_rate_file.parquet", out / "provider_rate_file.csv"
+    deliverable = build_deliverable(con, q, rate_path, csv_path)
     invalid_rows, invalid_tins = con.execute(f"SELECT count(*), count(DISTINCT tin) FROM {q} WHERE NOT npi_valid").fetchone()
     rows, verified, vc, npis, npis_spec = con.execute(f"""SELECT count(*), count(*) FILTER (WHERE address_status = 'verified'),
                                                       count(*) FILTER (WHERE address_status IN ('verified', 'corroborated')), count(DISTINCT npi),
                                                       count(DISTINCT npi) FILTER (WHERE specialty <> '') FROM {q} WHERE npi_valid""").fetchone()
     by_status = dict(con.execute(f"SELECT address_status, count(*) FROM {q} WHERE npi_valid GROUP BY 1 ORDER BY 2 DESC, 1").fetchall())
-    long_stats = {"rows": int(rows), "rows_verified": int(verified), "share_rows_verified": round(verified / rows, 4) if rows else None,
+    long_stats = {"rows": deliverable["rows"], "detail_rows": int(rows), "rows_verified": int(verified),
+                  "share_rows_verified": round(verified / rows, 4) if rows else None,
                   "share_rows_verified_or_corroborated": round(vc / rows, 4) if rows else None,
                   "npis": int(npis), "npis_with_specialty": int(npis_spec), "rows_by_address_status": {k: int(v) for k, v in by_status.items()},
-                  "rows_excluded_invalid_npi": int(invalid_rows), "tins_with_invalid_npi_rows": int(invalid_tins), "grain": grain}
-    metrics = summary_metrics(cfg, long_stats)
-    about = [("Centene CA commercial-group PPO provider rate file", ""),
-             ("Grain", "One row per NPI x TIN x practice address x billing code x rate context. The context (associated code, service, billing class, "
-                       "setting, place of service, modifier, arrangement) is shown in its own columns: each is a different service or contract term, so one "
-                       "NPI-TIN-address-code can have several rows, each with one rate. No two rows share every column (checked on each run)."),
-             ("Revenue-code rows", "Health Net repeats the same rate set under many item names for one revenue code. Those copies are one row here, "
-                                   "with the names listed in Service Name; the full list is in the Parquet file (service_names)."),
-             ("PPO filter", "The CA rate file is shared by every Health Net CA network. Rows with in-file HMO evidence (HMO-only TIN label, capitation) are left out; "
-                            "see outputs/c4/<file>/non_ppo_exclusions.csv. Network Label shows the remaining in-file evidence."),
-             ("Built on", f"Data as of {metrics.get('as_of_date')}; generated {date.today().isoformat()} by python -m src.run --stage c6"),
-             ("Sheets", "Rates 1..n hold the rows, split to stay under Excel's 1,048,576-row limit (a new sheet starts at an NPI boundary after 1,000,000 rows, or at the hard limit)"),
-             ("Excluded", f"{long_stats['rows_excluded_invalid_npi']} rows whose NPI fails the NPI check digit (NPI = 0 in the rate file) are left out here and kept in the Parquet file with npi_valid = false"),
-             ("Logic", "docs/logic_c1_c2.md (PPO network), docs/logic_c4.md (rate selection), docs/logic_c5.md (addresses), docs/logic_c6.md (this file)"),
-             ("", ""), ("Column", "Meaning")] + list(COLUMN_NOTES.items())
-    summary_rows = [("Metric", "Value")] + [(k.replace("_", " "), "" if v is None else str(v)) for k, v in metrics.items()]
+                  "rows_excluded_invalid_npi": int(invalid_rows), "tins_with_invalid_npi_rows": int(invalid_tins), "grain": grain,
+                  "deliverable": deliverable}
     xlsx_path = out / "provider_rate_file.xlsx"
-    sheets = write_excel(con, long_path, xlsx_path, int(c6.get("max_rows_per_sheet", 1_000_000)), about, summary_rows)
+    sheets = write_excel(con, rate_path, xlsx_path, int(c6.get("max_rows_per_sheet", 1_000_000)))
     con.close()
-    stats = {**long_stats, "excel_sheets": sheets, "excel_bytes": xlsx_path.stat().st_size, "parquet_bytes": long_path.stat().st_size,
-             "summary": metrics}
+    stats = {**long_stats, "excel_sheets": sheets, "excel_bytes": xlsx_path.stat().st_size, "csv_bytes": csv_path.stat().st_size,
+             "detail_parquet_bytes": detail_path.stat().st_size}
     write_json(stats, out / "c6_stats.json")
-    write_run_summary(cfg)
-    log.info("c6: %s rows (%s verified, %s verified or corroborated) in %d sheet(s); xlsx %.1f MB", f"{rows:,}", f"{verified:,}", f"{vc:,}",
-             len(sheets), xlsx_path.stat().st_size / 1e6)
+    stats["summary"] = write_run_summary(cfg)
+    log.info("c6: rate file %s rows (NPI x TIN x address x billing code) in %d sheet(s), xlsx %.1f MB; detail %s rows", f"{deliverable['rows']:,}",
+             len(sheets), xlsx_path.stat().st_size / 1e6, f"{rows:,}")
     return stats

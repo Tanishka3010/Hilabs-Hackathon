@@ -518,11 +518,17 @@ def run(cfg):
         directory_check_sample(prov, nppes, refs, c5).to_csv(check_path, index=False)
         log.info("c5: wrote %s for a manual Health Net directory spot check", check_path)
     directory_check = score_directory_check(pd.read_csv(check_path, dtype=str, keep_default_na=False))
-    addr_v = addr.set_index("address_id")["verification_strength"].to_dict() if len(addr) else {}
-    links["strength"] = links["address_id"].map(addr_v).fillna("")
+    # address_id is a hash of the address alone, so two NPIs at one building share it: look strengths up per (NPI, address)
+    strength = addr.set_index(["npi", "address_id"])["verification_strength"] if len(addr) else pd.Series(dtype=str)
+    links["strength"] = [strength.get((n, a), "") if isinstance(a, str) else "" for n, a in zip(links["npi"], links["address_id"])]
+    links["strength"] = links["strength"].fillna("")
+    per_pair = links.groupby(["tin", "npi"]).agg(strict=("strength", lambda s: (s == "strict").any()),
+                                                 linked=("strength", lambda s: s.isin(["strict", "corroborated"]).any()))
     tins = links.groupby("tin").agg(any_address=("address_id", lambda s: s.notna().any()),
                                     any_npi_verified=("strength", lambda s: s.isin(["strict", "corroborated"]).any()),
                                     any_npi_strict=("strength", lambda s: (s == "strict").any()))
+    depth = per_pair.groupby("tin").agg(all_npis_strict=("strict", "all"), all_npis_linked=("linked", "all"))
+    tins = tins.join(depth)
     tin_spec = links[links["tin_specific"] & links["strength"].isin(["strict", "corroborated"])].groupby("tin").size()
     tins["tin_specific_verified"] = tins.index.isin(tin_spec.index)
     pairs = links.groupby(["tin", "npi"]).agg(any_address=("address_id", lambda s: s.notna().any()), tin_specific=("tin_specific", "any"))
@@ -549,6 +555,9 @@ def run(cfg):
         "share_tins_verified": round(tins["any_npi_strict"].mean(), 4) if len(tins) else None,
         "share_tins_verified_or_corroborated": round(tins["any_npi_verified"].mean(), 4) if len(tins) else None,
         "share_tins_tin_specific_verified": round(tins["tin_specific_verified"].mean(), 4) if len(tins) else None,
+        "tins_all_npis_verified": int(tins["all_npis_strict"].sum()),
+        "share_tins_all_npis_verified": round(tins["all_npis_strict"].mean(), 4) if len(tins) else None,
+        "share_tins_all_npis_verified_or_corroborated": round(tins["all_npis_linked"].mean(), 4) if len(tins) else None,
         "npi_tin_pairs_with_tin_specific_address": int(pairs["tin_specific"].sum()),
         "link_evidence": links["link_evidence"].value_counts().to_dict(),
         "addresses_per_npi": prov["n_addresses"].describe().round(2).to_dict(),

@@ -38,19 +38,38 @@ def test_pair_addresses_keeps_all_verified_else_best():
 
 
 def test_excel_split_respects_row_limit(tmp_path, monkeypatch):
-    rows = pd.DataFrame([{**{c: "x" for c, _, _ in c6.EXCEL_COLUMNS}, "npi": npi, "rate": 10.5, "zip": "02134", "npi_valid": npi != 0}
-                         for npi in [1, 1, 1, 1, 1, 1, 2, 3, 3, 0]])
-    pq = tmp_path / "long.parquet"
+    rows = pd.DataFrame([{"npi": npi, "tin": "01-2", "address": "1 A St, LA, CA 90001", "billing_code": "0250", "specialty": "X", "rate": 10.5}
+                         for npi in [1, 1, 1, 1, 1, 1, 2, 3, 3]])
+    pq = tmp_path / "rates.parquet"
     rows.to_parquet(pq)
     monkeypatch.setattr(c6, "EXCEL_MAX_ROWS", 4)
-    con = duckdb.connect()
-    sheets = c6.write_excel(con, pq, tmp_path / "out.xlsx", 2, [("About", "")], [("Metric", "Value")])
+    sheets = c6.write_excel(duckdb.connect(), pq, tmp_path / "out.xlsx", 2)
     assert sheets == [4, 2, 3]
     wb = load_workbook(tmp_path / "out.xlsx", read_only=True)
-    assert wb.sheetnames == ["About", "Summary", "Rates 1", "Rates 2", "Rates 3"]
-    first = list(wb["Rates 1"].iter_rows(min_row=2, max_row=2, values_only=True))[0]
-    cols = [label for _, label, _ in c6.EXCEL_COLUMNS]
-    assert first[cols.index("ZIP")] == "02134" and first[cols.index("Rate")] == 10.5 and first[cols.index("NPI")] == 1
+    assert wb.sheetnames == ["Rates 1", "Rates 2", "Rates 3"]
+    head, first = list(wb["Rates 1"].iter_rows(min_row=1, max_row=2, values_only=True))
+    assert list(head) == ["NPI", "TIN", "Address", "Billing Code", "Specialty", "Rate"]
+    assert first == (1, "01-2", "1 A St, LA, CA 90001", "0250", "X", 10.5)
+
+
+def test_deliverable_has_one_row_per_npi_tin_address_code(tmp_path):
+    base = {"npi": 1, "tin": "9", "full_address": "1 A St, LA, CA 90001", "billing_code": "300", "specialty": "Lab", "npi_valid": True,
+            "negotiation_arrangement": "ffs", "associated_code": None, "billing_code_modifier": None}
+    detail = pd.DataFrame([
+        {**base, "rate": 100.0},                                   # base contract
+        {**base, "rate": 300.0},                                   # second base rate (e.g. another place of service)
+        {**base, "rate": 50.0, "associated_code": "36415"},        # not base: has an associated code
+        {**base, "billing_code": "301", "rate": 70.0, "billing_code_modifier": "26"},
+        {**base, "npi": 0, "npi_valid": False, "rate": 1.0},
+    ])
+    pq = tmp_path / "detail.parquet"
+    detail.to_parquet(pq)
+    con = duckdb.connect()
+    st = c6.build_deliverable(con, f"read_parquet('{pq}')", tmp_path / "rates.parquet", tmp_path / "rates.csv")
+    out = pd.read_csv(tmp_path / "rates.csv", dtype={"tin": str, "billing_code": str})
+    assert list(out.columns) == ["npi", "tin", "address", "billing_code", "specialty", "rate"]
+    assert out.set_index("billing_code")["rate"].to_dict() == {"300": 100.0, "301": 70.0}
+    assert st["rows"] == 2 and st["keys_with_several_context_rates"] == 1
 
 
 def test_grain_check_rejects_duplicate_rows(tmp_path):

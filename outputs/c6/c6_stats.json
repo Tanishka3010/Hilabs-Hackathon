@@ -1,7 +1,15 @@
 {
-  "excel_bytes": 38561368,
+  "csv_bytes": 3438230,
+  "deliverable": {
+    "duplicate_keys": 0,
+    "keys_with_several_context_rates": 4061,
+    "rows": 31981
+  },
+  "detail_parquet_bytes": 1932075,
+  "detail_rows": 474967,
+  "excel_bytes": 1154999,
   "excel_sheets": [
-    474967
+    31981
   ],
   "grain": {
     "duplicate_keys_on_full_grain": 0,
@@ -10,8 +18,7 @@
   },
   "npis": 3715,
   "npis_with_specialty": 3707,
-  "parquet_bytes": 1832838,
-  "rows": 474967,
+  "rows": 31981,
   "rows_by_address_status": {
     "corroborated": 104046,
     "deactivated_npi": 3,
@@ -24,40 +31,5 @@
   "rows_verified": 354711,
   "share_rows_verified": 0.7468,
   "share_rows_verified_or_corroborated": 0.9659,
-  "summary": {
-    "as_of_date": "2026-10-06",
-    "c7_cost_effective_providers": 190,
-    "c7_high_cost_providers": 165,
-    "c7_providers_scored": 685,
-    "contexts_with_several_rates": 1681,
-    "in_network_files_raw_to_unique": "40 -> 33",
-    "in_scope_ca_group_plans": 1312,
-    "index_file_quality": "2026-09-28_ambetter: B; 2026-09-28_fidelis: C; 2026-09-28_qualchoice_alf_plan: C; 2026-09-28_qualchoice_arnold_and_blevins: C; 2026-09-28_qualchoice_big_four: C; 2026-09-28_qualchoice_city_of_fort_smith: C; 2026-09-28_qualchoice_city_of_hot_springs: A; 2026-09-28_qualchoice_dillards: C; 2026-09-28_qualchoice: D; 2026-09-28_qualchoice_jv_manufacturing: C; 2026-09-30_healthnet: A",
-    "index_files_parsed": 11,
-    "npi_tin_pairs": 3761,
-    "npis_excluded_non_ppo_evidence": 91,
-    "npis_with_corroborated_address": 537,
-    "npis_with_verified_address": 1610,
-    "ppo_plans": 456,
-    "ppo_rate_files": 1,
-    "prices_extracted": 1500288,
-    "rate_file_npis": 3715,
-    "rate_file_npis_with_specialty": 3707,
-    "rate_file_quality": "5bf4afa2cef9bc2a: 0.765 (C)",
-    "rate_file_rows_npi_tin_address_code": 474967,
-    "rate_rows_excluded_invalid_npi": 5,
-    "row_weighted_share_verified_or_corroborated": 0.9659,
-    "selected_rates_npi_tin_code_context": 271053,
-    "share_npis_verified_address": 0.4333,
-    "share_npis_verified_or_corroborated_address": 0.5778,
-    "share_tins_verified_address": 0.4323,
-    "share_tins_verified_or_corroborated_address": 0.5144,
-    "share_tins_with_tin_specific_verified_address": 0.048,
-    "tins_with_tin_specific_verified_address": 138,
-    "tins_with_verified_address": 1242,
-    "unique_npis": 3716,
-    "unique_plans": 3270,
-    "unique_tins": 2873
-  },
   "tins_with_invalid_npi_rows": 5
 }

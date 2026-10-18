@@ -4,7 +4,7 @@
 - **3,708 have a candidate address**;
 - **1,610 NPIs (43.3%) have a verified address**: two sources linked to the NPI by an identifier (NPI, EIN, PAC ID or licence number) agree, or California's licence register lists it. That is 349 individual clinicians and 1,261 organisations;
 - **another 537 (14.5%) have a corroborated address**: NPPES agrees with a site found by an organisation-name + ZIP search. That brings **verified or corroborated to 57.8%**;
-- **1,242 TINs (43.2%) have a verified address, and 1,478 (51.4%) a verified or corroborated one**. 138 TINs (4.8%) have a verified address tied to that TIN specifically;
+- **1,414 TINs (49.2%) are linked to a verified address** through at least one of their NPIs, and 57.8% to a verified or corroborated one. A stricter depth measure: 44.9% of TINs have every one of their NPIs verified;
 - **3,471 best addresses (93%) are confirmed to exist** by the US Census geocoder, which also gives coordinates and county;
 - **878 of 3,761 NPI–TIN pairs (23%)** have evidence tying the address to that specific TIN.
 
@@ -17,7 +17,7 @@ Ten sources are combined and scored. 1,226 NPIs (33%) still have a best address 
 | CMS Public Provider Enrollment File (PPEF) | Maps an organisation's NPI to its PECOS PAC ID. That turned the DAC group-practice sites from name + ZIP guesses into identifier links: 11,565 candidate sites. Most corroborated organisations became verified |
 | CA Department of Consumer Affairs licensee lists (Behavioral Sciences, Medical Board) | Joined through the licence numbers NPPES carries: 396 candidates for clinicians outside Medicare, such as therapists, counsellors and physicians |
 
-Together they moved verified NPIs from 661 (17.8%) to 1,610 (43.3%), and verified TINs from 510 to 1,242.
+Together they moved verified NPIs from 661 (17.8%) to 1,610 (43.3%).
 
 **Why two levels of verification.** A name + ZIP match (DAC group practices, CLIA sites, CDPH facilities without an NPI) is searched for in the ZIP codes NPPES gives for the NPI. When such a site then "agrees" with NPPES, the two sources are not fully independent: the search started from NPPES. Those addresses are reported as *corroborated*, kept in the rate file, and counted separately from *verified*.
 
@@ -179,9 +179,10 @@ For each pair (`tin_npi_address.csv`), the NPI's addresses are re-ranked so **ad
 | `npi_address_only` | No other evidence; the NPI's own ranking applies | no | 2,821 |
 
 Rows can carry several kinds of evidence. **673 of 3,761 pairs (18%)** have at least one TIN-specific item. TIN-level figures in `c5_stats.json`:
-- `tins_with_verified_address`: any NPI under the TIN has a verified address;
+- `tins_with_verified_address`: any NPI under the TIN has a verified address (strengths are looked up per NPI and address, because one building's `address_id` is shared by every NPI there);
+- `share_tins_all_npis_verified`: every NPI under the TIN has a verified address;
 - `tins_with_verified_or_corroborated_address`: the same, including corroborated;
-- `tins_with_tin_specific_verified_address`: the verified or corroborated address also carries TIN-specific evidence.
+- `tins_with_tin_specific_verified_address`: the verified or corroborated address also carries TIN-specific evidence. This is used to rank a pair's addresses, not as a coverage figure.
 
 ## 6. Outputs (`outputs/c5/`)
 

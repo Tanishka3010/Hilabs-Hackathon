@@ -10,7 +10,7 @@ A reproducible pipeline over Centene's Transparency-in-Coverage (TiC) files. Sco
 | `c4` | Downloads each PPO rate file to `raw/ptd/` (resumable, retried; plain or gzip JSON), streams it into rate tables (files in parallel), collapses rates the file repeats under many service names, drops rows with in-file HMO evidence, then keeps one rate per provider context with a documented selection rule | `outputs/c4/<file_key>/rates_selected.parquet`, `rates.parquet`, `provider_refs.parquet`, `non_ppo_exclusions.csv`, `selection_summary.csv`, `c4_stats.json` |
 | `c3` | Grades every file used: 14 quality metrics per rate file, 5 per index file, with a weighted score and grade (files graded in parallel) | `outputs/c3/file_scores.csv`, `metric_values.csv`, `metric_details.json`, `index_file_scores.csv`, `c3_stats.json` |
 | `c5` | Maps every NPI and TIN to scored candidate addresses from 10 sources (CA licensed-facility register, CMS DAC, DAC group practices by name and by PAC ID via CMS PPEF, CMS POS CLIA sites, CA DCA licence boards, NPPES primary and secondary, IRS nonprofits), grades each as verified / corroborated / unverified, and links TIN → NPI → address | `outputs/c5/provider_locations.csv`, `npi_addresses.csv`, `tin_npi_address.csv`, `c5_stats.json` |
-| `c6` | Builds the provider rate file: one row per NPI × TIN × address × billing code × rate context, with specialty and rate (Excel + Parquet), checks the grain, and writes the run summary | `outputs/c6/provider_rate_file.xlsx`, `provider_rate_file.parquet`, `outputs/SUMMARY.md`, `outputs/summary.json` |
+| `c6` | Builds the provider rate file: one row per NPI × TIN × address × billing code with columns NPI, TIN, Address, Billing Code, Specialty, Rate (Excel, CSV, Parquet), plus a detail file with every rate context; checks both grains and writes the run summary | `outputs/c6/provider_rate_file.xlsx`, `.csv`, `.parquet`, `provider_rate_detail.parquet`, `outputs/SUMMARY.md`, `outputs/summary.json` |
 | `c7` | Cost effectiveness: compares each provider's rates with similar providers (same service, same specialty or facility type, same county) | `outputs/c7/provider_cost_effectiveness.csv`, `service_comparisons.parquet`, `c7_stats.json` |
 | `ui` | One self-contained HTML page with an executive view and an analyst view | `outputs/ui/index.html` |
 
@@ -107,10 +107,10 @@ Re-running overwrites every output deterministically: rows are sorted on full ke
 - **C5:** 3,708 of 3,716 NPIs have a candidate address.
     - **1,610 NPIs (43.3%) have a verified address** (two identifier-linked sources agree, or the CA licence register).
     - **2,147 (57.8%) are verified or corroborated** (corroborated: NPPES plus a name + ZIP site).
-    - TINs: 43.2% verified, 51.4% verified or corroborated.
+    - TINs (through their NPIs): 49.2% verified, 57.8% verified or corroborated; 44.9% have every NPI verified.
     - The CMS PPEF (NPI → PAC ID → DAC group sites) and the CA DCA licence lists added 949 verified NPIs.
     - 93% of best addresses are confirmed by the US Census geocoder. See [docs/logic_c5.md](docs/logic_c5.md).
-- **C6:** `outputs/c6/provider_rate_file.xlsx` has 474,967 rows in one sheet (39 MB; NPI × TIN × address × billing code × rate context, with specialty and rate). Every run checks that no two rows share the full grain. The xlsx is git-ignored; rebuild it with `--stage c6`. The Parquet copy is committed.
+- **C6:** the rate file has **31,981 rows, one per NPI × TIN × address × billing code**, with exactly the columns NPI, TIN, Address, Billing Code, Specialty, Rate: `outputs/c6/provider_rate_file.xlsx`, `.csv` and `.parquet`. Every rate context and its evidence is in `provider_rate_detail.parquet` (474,967 rows). Every run checks both grains.
 - **C7:** 685 providers have enough comparable services to be labelled: 192 cost effective, 334 in line, 159 high cost. See [docs/logic_c7.md](docs/logic_c7.md).
 - **UI:** `outputs/ui/index.html`, with an executive view (funnel, file grade, linkage, cost mix) and an analyst view (searchable provider table with drill-down to services).
 

@@ -20,7 +20,7 @@ SERVICE_COLS = ["billing_code_type", "billing_code", "associated_code", "service
 
 
 def provider_services(cfg):
-    p = cfg["output_dir"] / "c6" / "provider_rate_file.parquet"
+    p = cfg["output_dir"] / "c6" / "provider_rate_detail.parquet"
     con = duck(cfg)
     cols = ", ".join(f"coalesce(CAST({c} AS VARCHAR), '') AS {c}" for c in SERVICE_COLS)
     df = con.execute(f"""
@@ -113,8 +113,8 @@ def run(cfg):
     c7 = cfg.get("c7") or {}
     out = cfg["output_dir"] / "c7"
     out.mkdir(parents=True, exist_ok=True)
-    if not (cfg["output_dir"] / "c6" / "provider_rate_file.parquet").exists():
-        log.warning("c7: needs outputs/c6/provider_rate_file.parquet; run c6 first")
+    if not (cfg["output_dir"] / "c6" / "provider_rate_detail.parquet").exists():
+        log.warning("c7: needs outputs/c6/provider_rate_detail.parquet; run c6 first")
         return {}
     services = provider_services(cfg)
     nucc = rd.load_nucc(cfg).set_index("taxonomy_code")["classification"]

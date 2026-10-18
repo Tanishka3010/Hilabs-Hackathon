@@ -1,22 +1,24 @@
 # C6: the provider rate file
 
-**Result.** `outputs/c6/provider_rate_file.xlsx` holds **474,967 rows** in one sheet (39 MB). There is one row per NPI × TIN × practice address × billing code × rate context. The columns the brief asks for (NPI, TIN, Address, Billing Code, Specialty, Rate) come first, and the context that makes each row unique is in its own columns.
-- 3,715 NPIs and 2,873 TINs; 3,707 NPIs have a specialty (their **primary** NPPES taxonomy).
-- **Address status by NPI** (the headline, from C5):
-    - 43.3% have a verified address;
-    - 57.8% are verified or corroborated.
+**Result.** The rate file (deliverable 1) has **31,981 rows, one per NPI × TIN × address × billing code**, with exactly the columns the brief asks for: **NPI, TIN, Address, Billing Code, Specialty, Rate**. It is written three ways:
+- `outputs/c6/provider_rate_file.xlsx` (1.2 MB, one sheet);
+- `outputs/c6/provider_rate_file.csv`;
+- `outputs/c6/provider_rate_file.parquet`.
 
-  Most rows belong to large multi-site organisations, so the row shares are much higher (75% verified, 97% verified or corroborated). The run summary therefore leads with the NPI and TIN shares.
+Every run checks that no two rows share NPI, TIN, address and billing code.
 
-`outputs/SUMMARY.md` (and `summary.json`) is deliverable 4, the high-level metrics from the whole run.
+The full detail stays in `outputs/c6/provider_rate_detail.parquet` (474,967 rows). It holds every rate context (associated code, place of service, modifier, setting, arrangement) and the evidence behind each row (address status and sources, selection rule, service names, HiLabs specialty). C7 and the UI read it.
+
+- 3,715 NPIs and 2,873 TINs; specialty is the NUCC name of each NPI's **primary** NPPES taxonomy.
+- **Address status** (from C5): 43.3% of NPIs have a verified address and 57.8% a verified or corroborated one. For TINs (linked through their NPIs) it is 49.2% and 57.8%, and 44.9% of TINs have every one of their NPIs verified.
+
+`outputs/SUMMARY.md` (and `summary.json`) is deliverable 4.
 
 Reproduce (needs C4 and C5 outputs):
 
 ```bash
 .venv/bin/python -m src.run --stage c6
 ```
-
-It takes about 20 s.
 
 ## 1. How a row is built
 
@@ -39,63 +41,39 @@ All three joins run in DuckDB (with a memory cap and a spill directory) and stre
     Within a pair, addresses with TIN-specific evidence rank first: the IRS address of the EIN, a DAC group practice matching the TIN name, or another NPI under the same TIN reporting the same address.
 3. **Specialty.** The NUCC display name of the NPI's **primary** taxonomy: the slot whose primary switch is Y, not slot 1. For 607 NPIs these differ.
 
-## 2. The grain, and why one NPI-TIN-address-code can have several rows
+## 2. The grain: one rate per NPI × TIN × address × billing code
 
-The brief's grain is NPI × TIN × address × billing code. In this file one billing code can carry several distinct prices for the same provider, and each is a different service or contract term:
-- **Revenue codes** are priced per associated code (the `additional_information` code Health Net publishes), so RC 300 has one rate with `36415` and another without;
-- **billing class** (professional vs institutional), **setting**, **place of service**, **modifier** (e.g. 26/TC) and **arrangement** each change the price.
+In the detail file one billing code can carry several rates for the same provider. Each is a different service or contract term:
+- **revenue codes** are priced per associated code (the `additional_information` code Health Net publishes);
+- **place of service**, **modifier**, **setting** and **arrangement** each change the price.
 
-So each of these has its own Excel column, and a row is unique on NPI, TIN, address, billing code type, billing code, associated code, service, billing class, setting, place of service, modifier and arrangement.
+The brief asks for one row per NPI, TIN, address and billing code, so one rate is kept per key by a fixed rule:
+1. **Prefer the base contract:** fee-for-service, no associated code, no modifier. These are the terms that apply when nothing special is billed.
+2. **Among the rates left, keep the lower median:** position ⌈n/2⌉ of the sorted distinct rates. This is the same tie rule as C4. It is a real published rate and never systematically the highest or lowest.
 
-**Grain check.** C6 checks this on every run and fails if any two rows share every key column. The counts are in `c6_stats.json` → `grain`:
+4,061 of the 31,981 keys had more than one rate before this step; every one of those rates is still in the detail file. The grain check runs on both files: the rate file must be unique on (NPI, TIN, address, billing code), and the detail file on its full context.
 
-| Count | Value |
-|---|---|
-| Duplicate keys on the full grain | 0 |
-| (NPI, TIN, address, code) keys with several context rows | 7,758 |
-
-**Collapsed service names.** When Health Net repeats one rate set under many item names for a revenue code, the rows are collapsed to one row with `Service Name` = "N services: name | name …". The full list is in the Parquet file (`service_names`).
+**Address.** The full practice address, "street, suite, city, state ZIP". A pair gets every verified or corroborated address it has (a provider can work at several sites), otherwise its best candidate; a pair with no address keeps a blank Address.
 
 ## 3. Columns
 
-| Excel column | Meaning |
+| Column | Meaning |
 |---|---|
-| NPI, TIN | From the PPO rate file's provider groups |
-| Provider Name | NPPES organisation name (Type 2), or first + last name (Type 1) |
-| Address, City, State, ZIP | Practice address for this TIN–NPI pair (C5) |
-| Address Status | `verified`, `corroborated`, `unverified`, `out_of_state`, `deactivated_npi` or `no_address` (defined in `logic_c5.md` §4) |
-| Billing Code Type, Billing Code | As published: CPT, HCPCS or RC (revenue code) |
-| Procedure Code | CPT/HCPCS that identifies the service: the billing code itself, or an associated code whose name matches the item |
-| Associated Code | RC rows: the CPT/HCPCS-shaped `additional_information`, as published (usually not the item's own service) |
-| Service Name | The item name, or "N services: …" for collapsed copies |
-| Billing Class, Setting, Place of Service, Modifier, Arrangement | The rate context kept apart in C4 |
-| Network Label | In-file network evidence: `ppo_label`, `other_label`, `unlabelled` (HMO-labelled and capitation rows are excluded) |
-| Specialty | NUCC display name of the primary taxonomy |
-| Rate, Rate Type | The selected rate and its type |
+| NPI | From the PPO rate file's provider groups |
+| TIN | The Tax ID the NPI bills under in the rate file |
+| Address | Practice address for this TIN–NPI pair (C5) |
+| Billing Code | As published: CPT, HCPCS or revenue code |
+| Specialty | NUCC display name of the NPI's primary taxonomy |
+| Rate | The rate kept for this key (§2), from the C4 selection |
 
-The **Parquet file** adds:
-- address evidence: `address_confidence`, `address_sources`, `verification_basis`, `link_evidence`, `pair_rank`, county, latitude, longitude;
-- rate evidence: `rate_min`, `rate_max`, `n_candidate_rows`, `n_distinct_rates`, `selection_rule`;
-- `service_names`, `n_service_names`, `description`;
-- `hilabs_spec_cd`, `hilabs_specialty`, `network_hint`, `network_label`, `npi_valid`.
+Everything else (address status, sources, associated code, place of service, rate type, selection rule) is in `provider_rate_detail.parquet`.
 
-## 4. Rows by address status
+## 4. Rows left out
 
-| Status | Rows |
-|---|---|
-| verified | 354,711 |
-| corroborated | 104,046 |
-| unverified | 15,259 |
-| out_of_state | 902 |
-| no_address | 46 |
-| deactivated_npi | 3 |
-
-**Rows left out:** 5 rows whose NPI is 0 (TIN-only contracts in the rate file; they fail the NPI check digit) aren't in the Excel file. They're kept in the Parquet file with `npi_valid = false`.
+5 detail rows whose NPI is 0 (TIN-only contracts in the rate file) fail the NPI check digit. They are left out of the rate file and kept in the detail file with `npi_valid = false`.
 
 ## 5. Sheets
-- **About:** grain, the revenue-code collapse, the PPO filter, sources, exclusions, and what each column means.
-- **Summary:** the same metrics as `outputs/SUMMARY.md`.
-- **Rates 1 … n:** the rows. A new sheet starts at an NPI boundary once a sheet passes 1,000,000 rows, or at Excel's hard limit. This run fits in one sheet.
+The Excel workbook holds only the rate rows (`Rates 1 … n`). A new sheet starts at an NPI boundary once a sheet passes 1,000,000 rows, or at Excel's hard limit; this run fits in one sheet.
 
 ## 6. Limitations
 - **PPO carve-out is partial** (`logic_c4.md` §1).
