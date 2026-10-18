@@ -78,7 +78,7 @@ Build the rate file and the run summary, then the cost-effectiveness metrics and
 Open `outputs/ui/index.html` in a browser (no server needed).
 
 Useful options:
-- `--index-dir`, `--output-dir`, `--nppes-dir`, `--ptd-dir`, `--reference-dir` override the config paths.
+- `--index-dir`, `--output-dir`, `--nppes-dir`, `--ptd-dir`, `--reference-dir`, `--sources-dir` override the config paths (relative paths are read from the repo root; absolute paths work too).
 - `--workers N` sets the number of parallel processes (index files, rate files and file grading run in parallel).
 - `--probe-mb 0` turns off the recon probe. By default the probe streams the first 40 MB of the CA in-network file to check for network markers, so it needs internet access; if the file can't be reached, the report says so.
 

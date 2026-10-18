@@ -1,5 +1,5 @@
 import json
-from datetime import date
+from datetime import date, datetime
 
 import pandas as pd
 import xlsxwriter
@@ -145,9 +145,11 @@ def grain_check(con, q):
             "rows_sharing_npi_tin_address_code": int(base[1])}
 
 
-def write_excel(con, parquet_path, xlsx_path, max_rows):
-    """The rate file as Excel: only the six required columns, split into sheets under Excel's row limit."""
+def write_excel(con, parquet_path, xlsx_path, max_rows, created=None):
+    """The rate file as Excel: only the six required columns, split into sheets under Excel's row limit.
+    The workbook's created date is pinned (to the data's as-of date) so a rerun writes an identical file."""
     wb = xlsxwriter.Workbook(str(xlsx_path), {"constant_memory": True, "strings_to_numbers": False, "strings_to_urls": False})
+    wb.set_properties({"created": created or datetime(2000, 1, 1)})
     bold = wb.add_format({"bold": True, "bg_color": "#DDEBF7", "border": 1})
     money = wb.add_format({"num_format": "#,##0.00"})
     text = wb.add_format({"num_format": "@"})
@@ -299,7 +301,8 @@ def run(cfg):
                   "rows_excluded_invalid_npi": int(invalid_rows), "tins_with_invalid_npi_rows": int(invalid_tins), "grain": grain,
                   "deliverable": deliverable}
     xlsx_path = out / "provider_rate_file.xlsx"
-    sheets = write_excel(con, rate_path, xlsx_path, int(c6.get("max_rows_per_sheet", 1_000_000)))
+    as_of = (load_stats(cfg, "c4/c4_stats.json").get("as_of_date") or "2000-01-01")[:10]
+    sheets = write_excel(con, rate_path, xlsx_path, int(c6.get("max_rows_per_sheet", 1_000_000)), datetime.fromisoformat(as_of))
     con.close()
     stats = {**long_stats, "excel_sheets": sheets, "excel_bytes": xlsx_path.stat().st_size, "csv_bytes": csv_path.stat().st_size,
              "detail_parquet_bytes": detail_path.stat().st_size}

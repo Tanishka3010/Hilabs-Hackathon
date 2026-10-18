@@ -47,7 +47,7 @@ Scoring weights (logic and metrics track): Logic 40, Metrics 35, Structure 25. E
 
 ## 2. Environment and how to run
 
-- **Repo:** `https://github.com/Tanishka3010/Hilabs-Hackathon`. The local clone is `/Users/tanishka/Hilabs-Hackathon` (macOS, Python 3.14 in `.venv`).
+- **Repo:** `https://github.com/Tanishka3010/Hilabs-Hackathon`. Work in any local clone; all paths are relative to the repo root (developed on macOS with Python 3.14 in `.venv`).
 - **Setup:**
   ```bash
   python3 -m venv .venv

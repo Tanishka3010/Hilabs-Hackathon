@@ -6,7 +6,7 @@
 - Per stage (scratch, warm caches): c4 3.1 s / 4.17 GB peak (extract reused; fresh extract ≈ 8 s / 430 MB per raw/extract_log.txt and my run), c3 1.0 s / 1.24 GB, c5 15.9 s / 0.49 GB, c6 60.5 s / 3.34 GB.
 - Rerun vs committed outputs: identical for c1, c2 plans, c3 scores, c5 address/link CSVs, c6 parquet (DataFrame.equals True). Differences: rates_selected row order + `provider_group_ids` string_agg order (264,958 rows; rates identical by set-compare), metric_details top-N tie order, ppo_files/file_classification (committed copy has fp_* fingerprint columns from `--fingerprint`), directory_check_sample regenerated blank in fresh dir.
 
-## Independent rate re-derivation (scratchpad/verify_rates.py, no project imports)
+## Independent rate re-derivation (a standalone script outside the repo, no project imports)
 20 stratified rows (6 Type 1, 6 Type 2 with conflicts, 4 RC+procedure code, 4 multi-address pairs), re-parsed from raw JSON with ijson and the documented rule → **20/20 match**.
 
 ## Plan→file chain: 5 random PPO plans

@@ -49,6 +49,7 @@ def main(argv=None):
     ap.add_argument("--ptd-dir")
     ap.add_argument("--reference-dir")
     ap.add_argument("--output-dir")
+    ap.add_argument("--sources-dir", help="folder with the C5 source files (default: c5.sources_dir in config/stages/c5.yaml)")
     ap.add_argument("--workers", type=int)
     ap.add_argument("--probe-mb", type=float)
     ap.add_argument("--fingerprint", action="store_true")
@@ -56,6 +57,8 @@ def main(argv=None):
     setup_logging()
     cfg = load_config(a.config, {"index_dir": a.index_dir, "nppes_dir": a.nppes_dir, "ptd_dir": a.ptd_dir, "reference_dir": a.reference_dir,
                                  "output_dir": a.output_dir, "workers": a.workers})
+    if a.sources_dir:
+        cfg.setdefault("c5", {})["sources_dir"] = a.sources_dir
     if a.probe_mb is not None:
         cfg.setdefault("recon", {})["probe_mb"] = a.probe_mb
     stats = {}
