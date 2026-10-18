@@ -91,6 +91,23 @@ def facility_candidates(fac, nppes, pl, npis, c5):
     return pd.concat([by_npi.reindex(columns=CANDIDATE_COLS), by_name.reindex(columns=CANDIDATE_COLS)], ignore_index=True)
 
 
+def dac_group_candidates(dac_state, nppes, pl, c5):
+    if dac_state is None or not len(dac_state) or not len(nppes):
+        return pd.DataFrame(columns=CANDIDATE_COLS)
+    orgs = nppes[nppes["entity_type"] == "2"][["npi", "org_name", "zip"]]
+    zips = pd.concat([orgs[["npi", "zip"]], pl[pl["npi"].isin(set(orgs["npi"]))][["npi", "zip"]]]).assign(zip=lambda d: d["zip"].map(clean).str[:5])
+    zips = zips[zips["zip"] != ""].drop_duplicates().merge(orgs[["npi", "org_name"]], on="npi")
+    groups = dac_state.assign(zip=dac_state["zip"].map(clean).str[:5], facility_name=dac_state["facility_name"].map(clean))
+    groups = groups[groups["facility_name"] != ""].drop_duplicates(["facility_name", "address_line1", "address_line2", "zip"])
+    m = zips.merge(groups.drop(columns=["npi"]), on="zip")
+    if not len(m):
+        return pd.DataFrame(columns=CANDIDATE_COLS)
+    thr = float(c5["facility_name_match_threshold"])
+    m["sim"] = [name_similarity(o, f, place_words(city)) for o, f, city in zip(m["org_name"], m["facility_name"], m["city"])]
+    m = m[m["sim"] >= thr]
+    return m.assign(source="dac_group", source_name=m["facility_name"], source_date=pd.NaT).reindex(columns=CANDIDATE_COLS)
+
+
 def irs_candidates(irs, refs):
     if irs is None or not len(irs):
         return pd.DataFrame(columns=CANDIDATE_COLS)
@@ -261,7 +278,12 @@ def run(cfg):
     except FileNotFoundError as e:
         log.warning("c5: IRS EO file unavailable (%s)", e)
         irs = None
-    extra = [facility_candidates(fac, nppes, pl, npis, c5), irs_candidates(irs, refs)]
+    try:
+        dac_state = rd.load_dac(cfg, states=[c5["target_state"]])
+    except FileNotFoundError as e:
+        log.warning("c5: DAC state file unavailable for group matching (%s)", e)
+        dac_state = None
+    extra = [facility_candidates(fac, nppes, pl, npis, c5), irs_candidates(irs, refs), dac_group_candidates(dac_state, nppes, pl, c5)]
     cand = build_candidates(nppes, pl, dac, extra)
     addr = score_addresses(cand, nppes, c5, as_of)
     prov = provider_summary(npis, addr, nppes, c5)

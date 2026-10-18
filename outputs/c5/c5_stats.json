@@ -1,20 +1,21 @@
 {
-  "address_candidates": 6901,
+  "address_candidates": 11475,
   "addresses_per_npi": {
     "25%": 1.0,
     "50%": 1.0,
-    "75%": 1.0,
+    "75%": 2.0,
     "count": 3735.0,
     "max": 115.0,
-    "mean": 1.59,
+    "mean": 2.07,
     "min": 0.0,
-    "std": 3.12
+    "std": 3.77
   },
   "as_of_date": "2026-10-06",
   "candidates_by_source": {
     "ca_facility": 561,
     "ca_facility_name_zip": 81,
     "dac": 498,
+    "dac_group": 4574,
     "irs_eo": 372,
     "nppes_primary": 3726,
     "nppes_secondary": 1663
@@ -37,6 +38,7 @@
       "ca_facility": "ca_cdph",
       "ca_facility_name_zip": "ca_cdph",
       "dac": "cms_dac",
+      "dac_group": "cms_dac",
       "irs_eo": "irs",
       "nppes_primary": "nppes",
       "nppes_secondary": "nppes"
@@ -45,25 +47,26 @@
       "ca_facility": 0.8,
       "ca_facility_name_zip": 0.6,
       "dac": 0.7,
+      "dac_group": 0.6,
       "irs_eo": 0.4,
       "nppes_primary": 0.5,
       "nppes_secondary": 0.4
     }
   },
-  "distinct_npi_addresses": 5924,
+  "distinct_npi_addresses": 7730,
   "link_evidence": {
     "dac_group_name_matches_tin": 4,
     "dac_group_name_matches_tin+irs_address_for_tin+verified_address": 1,
     "dac_group_name_matches_tin+verified_address": 6,
-    "irs_address_for_tin": 195,
-    "irs_address_for_tin+nppes_org_name_matches_tin": 97,
-    "irs_address_for_tin+nppes_org_name_matches_tin+verified_address": 50,
-    "irs_address_for_tin+verified_address": 29,
+    "irs_address_for_tin": 193,
+    "irs_address_for_tin+nppes_org_name_matches_tin": 90,
+    "irs_address_for_tin+nppes_org_name_matches_tin+verified_address": 57,
+    "irs_address_for_tin+verified_address": 31,
     "no_address": 12,
-    "npi_address_only": 3586,
-    "nppes_org_name_matches_tin": 1588,
-    "nppes_org_name_matches_tin+verified_address": 233,
-    "verified_address": 460
+    "npi_address_only": 3932,
+    "nppes_org_name_matches_tin": 1450,
+    "nppes_org_name_matches_tin+verified_address": 799,
+    "verified_address": 1548
   },
   "npi_tin_pairs": 3780,
   "npi_tin_pairs_with_tin_specific_address": 1564,
@@ -72,18 +75,18 @@
     "deactivated_npi": 7,
     "no_address": 2,
     "out_of_state_only": 114,
-    "unverified_multiple_candidates": 570,
-    "unverified_single_source": 2344,
-    "verified": 698
+    "unverified_multiple_candidates": 407,
+    "unverified_single_source": 1486,
+    "verified": 1719
   },
   "npis_with_any_address": 3727,
   "npis_with_in_state_address": 3613,
-  "npis_with_verified_address": 698,
-  "share_npis_verified": 0.1869,
-  "share_tins_verified": 0.1891,
+  "npis_with_verified_address": 1719,
+  "share_npis_verified": 0.4602,
+  "share_tins_verified": 0.4446,
   "tins": 2888,
   "tins_with_any_address": 2885,
-  "tins_with_verified_address": 546,
+  "tins_with_verified_address": 1284,
   "verified_by_entity_type": {
     "": {
       "count": 2,
@@ -95,11 +98,11 @@
     },
     "2": {
       "count": 3054,
-      "sum": 479
+      "sum": 1500
     }
   },
   "verified_npis_by_basis": {
-    "state_license_register": 35,
-    "two_independent_sources": 663
+    "state_license_register": 32,
+    "two_independent_sources": 1687
   }
 }

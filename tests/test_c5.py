@@ -166,3 +166,27 @@ def test_place_names_do_not_make_a_name_match():
     drop = c5m.place_words("SANTA MARIA", "SANTA BARBARA")
     assert c5m.name_similarity("THE ENDOSCOPY CENTER OF SANTA MARIA LLC", "SANTA MARIA HEALTH CENTER", drop) == 0.0
     assert c5m.name_similarity("KAISER FOUNDATION HOSPITALS", "KAISER FOUNDATION HOSPITAL - FREMONT", c5m.place_words("FREMONT")) == 1.0
+
+
+def test_dac_group_practice_confirms_organisation_address():
+    nppes = pd.DataFrame([
+        {"npi": 8, "entity_type": "2", "org_name": "RIPON FAMILY PHYSICIANS", "first_name": "", "last_name": "", "address_line1": "521 N Wilma Ave",
+         "address_line2": "", "city": "Ripon", "state": "CA", "zip": "95366", "last_update_date": pd.Timestamp("2016-01-01"),
+         "nppes_status": "active", "taxonomy_code": "261QP2300X"},
+        {"npi": 9, "entity_type": "2", "org_name": "MODESTO HEART CENTER", "first_name": "", "last_name": "", "address_line1": "1 Main St",
+         "address_line2": "", "city": "Modesto", "state": "CA", "zip": "95350", "last_update_date": pd.Timestamp("2016-01-01"),
+         "nppes_status": "active", "taxonomy_code": "261QP2300X"},
+    ])
+    dac_state = pd.DataFrame([
+        {"npi": 100, "facility_name": "RIPON FAMILY PHYSICIANS INC", "address_line1": "521 NORTH WILMA AVENUE", "address_line2": "", "city": "RIPON",
+         "state": "CA", "zip": "953661234"},
+        {"npi": 101, "facility_name": "RIPON FAMILY PHYSICIANS", "address_line1": "9 Far Rd", "address_line2": "", "city": "FRESNO", "state": "CA", "zip": "93701"},
+        {"npi": 102, "facility_name": "MODESTO HEALTH CENTER", "address_line1": "1 MAIN ST", "address_line2": "", "city": "MODESTO", "state": "CA", "zip": "95350"},
+    ])
+    pl = pd.DataFrame(columns=["npi", "zip"])
+    grp = c5m.dac_group_candidates(dac_state, nppes, pl, C5)
+    assert grp["npi"].tolist() == [8] and grp["source"].tolist() == ["dac_group"]
+    addr = c5m.score_addresses(c5m.build_candidates(nppes, pl, pd.DataFrame(), [grp]), nppes, C5, AS_OF)
+    best = addr[addr["rank"] == 1].set_index("npi")
+    assert best.loc[8, "verified"] and best.loc[8, "sources"] == "dac_group|nppes_primary"
+    assert not best.loc[9, "verified"]

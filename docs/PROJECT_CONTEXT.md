@@ -28,7 +28,7 @@ Provider types: Type 1 (individual) and Type 2 (organisation) NPIs.
 | C2 | Identify the PPO plans and rate files; explain how HMO, EPO and POS were ruled out | **Done**, organizer answers applied |
 | C3 | Define PTD quality and completeness metrics, score every file used, justify each metric | **Done**: 13 rate-file metrics and 5 index-file metrics |
 | C4 | Extract rates for every PPO provider; when a provider has several rates for one code, say which is kept and why | **Done** |
-| C5 | Map TINs and NPIs to their practising address, without relying on NPPES alone | **Done**: 6 sources; 698 NPIs (18.7%) and 546 TINs (18.9%) verified; 41% of NPI–TIN pairs have TIN-specific evidence |
+| C5 | Map TINs and NPIs to their practising address, without relying on NPPES alone | **Done**: 7 sources; 1,719 NPIs (46.0%) and 1,284 TINs (44.5%) verified; 41% of NPI–TIN pairs have TIN-specific evidence |
 | C6 | Build the provider rate file (NPI, TIN, address, billing code, specialty, rate), as Excel | Not started |
 | C7 (optional) | Cost-effectiveness metrics vs similar providers | Not started |
 
@@ -260,7 +260,8 @@ Full logic: [logic_c5.md](logic_c5.md).
 |---|---|---|---|
 | CA licensed-facility list, by NPI | 0.8 | `ca_cdph` | **High trust: verifies alone** |
 | CA licensed-facility list, by name + ZIP | 0.6 | `ca_cdph` | |
-| CMS DAC (national file) | 0.7 | `cms_dac` | |
+| CMS DAC (national file), by NPI | 0.7 | `cms_dac` | |
+| CMS DAC group practices (organisation name ≈ DAC group name, same ZIP) | 0.6 | `cms_dac` | Confirms organisations |
 | NPPES primary | 0.5 × recency | `nppes` | |
 | NPPES secondary | 0.4 × recency | `nppes` | |
 | IRS EO (CA) | 0.4 | `irs` | Linked by TIN = EIN |
@@ -279,15 +280,15 @@ Recency factor: within 1 year 1.0, 1–3 years 0.7, older 0.4. The downloaded fi
 
 **Results:**
 - 3,727 of 3,735 NPIs have an address; 3,613 in CA.
-- **698 verified (18.7%)**: 219 individuals and 479 organisations. 663 by two sources, 35 by the state register alone.
-- TINs verified: 546 of 2,888 (18.9%).
+- **1,719 verified (46.0%)**: 219 individuals and 1,500 organisations. 1,687 by two sources, 32 by the state register alone. DAC group-practice matching alone added about 1,000 organisations.
+- TINs verified: 1,284 of 2,888 (44.5%).
 - 1,564 of 3,780 pairs (41%) have TIN-specific evidence.
-- Status counts: unverified single source 2,344, unverified multiple 570, out of state only 114, deactivated 7, no address 2.
+- Status counts: unverified single source 1,486, unverified multiple 407, out of state only 114, deactivated 7, no address 2.
 
 **Outputs:** `outputs/c5/address_candidates.parquet`, `npi_addresses.csv`, `provider_locations.csv`, `tin_npi_address.csv`, `c5_stats.json`.
 
 **Could add:**
-- the CMS POS file (the user will download it manually, since data.cms.gov blocks scripts);
+- the CMS POS file (deliberately skipped: data.cms.gov blocks downloads here, and the CA register covers the same CA facilities);
 - the Census geocoder;
 - the Health Net provider directory.
 
@@ -340,7 +341,7 @@ Commit messages end with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com
 
 ## 12. What's next
 
-1. **C5 optional extras:** the CMS POS file (manual download into `raw/sources/`), Census batch geocoding, and the Health Net directory. Each plugs in as a new source with its own weight.
+1. **C5 optional extras:** Census batch geocoding and the Health Net directory. The CMS POS file was skipped (see logic_c5 §7). Each plugs in as a new source with its own weight.
 2. **C6 (provider rate file, Excel).** Join `rates_selected` to addresses and specialty (NPPES taxonomy → NUCC / HiLabs crosswalk). One row per NPI, TIN, address and billing code, with columns NPI, TIN, Address, Billing Code, Specialty and Rate. 840k contexts may exceed Excel's row limit (1,048,576) once multiplied by addresses: plan to split by sheet or filter to procedure-coded rows, and document the choice.
 3. **The summary file and the shared summary doc** (claude.ai artifact `https://claude.ai/code/artifact/acdaa8c8-b12a-4364-8f9b-d25bb3d3dd88`) need C3, C4, C5 and C6 numbers. A refreshed Word copy goes in `docs/`.
 4. **Optional:** C7 cost-effectiveness metrics, a UI, and the video.

@@ -107,13 +107,14 @@ def target_npis(cfg):
 
 
 def resolve_scope(cfg, npis=None, states=None):
-    if npis is None:
+    if npis is None and not states:
         npis = target_npis(cfg)
     if npis:
         npis = frozenset(int(n) for n in npis)
         return npis, None, f"npis-{stable_key(','.join(map(str, sorted(npis))), 12)}"
+    if not states:
+        log.warning("reference scope: no provider_refs yet, falling back to configured states")
     states = sorted({s.upper() for s in (states or ref_settings(cfg).get("fallback_states") or DEFAULT_FALLBACK_STATES)})
-    log.warning("reference scope: no provider_refs yet, falling back to states %s", states)
     return None, states, "states-" + "-".join(states)
 
 

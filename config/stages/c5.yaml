@@ -12,12 +12,14 @@ c5:
     ca_facility: 0.8
     dac: 0.7
     ca_facility_name_zip: 0.6
+    dac_group: 0.6
     nppes_primary: 0.5
     nppes_secondary: 0.4
     irs_eo: 0.4
   source_family:
     ca_facility: ca_cdph
     ca_facility_name_zip: ca_cdph
+    dac_group: cms_dac
     dac: cms_dac
     nppes_primary: nppes
     nppes_secondary: nppes
