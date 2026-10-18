@@ -507,7 +507,8 @@ def run(cfg):
     prov = provider_summary(npis, addr, nppes, c5)
     county_check = county_label_check(refs, prov)
     links = link_tin_npi_address(refs, addr, nppes, c5)
-    cand.to_parquet(out / "address_candidates.parquet", index=False)
+    cand.sort_values(["npi", "source", "raw_address_key" if "raw_address_key" in cand else "address_key", "address_line1", "address_line2",
+                      "source_name"], kind="stable").to_parquet(out / "address_candidates.parquet", index=False)
     addr.to_csv(out / "npi_addresses.csv", index=False)
     prov.to_csv(out / "provider_locations.csv", index=False)
     links.to_csv(out / "tin_npi_address.csv", index=False)
