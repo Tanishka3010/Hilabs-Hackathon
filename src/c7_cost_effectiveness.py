@@ -7,7 +7,7 @@ Similar providers = same service, same kind of provider, same market:
   - kind: professional rates -> HiLabs benchmark specialty (falls back to the NUCC classification of the primary taxonomy);
     institutional rates -> NUCC classification (e.g. General Acute Care Hospital vs Ambulatory Surgical);
   - market: the county of the provider's best address; widened to the whole state when the county has fewer than min_peers providers.
-Metrics (see docs/logic_c7.md for the reasons): price ratio to the peer median (leave-one-out), cost index (geometric mean of ratios),
+Metrics: price ratio to the peer median (leave-one-out), cost index (geometric mean of ratios),
 percentile, share of services above the peers' 75th percentile, services compared."""
 import numpy as np
 import pandas as pd

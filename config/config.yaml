@@ -1,4 +1,4 @@
-index_dir: DATA
+index_dir: index_files
 nppes_dir: raw/nppes
 ptd_dir: raw/ptd
 reference_dir: reference
