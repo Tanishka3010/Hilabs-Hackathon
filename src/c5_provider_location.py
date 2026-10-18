@@ -60,6 +60,30 @@ def name_similarity(a, b, drop=frozenset()):
     return round(len(ta & tb) / len(ta | tb), 4) if ta and tb else 0.0
 
 
+def strong_name_match(a, b, drop, threshold):
+    ta, tb = name_tokens(a, drop), name_tokens(b, drop)
+    shared = ta & tb
+    return bool(ta and tb) and len(shared) >= 2 and len(shared) / len(ta | tb) >= threshold
+
+
+def npi_name_zips(nppes, pl, entity_types=("2",)):
+    people = (nppes["first_name"].fillna("").map(clean) + " " + nppes["last_name"].fillna("").map(clean)).str.strip()
+    names = nppes.assign(match_name=nppes["org_name"].fillna("").map(clean).where(nppes["entity_type"] == "2", people))
+    names = names[names["entity_type"].isin(entity_types) & (names["match_name"] != "")][["npi", "match_name", "zip"]]
+    zips = pd.concat([names[["npi", "zip"]], pl[pl["npi"].isin(set(names["npi"]))][["npi", "zip"]]]).assign(zip=lambda d: d["zip"].map(clean).str[:5])
+    return zips[zips["zip"] != ""].drop_duplicates().merge(names[["npi", "match_name"]], on="npi")
+
+
+def match_sites(npi_zips, sites, c5, place_cols=("city",)):
+    m = npi_zips.merge(sites.drop(columns=["npi"], errors="ignore"), on="zip")
+    if not len(m):
+        return m
+    thr = float(c5["facility_name_match_threshold"])
+    keep = [strong_name_match(o, f, place_words(*[r[c] for c in place_cols]), thr)
+            for o, f, r in zip(m["match_name"], m["facility_name"], m[list(place_cols)].to_dict("records"))]
+    return m[keep]
+
+
 def place_words(*places):
     return frozenset(GEO_STOP | {w for p in places for w in re.sub(r"[^A-Z0-9 ]", " ", clean(p).upper()).split()})
 
@@ -78,15 +102,9 @@ def facility_candidates(fac, nppes, pl, npis, c5):
     if fac is None or not len(fac):
         return pd.DataFrame(columns=CANDIDATE_COLS)
     by_npi = fac[fac["npi"].isin(npis)].assign(source="ca_facility", source_name=fac["facility_name"], source_date=fac["data_date"])
-    orgs = nppes[(nppes["entity_type"] == "2") & ~nppes["npi"].isin(set(by_npi["npi"].dropna().astype("int64")))][["npi", "org_name", "zip"]]
-    zips = pd.concat([orgs[["npi", "zip"]], pl[pl["npi"].isin(set(orgs["npi"]))][["npi", "zip"]]]).assign(zip=lambda d: d["zip"].map(clean).str[:5])
-    zips = zips.drop_duplicates().merge(orgs[["npi", "org_name"]], on="npi")
+    unmatched = nppes[~nppes["npi"].isin(set(by_npi["npi"].dropna().astype("int64")))]
     pool = fac[fac["npi"].isna()].assign(zip=lambda d: d["zip"].map(clean).str[:5])
-    m = zips.merge(pool.drop(columns=["npi"]), on="zip")
-    thr = float(c5["facility_name_match_threshold"])
-    if len(m):
-        m["sim"] = [name_similarity(o, f, place_words(city, county)) for o, f, city, county in zip(m["org_name"], m["facility_name"], m["city"], m["county"])]
-        m = m[m["sim"] >= thr]
+    m = match_sites(npi_name_zips(unmatched, pl), pool, c5, ("city", "county"))
     by_name = m.assign(source="ca_facility_name_zip", source_name=m["facility_name"] if len(m) else "", source_date=m["data_date"] if len(m) else pd.NaT)
     return pd.concat([by_npi.reindex(columns=CANDIDATE_COLS), by_name.reindex(columns=CANDIDATE_COLS)], ignore_index=True)
 
@@ -94,18 +112,21 @@ def facility_candidates(fac, nppes, pl, npis, c5):
 def dac_group_candidates(dac_state, nppes, pl, c5):
     if dac_state is None or not len(dac_state) or not len(nppes):
         return pd.DataFrame(columns=CANDIDATE_COLS)
-    orgs = nppes[nppes["entity_type"] == "2"][["npi", "org_name", "zip"]]
-    zips = pd.concat([orgs[["npi", "zip"]], pl[pl["npi"].isin(set(orgs["npi"]))][["npi", "zip"]]]).assign(zip=lambda d: d["zip"].map(clean).str[:5])
-    zips = zips[zips["zip"] != ""].drop_duplicates().merge(orgs[["npi", "org_name"]], on="npi")
     groups = dac_state.assign(zip=dac_state["zip"].map(clean).str[:5], facility_name=dac_state["facility_name"].map(clean))
     groups = groups[groups["facility_name"] != ""].drop_duplicates(["facility_name", "address_line1", "address_line2", "zip"])
-    m = zips.merge(groups.drop(columns=["npi"]), on="zip")
+    m = match_sites(npi_name_zips(nppes, pl), groups, c5)
     if not len(m):
         return pd.DataFrame(columns=CANDIDATE_COLS)
-    thr = float(c5["facility_name_match_threshold"])
-    m["sim"] = [name_similarity(o, f, place_words(city)) for o, f, city in zip(m["org_name"], m["facility_name"], m["city"])]
-    m = m[m["sim"] >= thr]
     return m.assign(source="dac_group", source_name=m["facility_name"], source_date=pd.NaT).reindex(columns=CANDIDATE_COLS)
+
+
+def clia_candidates(clia, nppes, pl, c5):
+    if clia is None or not len(clia) or not len(nppes):
+        return pd.DataFrame(columns=CANDIDATE_COLS)
+    m = match_sites(npi_name_zips(nppes, pl, ("1", "2")), clia.assign(facility_name=clia["facility_name"].map(clean)), c5)
+    if not len(m):
+        return pd.DataFrame(columns=CANDIDATE_COLS)
+    return m.assign(source="cms_clia", source_name=m["facility_name"], source_date=pd.NaT).reindex(columns=CANDIDATE_COLS)
 
 
 def irs_candidates(irs, refs):
@@ -160,7 +181,7 @@ def score_addresses(cand, nppes, c5, as_of):
             "n_source_families": g["source_family"].nunique(), "confidence": round(1 - conf, 4),
             "nppes_last_update": g.loc[g["source"].str.startswith("nppes"), "source_date"].max(),
             "dac_facility_names": "|".join(sorted({n for n in g.loc[g["source"] == "dac", "source_name"] if n})),
-            "registry_names": "|".join(sorted({n for n in g.loc[g["source"].isin(["ca_facility", "ca_facility_name_zip", "irs_eo"]), "source_name"] if n})),
+            "registry_names": "|".join(sorted({n for n in g.loc[g["source"].isin(["ca_facility", "ca_facility_name_zip", "irs_eo", "dac_group", "cms_clia"]), "source_name"] if n})),
             "irs_tins": "|".join(sorted({t for t in g.loc[g["source"] == "irs_eo", "source_tin"] if t})),
             "high_trust": bool(g["source"].isin(c5.get("high_trust_sources") or []).any()),
             "in_target_state": first["state"] == c5["target_state"].upper(),
@@ -283,7 +304,13 @@ def run(cfg):
     except FileNotFoundError as e:
         log.warning("c5: DAC state file unavailable for group matching (%s)", e)
         dac_state = None
-    extra = [facility_candidates(fac, nppes, pl, npis, c5), irs_candidates(irs, refs), dac_group_candidates(dac_state, nppes, pl, c5)]
+    try:
+        clia = rd.load_pos_clia(cfg, zips=set(nppes["zip"].map(clean).str[:5]) | set(pl["zip"].map(clean).str[:5]))
+    except FileNotFoundError as e:
+        log.warning("c5: CMS POS CLIA file unavailable (%s)", e)
+        clia = None
+    extra = [facility_candidates(fac, nppes, pl, npis, c5), irs_candidates(irs, refs), dac_group_candidates(dac_state, nppes, pl, c5),
+             clia_candidates(clia, nppes, pl, c5)]
     cand = build_candidates(nppes, pl, dac, extra)
     addr = score_addresses(cand, nppes, c5, as_of)
     prov = provider_summary(npis, addr, nppes, c5)

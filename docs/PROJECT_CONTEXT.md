@@ -28,7 +28,7 @@ Provider types: Type 1 (individual) and Type 2 (organisation) NPIs.
 | C2 | Identify the PPO plans and rate files; explain how HMO, EPO and POS were ruled out | **Done**, organizer answers applied |
 | C3 | Define PTD quality and completeness metrics, score every file used, justify each metric | **Done**: 13 rate-file metrics and 5 index-file metrics |
 | C4 | Extract rates for every PPO provider; when a provider has several rates for one code, say which is kept and why | **Done** |
-| C5 | Map TINs and NPIs to their practising address, without relying on NPPES alone | **Done**: 7 sources; 1,719 NPIs (46.0%) and 1,284 TINs (44.5%) verified; 41% of NPI–TIN pairs have TIN-specific evidence |
+| C5 | Map TINs and NPIs to their practising address, without relying on NPPES alone | **Done**: 8 sources; 1,813 NPIs (48.5%) and 1,370 TINs (47.4%) verified; 41% of NPI–TIN pairs have TIN-specific evidence |
 | C6 | Build the provider rate file (NPI, TIN, address, billing code, specialty, rate), as Excel | Not started |
 | C7 (optional) | Cost-effectiveness metrics vs similar providers | Not started |
 
@@ -37,7 +37,7 @@ Deliverables:
 | # | Deliverable | Status |
 |---|---|---|
 | 1 | Rate file (Excel) | Needs C5 and C6 |
-| 2 | Logic file | Network part done (C1/C2 docs); address part needs C5 |
+| 2 | Logic file | Network part done (`logic_c1_c2.md`); address part done (`logic_c5.md`) |
 | 3 | File-quality metrics | Done (`logic_c3.md`) |
 | 4 | Summary file | Partly: README, `c*_stats.json`, and the shared summary doc (claude.ai artifact) |
 | 5 | Video (≤ 5 min) | Not started |
@@ -262,13 +262,14 @@ Full logic: [logic_c5.md](logic_c5.md).
 | CA licensed-facility list, by name + ZIP | 0.6 | `ca_cdph` | |
 | CMS DAC (national file), by NPI | 0.7 | `cms_dac` | |
 | CMS DAC group practices (organisation name ≈ DAC group name, same ZIP) | 0.6 | `cms_dac` | Confirms organisations |
+| CMS POS CLIA sites (Q3 2023, active; organisation or clinician name ≈ site name, same ZIP) | 0.5 | `cms_clia` | Clinics, physician offices, labs |
 | NPPES primary | 0.5 × recency | `nppes` | |
 | NPPES secondary | 0.4 × recency | `nppes` | |
 | IRS EO (CA) | 0.4 | `irs` | Linked by TIN = EIN |
 
-Recency factor: within 1 year 1.0, 1–3 years 0.7, older 0.4. The downloaded files live in `raw/sources/` (`health_facility_locations.csv`, `eo_ca.csv`). The national DAC file is in `reference/` (git-ignored).
+Recency factor: within 1 year 1.0, 1–3 years 0.7, older 0.4. The downloaded files live in `raw/sources/` (`health_facility_locations.csv`, `eo_ca.csv`, and `POS_CLIA_Q3_2023.csv`, which the user downloaded manually). The national DAC file is in `reference/` (git-ignored).
 
-**Name matching:** word overlap after removing legal and generic words, stemming plurals, and, for facilities, removing the facility's city and county words plus generic place words. That last step was added after spot checks found place-name false matches.
+**Name matching** (one shared rule for every name + ZIP source): same ZIP, word overlap ≥ 0.6 and **at least 2 shared meaningful words**, after removing legal and generic words, stemming plurals, and removing the site's city and county words plus generic place words. The place-word guard fixed "Santa Maria"-type false matches. The 2-word guard fixed "Aurora Medical Corporation" vs "Aurora Medical Center" and removed 155 single-word verifications. A name match only adds a candidate; verification still needs the same street address from another family.
 
 **Method:**
 - **Address key** = normalised street (suite removed, street words abbreviated) + ZIP5.
@@ -280,17 +281,21 @@ Recency factor: within 1 year 1.0, 1–3 years 0.7, older 0.4. The downloaded fi
 
 **Results:**
 - 3,727 of 3,735 NPIs have an address; 3,613 in CA.
-- **1,719 verified (46.0%)**: 219 individuals and 1,500 organisations. 1,687 by two sources, 32 by the state register alone. DAC group-practice matching alone added about 1,000 organisations.
-- TINs verified: 1,284 of 2,888 (44.5%).
+- **1,813 verified (48.5%)**: 231 individuals and 1,582 organisations. 1,788 by two sources, 25 by the state register alone.
+- History: 216 (NPPES + DAC) → 698 (+ CA register, IRS) → 1,719 (+ DAC group practices, another session) → 1,564 (2-word guard) → **1,813** (+ CLIA, which is the deciding source for 230).
+- TINs verified: 1,370 of 2,888 (47.4%).
 - 1,564 of 3,780 pairs (41%) have TIN-specific evidence.
-- Status counts: unverified single source 1,486, unverified multiple 407, out of state only 114, deactivated 7, no address 2.
+- Status counts: unverified single source 1,345, unverified multiple 454, out of state only 114, deactivated 7, no address 2.
 
 **Outputs:** `outputs/c5/address_candidates.parquet`, `npi_addresses.csv`, `provider_locations.csv`, `tin_npi_address.csv`, `c5_stats.json`.
 
 **Could add:**
-- the CMS POS file (deliberately skipped: data.cms.gov blocks downloads here, and the CA register covers the same CA facilities);
-- the Census geocoder;
-- the Health Net provider directory.
+- the Health Net provider directory (the best remaining source);
+- the CMS POS hospital/non-hospital extract (the user supplied the CLIA extract);
+- the CA Secretary of State business registry;
+- the Census geocoder.
+
+See `logic_c5.md` §7 for what each remaining group needs.
 
 ## 8. Reference-data loaders (`src/reference_data.py`)
 

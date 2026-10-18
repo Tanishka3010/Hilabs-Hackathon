@@ -122,7 +122,7 @@ def facility_frame():
     return pd.DataFrame([
         {"npi": 2, "facility_name": "ACME CLINIC", "business_name": "ACME HOLDINGS", "address_line1": "9 OAK ROAD", "city": "LOS ANGELES",
          "county": "LOS ANGELES", "state": "CA", "zip": "90001", "data_date": pd.Timestamp("2026-10-16")},
-        {"npi": None, "facility_name": "OAKLAND SURGERY CENTER", "business_name": "", "address_line1": "1 Bay St", "city": "OAKLAND",
+        {"npi": None, "facility_name": "BAYSIDE SURGERY CENTER", "business_name": "", "address_line1": "1 Bay St", "city": "OAKLAND",
          "county": "ALAMEDA", "state": "CA", "zip": "94601", "data_date": pd.Timestamp("2026-10-16")},
         {"npi": None, "facility_name": "OAKLAND HEALTH CENTER", "business_name": "", "address_line1": "5 Lake St", "city": "OAKLAND",
          "county": "ALAMEDA", "state": "CA", "zip": "94601", "data_date": pd.Timestamp("2026-10-16")},
@@ -131,7 +131,7 @@ def facility_frame():
 
 def test_registry_and_irs_sources_verify_and_link():
     nppes = pd.concat([nppes_frame(), pd.DataFrame([
-        {"npi": 6, "entity_type": "2", "org_name": "OAKLAND SURGERY CENTER LLC", "first_name": "", "last_name": "", "address_line1": "1 Bay Street",
+        {"npi": 6, "entity_type": "2", "org_name": "BAYSIDE SURGERY CENTER LLC", "first_name": "", "last_name": "", "address_line1": "1 Bay Street",
          "address_line2": "", "city": "Oakland", "state": "CA", "zip": "94601", "last_update_date": pd.Timestamp("2015-01-01"),
          "nppes_status": "active", "taxonomy_code": "261QA1903X"},
         {"npi": 7, "entity_type": "2", "org_name": "OAKLAND DIALYSIS INC", "first_name": "", "last_name": "", "address_line1": "8 Pine St",
@@ -143,7 +143,7 @@ def test_registry_and_irs_sources_verify_and_link():
     fac = c5m.facility_candidates(facility_frame(), nppes, pl, {2, 6, 7}, C5)
     assert set(fac["source"]) == {"ca_facility", "ca_facility_name_zip"}
     named = fac[fac["source"] == "ca_facility_name_zip"]
-    assert named["npi"].tolist() == [6] and named["source_name"].tolist() == ["OAKLAND SURGERY CENTER"]
+    assert named["npi"].tolist() == [6] and named["source_name"].tolist() == ["BAYSIDE SURGERY CENTER"]
     cand = c5m.build_candidates(nppes, pl, pd.DataFrame(columns=["npi"]), [fac, c5m.irs_candidates(irs, refs)])
     addr = c5m.score_addresses(cand, nppes, C5, AS_OF)
     best = addr[addr["rank"] == 1].set_index("npi")
@@ -190,3 +190,28 @@ def test_dac_group_practice_confirms_organisation_address():
     best = addr[addr["rank"] == 1].set_index("npi")
     assert best.loc[8, "verified"] and best.loc[8, "sources"] == "dac_group|nppes_primary"
     assert not best.loc[9, "verified"]
+
+
+@pytest.mark.parametrize("a,b,ok", [
+    ("SKYWAY SURGERY CENTER. LLC", "SKYWAY SURGERY CENTER LLC", True),
+    ("AURORA MEDICAL CORPORATION", "AURORA MEDICAL CENTER", False),
+    ("OAKLAND SURGERY CENTER LLC", "OAKLAND SURGERY CENTER", False),
+    ("ROBERT HARTMAN", "ROBERT HARTMAN MD", True),
+    ("WEI WANG", "WANG DENTAL", False),
+])
+def test_strong_name_match_needs_two_shared_words(a, b, ok):
+    assert c5m.strong_name_match(a, b, c5m.place_words("OAKLAND"), 0.6) is ok
+
+
+def test_clia_sites_become_candidates_for_people_and_organisations():
+    nppes = nppes_frame()
+    clia = pd.DataFrame([
+        {"clia_id": "05D1", "facility_name": "ANN LEE MD", "address_line1": "123 MAIN ST", "address_line2": "STE 4", "city": "SAN FRANCISCO", "state": "CA", "zip": "94107"},
+        {"clia_id": "05D2", "facility_name": "ACME CLINIC INC", "address_line1": "9 OAK RD", "address_line2": "", "city": "LOS ANGELES", "state": "CA", "zip": "90001"},
+        {"clia_id": "05D3", "facility_name": "ACME", "address_line1": "1 Other St", "address_line2": "", "city": "LOS ANGELES", "state": "CA", "zip": "90001"},
+    ])
+    cand = c5m.clia_candidates(clia, nppes, pd.DataFrame(columns=["npi", "zip"]), C5)
+    assert sorted(zip(cand["npi"], cand["source_name"])) == [(1, "ANN LEE MD"), (2, "ACME CLINIC INC")]
+    addr = c5m.score_addresses(c5m.build_candidates(nppes, pd.DataFrame(), pd.DataFrame(), [cand]), nppes, C5, AS_OF)
+    best = addr[addr["rank"] == 1].set_index("npi")
+    assert best.loc[2, "verified"] and best.loc[2, "sources"] == "cms_clia|nppes_primary"

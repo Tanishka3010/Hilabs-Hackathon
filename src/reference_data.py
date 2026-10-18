@@ -294,3 +294,24 @@ def load_irs_eo(cfg, eins=None):
     df["zip"] = df["zip"].fillna("").str[:5]
     log.info("IRS exempt organisations (%s): %s rows", path.name, f"{len(df):,}")
     return df.reset_index(drop=True)
+
+
+POS_CLIA_RENAME = {"PRVDR_NUM": "clia_id", "FAC_NAME": "facility_name", "ST_ADR": "address_line1", "ADDTNL_ST_ADR": "address_line2",
+                   "CITY_NAME": "city", "STATE_CD": "state", "ZIP_CD": "zip", "PGM_TRMNTN_CD": "termination_code", "CRTFCT_TYPE_CD": "certificate_type"}
+
+
+def load_pos_clia(cfg, zips=None):
+    path = find_file(sources_dir(cfg), "POS_CLIA*.csv")
+    keep = {str(z)[:5] for z in zips} if zips is not None else None
+    parts, scanned = [], 0
+    for chunk in pd.read_csv(path, dtype=str, usecols=list(POS_CLIA_RENAME), chunksize=200_000):
+        scanned += len(chunk)
+        chunk = chunk[chunk["PGM_TRMNTN_CD"] == "00"]
+        if keep is not None:
+            chunk = chunk[chunk["ZIP_CD"].fillna("").str[:5].isin(keep)]
+        parts.append(chunk)
+    df = pd.concat(parts, ignore_index=True).rename(columns=POS_CLIA_RENAME)
+    df["state"] = df["state"].fillna("").str.upper()
+    df["zip"] = df["zip"].fillna("").str[:5]
+    log.info("CMS POS CLIA (%s): %s rows scanned, %s active sites kept", path.name, f"{scanned:,}", f"{len(df):,}")
+    return df
