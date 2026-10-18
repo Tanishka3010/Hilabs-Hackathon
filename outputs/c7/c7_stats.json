@@ -13,19 +13,19 @@
       "insufficient_data": 651
     },
     "2": {
-      "cost_effective": 190,
-      "high_cost": 163,
-      "in_line": 318,
+      "cost_effective": 192,
+      "high_cost": 157,
+      "in_line": 322,
       "insufficient_data": 2412
     }
   },
   "by_label": {
-    "cost_effective": 190,
-    "high_cost": 165,
-    "in_line": 330,
+    "cost_effective": 192,
+    "high_cost": 159,
+    "in_line": 334,
     "insufficient_data": 3071
   },
-  "compared_at_county_level": 75278,
+  "compared_at_county_level": 76370,
   "config": {
     "cost_effective_max_index": 0.9,
     "high_cost_min_index": 1.1,
@@ -33,9 +33,9 @@
     "min_services": 5
   },
   "cost_index_quartiles": {
-    "0.25": 0.8969,
+    "0.25": 0.8954,
     "0.5": 1.0,
-    "0.75": 1.0715
+    "0.75": 1.0674
   },
   "providers": 3756,
   "providers_scored": 685,

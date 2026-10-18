@@ -164,6 +164,40 @@ def clia_candidates(clia, nppes, pl, c5):
     return m.assign(source="cms_clia", source_name=m["facility_name"], source_date=pd.NaT).reindex(columns=CANDIDATE_COLS)
 
 
+PO_BOX_RE = re.compile(r"^\s*P\.?\s*O\.?\s*BOX\b|^\s*POST OFFICE BOX\b", re.I)
+
+
+def dca_candidates(dca, nppes, state="CA"):
+    """CA licence boards (DCA): NPPES lists each clinician's licence numbers, so the licence links the NPI to the board's address of record
+    (an identifier link, not a name match). The licensee's surname must also match NPPES, which guards against equal digits on different
+    boards. PO boxes are dropped: they are not practice sites."""
+    if dca is None or not len(dca) or not len(nppes) or "licences" not in nppes:
+        return pd.DataFrame(columns=CANDIDATE_COLS)
+    lic = nppes[["npi", "last_name", "licences"]].assign(licence=nppes["licences"].fillna("").str.split("|")).explode("licence")
+    lic = lic[lic["licence"].fillna("").str.startswith(f"{state}:")]
+    lic["licence_digits"] = lic["licence"].str.split(":").str[1]
+    m = lic.merge(dca, on="licence_digits", suffixes=("", "_dca"))
+    m = m[m["last_name"].fillna("").map(clean).str.upper() == m["last_name_dca"].fillna("").map(clean).str.upper()]
+    m = m[~m["address_line1"].fillna("").str.match(PO_BOX_RE)]
+    if not len(m):
+        return pd.DataFrame(columns=CANDIDATE_COLS)
+    return m.assign(source="ca_dca_licence", source_name=m["board"] + ": " + m["licence_type"], source_date=m["expiration_date"]).reindex(columns=CANDIDATE_COLS)
+
+
+def ppef_dac_candidates(ppef, dac_state, nppes):
+    """Organisation NPI -> PECOS PAC ID (CMS PPEF) -> every DAC row whose group practice has that PAC ID -> the group's Medicare-enrolled
+    practice sites. This replaces a name + ZIP guess with an identifier chain, so the DAC group site is linked to the organisation's NPI."""
+    if ppef is None or dac_state is None or not len(ppef) or not len(dac_state) or "org_pac_id" not in dac_state:
+        return pd.DataFrame(columns=CANDIDATE_COLS)
+    orgs = set(nppes.loc[nppes["entity_type"] == "2", "npi"].astype("int64")) if len(nppes) else set()
+    p = ppef[ppef["enrollment_id"].fillna("").str.startswith("O") & ppef["npi"].isin(orgs)][["npi", "pac_id"]].drop_duplicates()
+    sites = dac_state.dropna(subset=["org_pac_id"]).drop(columns=["npi"], errors="ignore").drop_duplicates(["org_pac_id", "address_line1", "address_line2", "zip"])
+    m = p.merge(sites, left_on="pac_id", right_on="org_pac_id")
+    if not len(m):
+        return pd.DataFrame(columns=CANDIDATE_COLS)
+    return m.assign(source="dac_pac_id", source_name=m["facility_name"], source_date=pd.NaT).reindex(columns=CANDIDATE_COLS)
+
+
 def irs_candidates(irs, refs):
     if irs is None or not len(irs):
         return pd.DataFrame(columns=CANDIDATE_COLS)
@@ -239,7 +273,7 @@ def score_addresses(cand, nppes, c5, as_of):
         "geo_address": first_matched(cand, "geo_address"), "latitude": first_matched(cand, "latitude"), "longitude": first_matched(cand, "longitude"),
         "county_fips": first_matched(cand, "county_fips"),
         "n_raw_spellings": g["raw_address_key"].nunique() if "raw_address_key" in cand else None,
-        "registry_names": joined(cand[cand["source"].isin(["ca_facility", "ca_facility_name_zip", "irs_eo", "dac_group", "cms_clia"])], "source_name"),
+        "registry_names": joined(cand[cand["source"].isin(["ca_facility", "ca_facility_name_zip", "irs_eo", "dac_group", "dac_pac_id", "cms_clia", "ca_dca_licence"])], "source_name"),
         "irs_tins": joined(cand[cand["source"] == "irs_eo"], "source_tin"),
         "high_trust": g["source"].agg(lambda s: bool(s.isin(c5.get("high_trust_sources") or []).any())),
     }
@@ -459,8 +493,10 @@ def run(cfg):
     irs = load_source("irs_eo", lambda: rd.load_irs_eo(cfg, eins=set(refs["tin"].dropna())), c5, missing)
     dac_state = load_source("dac_state", lambda: rd.load_dac(cfg, states=[c5["target_state"]]), c5, missing)
     clia = load_source("cms_clia", lambda: rd.load_pos_clia(cfg, zips=set(nppes["zip"].map(clean).str[:5]) | set(pl["zip"].map(clean).str[:5])), c5, missing)
+    dca = load_source("ca_dca_licence", lambda: rd.load_dca_licences(cfg), c5, missing)
+    ppef = load_source("ppef", lambda: rd.load_ppef(cfg, npis=all_npis), c5, missing)
     extra = [facility_candidates(fac, nppes, pl, npis, c5), irs_candidates(irs, refs), dac_group_candidates(dac_state, nppes, pl, c5),
-             clia_candidates(clia, nppes, pl, c5)]
+             clia_candidates(clia, nppes, pl, c5), dca_candidates(dca, nppes, c5["target_state"].upper()), ppef_dac_candidates(ppef, dac_state, nppes)]
     cand = geocode_candidates(build_candidates(nppes, pl, dac, extra), cfg, c5)
     addr = score_addresses(cand, nppes, c5, as_of)
     try:

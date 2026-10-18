@@ -10,6 +10,8 @@ c5:
     stale: 0.4
   source_weights:
     ca_facility: 0.8
+    dac_pac_id: 0.7
+    ca_dca_licence: 0.5
     dac: 0.7
     ca_facility_name_zip: 0.6
     dac_group: 0.6
@@ -19,6 +21,8 @@ c5:
     irs_eo: 0.4
   source_family:
     ca_facility: ca_cdph
+    dac_pac_id: cms_dac
+    ca_dca_licence: ca_dca
     ca_facility_name_zip: ca_cdph
     dac_group: cms_dac
     cms_clia: cms_clia

@@ -27,3 +27,10 @@ All outputs were regenerated with `python -m src.run --stage all` (143 s, peak 2
 | F-021 | C7 cost effectiveness added; UI added (`outputs/ui/index.html`). Video not done (user's instruction) | c7_cost_effectiveness.py, ui_report.py, docs/logic_c7.md | 685 providers labelled: 190 cost effective, 330 in line, 165 high cost |
 
 Also: the reference caches are now built once per run for the rate file's full NPI set (C3, C5 and C6 share them).
+
+## Follow-up (2026-10-18): new identifier-linked sources for C5
+
+- CMS PPEF enrollment extract: organisation NPI → PECOS PAC ID → DAC group sites (`dac_pac_id`, family `cms_dac`).
+- CA DCA licensee lists (Behavioral Sciences, Medical Board): NPPES licence number (CA, digits) + same surname → address of record (`ca_dca_licence`, family `ca_dca`); current licences only, PO boxes dropped.
+- NPPES cache v3 adds licence numbers.
+- Result: verified NPIs 661 → 1,610 (17.8% → 43.3%); verified or corroborated 50.7% → 57.8%; verified TINs 510 → 1,242 (17.8% → 43.2%). Tests: 160 pass.

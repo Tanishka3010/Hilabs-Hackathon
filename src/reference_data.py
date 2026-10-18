@@ -53,8 +53,10 @@ NPPES_RENAME = {
     "NPI Reactivation Date": "reactivation_date",
     **{f"Healthcare Provider Taxonomy Code_{i}": f"taxonomy_{i}" for i in range(1, 16)},
     **{f"Healthcare Provider Primary Taxonomy Switch_{i}": f"taxonomy_switch_{i}" for i in range(1, 16)},
+    **{f"Provider License Number_{i}": f"licence_{i}" for i in range(1, 16)},
+    **{f"Provider License Number State Code_{i}": f"licence_state_{i}" for i in range(1, 16)},
 }
-NPPES_CACHE_VERSION = "v2"  # v2: all 15 taxonomy slots, primary taxonomy chosen by the switch
+NPPES_CACHE_VERSION = "v3"  # v2: primary taxonomy chosen by the switch; v3: licence numbers per state
 
 PL_RENAME = {
     "NPI": "npi",
@@ -188,6 +190,25 @@ def nppes_status(df):
     return status
 
 
+def licence_digits(v):
+    """Licence numbers are written differently by NPPES ('A12345', 'PSY 12345', 'LMFT12345') and the CA boards ('12345'):
+    compare on the digits without leading zeros."""
+    d = "".join(ch for ch in str(v or "") if ch.isdigit()).lstrip("0")
+    return d
+
+
+def licence_numbers(df):
+    """Collapses NPPES's 15 licence slots into 'STATE:digits|STATE:digits' per NPI and drops the raw slot columns."""
+    out = []
+    for vals in zip(*[df.get(f"licence_{i}", pd.Series("", index=df.index)).fillna("") for i in range(1, 16)],
+                    *[df.get(f"licence_state_{i}", pd.Series("", index=df.index)).fillna("") for i in range(1, 16)]):
+        nums, states = vals[:15], vals[15:]
+        out.append("|".join(sorted({f"{st.strip().upper()}:{licence_digits(n)}" for n, st in zip(nums, states) if licence_digits(n) and st.strip()})))
+    df = df.drop(columns=[c for c in df.columns if c.startswith("licence_")])
+    df["licences"] = out
+    return df
+
+
 def load_nucc(cfg):
     path = find_file(cfg["reference_dir"], "nucc_taxonomy*.csv")
     df = pd.read_csv(path, dtype=str).fillna("").rename(columns=NUCC_RENAME)
@@ -252,7 +273,7 @@ def load_nppes(cfg, npis=None, states=None, force=False):
         for c in NPPES_DATE_COLS:
             df[c] = pd.to_datetime(df[c], errors="coerce", format="%m/%d/%Y")
         df["nppes_status"] = nppes_status(df)
-        return primary_taxonomy(df)
+        return licence_numbers(primary_taxonomy(df))
 
     df = cached(cache_path(cfg, f"nppes_{NPPES_CACHE_VERSION}_{tag}.parquet"), build, force)
     log.info("NPPES (%s): %s rows, status %s, states %s", tag, f"{len(df):,}", df["nppes_status"].value_counts().to_dict(),
@@ -343,3 +364,43 @@ def ca_county_names(cfg):
     fac = load_ca_facilities(cfg, active_only=False)
     m = fac[["fips_county", "county"]].dropna().drop_duplicates("fips_county")
     return dict(zip(m["fips_county"], m["county"].str.upper()))
+
+
+DCA_RENAME = {"Agency Name": "board", "License Type": "licence_type", "License Number": "licence_number", "Indiv/Org": "indiv_org",
+              "Org/Last Name": "last_name", "First Name": "first_name", "Address Line 1": "address_line1", "Address Line 2": "address_line2",
+              "City": "city", "County": "county", "State": "state", "Zip": "zip", "Expiration Date": "expiration_date", "License Status": "licence_status"}
+
+
+def load_dca_licences(cfg, current_only=True):
+    """California Department of Consumer Affairs licensee lists (one tab-separated file per board, e.g. Behavioral Sciences, Medical Board).
+    Each row is a licence with the licensee's address of record."""
+    paths = sorted(sources_dir(cfg).glob("dca_*"))
+    if not paths:
+        raise FileNotFoundError(f"no dca_* licensee file in {sources_dir(cfg)}")
+    parts = [pd.read_csv(p, sep="\t", dtype=str, encoding="latin-1", usecols=list(DCA_RENAME)).rename(columns=DCA_RENAME) for p in paths]
+    df = pd.concat(parts, ignore_index=True)
+    if current_only:
+        df = df[df["licence_status"].fillna("").str.startswith("Current")]
+    df["licence_digits"] = df["licence_number"].map(licence_digits)
+    df["state"] = df["state"].fillna("").str.upper()
+    df["zip"] = df["zip"].fillna("").str[:5]
+    df["expiration_date"] = pd.to_datetime(df["expiration_date"], errors="coerce", format="%m-%d-%Y")
+    log.info("DCA licensees (%s): %s current licences", ", ".join(p.name for p in paths), f"{len(df):,}")
+    return df.reset_index(drop=True)
+
+
+def load_ppef(cfg, npis=None):
+    """CMS Medicare FFS Public Provider Enrollment (enrollment extract): NPI -> PECOS associate control (PAC) ID and enrollment type."""
+    path = find_file(sources_dir(cfg), "PPEF_Enrollment_Extract_*.csv")
+    keep = {int(n) for n in npis} if npis is not None else None
+    parts = []
+    for chunk in pd.read_csv(path, dtype=str, encoding="latin-1", usecols=["NPI", "PECOS_ASCT_CNTL_ID", "ENRLMT_ID", "STATE_CD", "ORG_NAME"],
+                             chunksize=500_000):
+        if keep is not None:
+            chunk = chunk[pd.to_numeric(chunk["NPI"], errors="coerce").isin(keep)]
+        parts.append(chunk)
+    df = pd.concat(parts, ignore_index=True).rename(columns={"NPI": "npi", "PECOS_ASCT_CNTL_ID": "pac_id", "ENRLMT_ID": "enrollment_id",
+                                                           "STATE_CD": "state", "ORG_NAME": "org_name"})
+    df["npi"] = df["npi"].astype("int64")
+    log.info("PPEF (%s): %s enrollments for %s NPIs", path.name, f"{len(df):,}", f"{df['npi'].nunique():,}")
+    return df

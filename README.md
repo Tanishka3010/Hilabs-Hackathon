@@ -9,7 +9,7 @@ A reproducible pipeline over Centene's Transparency-in-Coverage (TiC) files. Sco
 | `c2` | Applies the scope filters and the network-type rule cascade to every plan and file | `outputs/c2/plan_classification.csv`, `file_classification.csv`, `ppo_plans.csv`, `ppo_files.csv`, `exclusions_summary.csv`, `conflicts.csv`, `c2_stats.json` |
 | `c4` | Downloads each PPO rate file to `raw/ptd/` (resumable, retried; plain or gzip JSON), streams it into rate tables (files in parallel), collapses rates the file repeats under many service names, drops rows with in-file HMO evidence, then keeps one rate per provider context with a documented selection rule | `outputs/c4/<file_key>/rates_selected.parquet`, `rates.parquet`, `provider_refs.parquet`, `non_ppo_exclusions.csv`, `selection_summary.csv`, `c4_stats.json` |
 | `c3` | Grades every file used: 14 quality metrics per rate file, 5 per index file, with a weighted score and grade (files graded in parallel) | `outputs/c3/file_scores.csv`, `metric_values.csv`, `metric_details.json`, `index_file_scores.csv`, `c3_stats.json` |
-| `c5` | Maps every NPI and TIN to scored candidate addresses from 8 sources (CA licensed-facility register, CMS DAC and DAC group practices, CMS POS CLIA sites, NPPES primary and secondary, IRS nonprofits), grades each as verified / corroborated / unverified, and links TIN → NPI → address | `outputs/c5/provider_locations.csv`, `npi_addresses.csv`, `tin_npi_address.csv`, `c5_stats.json` |
+| `c5` | Maps every NPI and TIN to scored candidate addresses from 10 sources (CA licensed-facility register, CMS DAC, DAC group practices by name and by PAC ID via CMS PPEF, CMS POS CLIA sites, CA DCA licence boards, NPPES primary and secondary, IRS nonprofits), grades each as verified / corroborated / unverified, and links TIN → NPI → address | `outputs/c5/provider_locations.csv`, `npi_addresses.csv`, `tin_npi_address.csv`, `c5_stats.json` |
 | `c6` | Builds the provider rate file: one row per NPI × TIN × address × billing code × rate context, with specialty and rate (Excel + Parquet), checks the grain, and writes the run summary | `outputs/c6/provider_rate_file.xlsx`, `provider_rate_file.parquet`, `outputs/SUMMARY.md`, `outputs/summary.json` |
 | `c7` | Cost effectiveness: compares each provider's rates with similar providers (same service, same specialty or facility type, same county) | `outputs/c7/provider_cost_effectiveness.csv`, `service_comparisons.parquet`, `c7_stats.json` |
 | `ui` | One self-contained HTML page with an executive view and an analyst view | `outputs/ui/index.html` |
@@ -28,7 +28,7 @@ All paths are set in `config/config.yaml`, relative to the repo root, and each o
 DATA/                 index_dir      the 11 Centene TiC index JSON files (read-only, committed)
 raw/nppes/            nppes_dir      NPPES npidata_pfile_*.csv and pl_pfile_*.csv (git-ignored)
 raw/ptd/              ptd_dir        full in-network rate files (.json or .json.gz), downloaded and cached (git-ignored)
-raw/sources/          c5.sources_dir health_facility_locations.csv (CDPH), eo_ca.csv (IRS exempt orgs, CA), POS_CLIA_*.csv (CMS) (git-ignored)
+raw/sources/          c5.sources_dir health_facility_locations.csv (CDPH), eo_ca.csv (IRS exempt orgs, CA), POS_CLIA_*.csv (CMS), PPEF_Enrollment_Extract_*.csv (CMS), dca_*_Data00.tsv (CA DCA licensee lists) (git-ignored)
 reference/            reference_dir  NUCC taxonomy, HiLabs benchmark xlsx, CMS DAC (DAC_NationalDownloadableFile.csv), directory_check_sample.csv
 outputs/              output_dir     generated; safe to delete and regenerate (outputs/_cache holds reference, geocoder and DuckDB spill caches)
 ```
@@ -105,13 +105,13 @@ Re-running overwrites every output deterministically: rows are sorted on full ke
     - Rows with in-file HMO evidence (capitation, HMO-only labels) are excluded: 91 NPIs in 34 provider groups.
     - 1,681 contexts had several rates; each kept one by a fixed rule. See [docs/logic_c4.md](docs/logic_c4.md).
 - **C5:** 3,708 of 3,716 NPIs have a candidate address.
-    - **661 NPIs (17.8%) have a verified address** (two identifier-linked sources agree, or the CA licence register).
-    - **1,886 (50.7%) are verified or corroborated** (corroborated: NPPES plus a name + ZIP site).
-    - TINs: 17.8% verified, 48.3% verified or corroborated.
-    - 93% of best addresses are confirmed by the US Census geocoder.
-    - See [docs/logic_c5.md](docs/logic_c5.md).
-- **C6:** `outputs/c6/provider_rate_file.xlsx` has 457,783 rows in one sheet (37 MB; NPI × TIN × address × billing code × rate context, with specialty and rate). Every run checks that no two rows share the full grain. The xlsx is git-ignored; rebuild it with `--stage c6`. The Parquet copy is committed.
-- **C7:** 685 providers have enough comparable services to be labelled: 190 cost effective, 330 in line, 165 high cost. See [docs/logic_c7.md](docs/logic_c7.md).
+    - **1,610 NPIs (43.3%) have a verified address** (two identifier-linked sources agree, or the CA licence register).
+    - **2,147 (57.8%) are verified or corroborated** (corroborated: NPPES plus a name + ZIP site).
+    - TINs: 43.2% verified, 51.4% verified or corroborated.
+    - The CMS PPEF (NPI → PAC ID → DAC group sites) and the CA DCA licence lists added 949 verified NPIs.
+    - 93% of best addresses are confirmed by the US Census geocoder. See [docs/logic_c5.md](docs/logic_c5.md).
+- **C6:** `outputs/c6/provider_rate_file.xlsx` has 474,967 rows in one sheet (39 MB; NPI × TIN × address × billing code × rate context, with specialty and rate). Every run checks that no two rows share the full grain. The xlsx is git-ignored; rebuild it with `--stage c6`. The Parquet copy is committed.
+- **C7:** 685 providers have enough comparable services to be labelled: 192 cost effective, 334 in line, 159 high cost. See [docs/logic_c7.md](docs/logic_c7.md).
 - **UI:** `outputs/ui/index.html`, with an executive view (funnel, file grade, linkage, cost mix) and an analyst view (searchable provider table with drill-down to services).
 
 ## Tests

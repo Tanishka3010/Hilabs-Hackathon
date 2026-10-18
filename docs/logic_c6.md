@@ -1,12 +1,12 @@
 # C6: the provider rate file
 
-**Result.** `outputs/c6/provider_rate_file.xlsx` holds **457,783 rows** in one sheet (37 MB). There is one row per NPI × TIN × practice address × billing code × rate context. The columns the brief asks for (NPI, TIN, Address, Billing Code, Specialty, Rate) come first, and the context that makes each row unique is in its own columns.
+**Result.** `outputs/c6/provider_rate_file.xlsx` holds **474,967 rows** in one sheet (39 MB). There is one row per NPI × TIN × practice address × billing code × rate context. The columns the brief asks for (NPI, TIN, Address, Billing Code, Specialty, Rate) come first, and the context that makes each row unique is in its own columns.
 - 3,715 NPIs and 2,873 TINs; 3,707 NPIs have a specialty (their **primary** NPPES taxonomy).
 - **Address status by NPI** (the headline, from C5):
-    - 17.8% have a verified address;
-    - 50.7% are verified or corroborated.
+    - 43.3% have a verified address;
+    - 57.8% are verified or corroborated.
 
-  Most rows belong to large multi-site organisations, so the row shares are much higher (70% verified, 96% verified or corroborated). The run summary therefore leads with the NPI and TIN shares.
+  Most rows belong to large multi-site organisations, so the row shares are much higher (75% verified, 97% verified or corroborated). The run summary therefore leads with the NPI and TIN shares.
 
 `outputs/SUMMARY.md` (and `summary.json`) is deliverable 4, the high-level metrics from the whole run.
 
@@ -52,7 +52,7 @@ So each of these has its own Excel column, and a row is unique on NPI, TIN, addr
 | Count | Value |
 |---|---|
 | Duplicate keys on the full grain | 0 |
-| (NPI, TIN, address, code) keys with several context rows | 7,400 |
+| (NPI, TIN, address, code) keys with several context rows | 7,758 |
 
 **Collapsed service names.** When Health Net repeats one rate set under many item names for a revenue code, the rows are collapsed to one row with `Service Name` = "N services: name | name …". The full list is in the Parquet file (`service_names`).
 
@@ -83,10 +83,10 @@ The **Parquet file** adds:
 
 | Status | Rows |
 |---|---|
-| verified | 320,909 |
-| corroborated | 119,561 |
-| unverified | 16,335 |
-| out_of_state | 929 |
+| verified | 354,711 |
+| corroborated | 104,046 |
+| unverified | 15,259 |
+| out_of_state | 902 |
 | no_address | 46 |
 | deactivated_npi | 3 |
 

@@ -81,7 +81,7 @@ def test_nppes_cache_is_reused_without_raw_file(cfg):
         p.unlink()
     second = rd.load_nppes(cfg, npis=TARGET)
     assert len(first) == len(second) == 4
-    assert list((cfg["output_dir"] / "_cache" / "reference").glob("nppes_v2_npis-*.parquet"))
+    assert list((cfg["output_dir"] / "_cache" / "reference").glob(f"nppes_{rd.NPPES_CACHE_VERSION}_npis-*.parquet"))
 
 
 def test_nppes_state_fallback_when_no_provider_refs(cfg):
@@ -153,3 +153,9 @@ def test_primary_taxonomy_is_the_flagged_slot():
     assert out["taxonomy_code"].tolist() == ["222", "AAA", "BBB"]
     assert out["taxonomy_primary"].tolist() == ["Y", "N", "N"] and out["taxonomy_slot"].tolist() == [2, 0, 0]
     assert out["taxonomy_codes_all"].tolist() == ["111|222", "AAA", "BBB"]
+
+
+def test_licence_numbers_are_compared_on_digits():
+    assert rd.licence_digits("PSY 012345") == rd.licence_digits("12345") == "12345"
+    df = pd.DataFrame({"licence_1": ["A12345"], "licence_state_1": ["CA"], "licence_2": ["999"], "licence_state_2": ["NV"]})
+    assert rd.licence_numbers(df)["licences"].tolist() == ["CA:12345|NV:999"]

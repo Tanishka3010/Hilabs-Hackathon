@@ -1,14 +1,23 @@
 # C5: mapping PTD TINs and NPIs to their practising address
 
 **Result.** Every NPI in the PPO rate file (after C4's HMO-evidence carve-out: 3,716 NPIs, 2,873 TINs, 3,761 NPI–TIN pairs) is placed:
-- **3,708 have a candidate address**, and 3,594 have a best address in CA;
-- **661 NPIs (17.8%) have a verified address**: two sources linked to the NPI by an identifier (NPI or EIN) agree, or California's licence register lists it;
-- **another 1,225 (33.0%) have a corroborated address**: NPPES agrees with a site that was found by an organisation-name + ZIP search. That brings **verified or corroborated to 50.7%**;
-- **510 TINs (17.8%) have a verified address, and 1,389 (48.3%) a verified or corroborated one**. 129 TINs (4.5%) have a verified address that is tied to that TIN specifically;
-- **3,463 best addresses (93%) are confirmed to exist** by the US Census geocoder, which also gives coordinates and county;
-- **673 of 3,761 NPI–TIN pairs (18%)** have evidence tying the address to that specific TIN: the IRS address of the EIN, a DAC group practice named like the TIN, or another NPI under the same TIN reporting the same address.
+- **3,708 have a candidate address**;
+- **1,610 NPIs (43.3%) have a verified address**: two sources linked to the NPI by an identifier (NPI, EIN, PAC ID or licence number) agree, or California's licence register lists it. That is 349 individual clinicians and 1,261 organisations;
+- **another 537 (14.5%) have a corroborated address**: NPPES agrees with a site found by an organisation-name + ZIP search. That brings **verified or corroborated to 57.8%**;
+- **1,242 TINs (43.2%) have a verified address, and 1,478 (51.4%) a verified or corroborated one**. 138 TINs (4.8%) have a verified address tied to that TIN specifically;
+- **3,471 best addresses (93%) are confirmed to exist** by the US Census geocoder, which also gives coordinates and county;
+- **878 of 3,761 NPI–TIN pairs (23%)** have evidence tying the address to that specific TIN.
 
-Eight sources are combined and scored. 1,599 NPIs (43%) still have a best address supported only by NPPES; those stay `unverified`.
+Ten sources are combined and scored. 1,226 NPIs (33%) still have a best address supported only by NPPES; those stay `unverified`.
+
+**What the two newest sources added** (2026-10-18):
+
+| Source | Effect |
+|---|---|
+| CMS Public Provider Enrollment File (PPEF) | Maps an organisation's NPI to its PECOS PAC ID. That turned the DAC group-practice sites from name + ZIP guesses into identifier links: 11,565 candidate sites. Most corroborated organisations became verified |
+| CA Department of Consumer Affairs licensee lists (Behavioral Sciences, Medical Board) | Joined through the licence numbers NPPES carries: 396 candidates for clinicians outside Medicare, such as therapists, counsellors and physicians |
+
+Together they moved verified NPIs from 661 (17.8%) to 1,610 (43.3%), and verified TINs from 510 to 1,242.
 
 **Why two levels of verification.** A name + ZIP match (DAC group practices, CLIA sites, CDPH facilities without an NPI) is searched for in the ZIP codes NPPES gives for the NPI. When such a site then "agrees" with NPPES, the two sources are not fully independent: the search started from NPPES. Those addresses are reported as *corroborated*, kept in the rate file, and counted separately from *verified*.
 
@@ -21,7 +30,7 @@ Reproduce:
 It runs in about 20 s once the reference and geocoding caches exist. The first run sends about 5,000 distinct addresses to the Census batch geocoder (3 batches, about 90 s). Results are cached in `outputs/_cache/geocode/`, so each address is only sent once; set `c5.geocode.enabled: false` to run offline. It needs:
 - `raw/nppes/` (NPPES);
 - `reference/DAC_NationalDownloadableFile.csv`;
-- in `raw/sources/`: `health_facility_locations.csv`, `eo_ca.csv` and `POS_CLIA_*.csv`.
+- in `raw/sources/`: `health_facility_locations.csv`, `eo_ca.csv`, `POS_CLIA_*.csv`, `PPEF_Enrollment_Extract_*.csv` (CMS) and the DCA licensee lists saved as `dca_<Board>_Data00.tsv` (the DCA download is named `.xls` but is tab-separated text).
 
 Every source is required: a missing one stops C5 with its name, because silently skipping it would change the verified share. Set `c5.allow_missing_sources: true` to run without it on purpose; it is then listed in `c5_stats.json` → `missing_sources`.
 
@@ -48,6 +57,8 @@ The brief warns that one TIN can have many addresses and one NPI can practise at
 | **CMS DAC** (national file) | `cms_dac` | 0.7 | NPI | 498 | Refreshed from Medicare enrollment (PECOS). Clinicians only. Carries the **group practice name** per address |
 | **CMS DAC group practices** (all 314,486 CA DAC rows) | `cms_dac` | 0.6 | Organisation name ≈ DAC group practice name **and** same ZIP | 3,587 (1,045 organisations) | DAC lists, for every clinician, the group practice they bill through and its site. A group's DAC sites are Medicare-enrolment addresses of the **organisation itself**, independent of NPPES. The link is a name match, so it's weighted below a direct NPI match |
 | **CMS POS CLIA file** (Q3 2023; active certificates only: 33,500 sites in our NPIs' ZIPs, from 628,095 rows) | `cms_clia` | 0.5 | Organisation name, **or a clinician's first + last name**, ≈ CLIA site name **and** same ZIP | 1,158 (817 NPIs) | Every site that runs lab tests, including clinics and physician offices, needs a CLIA certificate for its physical address. It's an independent federal register. Weighted lower because the file is from 2023 and the link is a name match |
+| **CMS DAC group sites by PAC ID** (CMS PPEF: organisation NPI → PECOS PAC ID; DAC: `org_pac_id` → the group's sites) | `cms_dac` | 0.7 | Organisation NPI → PAC ID (identifier chain) | 11,565 | The same Medicare-enrolment sites as the DAC group match below, but reached through identifiers, so it counts as an identifier link |
+| **CA DCA licensee lists** (`raw/sources/dca_*`: Board of Behavioral Sciences, Medical Board; current licences only, PO boxes dropped) | `ca_dca` | 0.5 | NPPES licence number (state CA, compared on digits) **and** the same surname | 396 | The board's address of record. It is self-reported and can be a mailing address, so it never verifies alone, only together with another source |
 | NPPES primary practice address | `nppes` | 0.5 × recency | NPI | 3,726 | Universal but self-reported; the brief says about 80% are stale |
 | NPPES secondary practice locations | `nppes` | 0.4 × recency | NPI | 1,663 | Same registry, so not independent of the primary |
 | **IRS exempt organisations, CA** (irs.gov, posted 13 Oct 2026) | `irs` | 0.4 | **TIN = EIN** (142 of our TINs) | 372 | The filing address, often the headquarters rather than a practice site. It can confirm an address, never verify one alone |
@@ -120,7 +131,7 @@ The geocoder isn't counted as an independent *source*: it confirms an address ex
 For each (NPI, address key):
 - **Confidence** = 1 − Π(1 − weight) over the sources reporting it, each source counted once. For example, CA register + a stale NPPES primary gives 1 − 0.2 × 0.8 = 0.84.
 - **Identifier-linked vs name-linked sources.**
-    - Identifier-linked: NPPES (by NPI), DAC (by NPI), the CA register (by NPI) and IRS (by EIN = TIN).
+    - Identifier-linked: NPPES (by NPI), DAC (by NPI), DAC group sites by PAC ID (via PPEF), the CA register (by NPI), the DCA licence boards (by licence number) and IRS (by EIN = TIN).
     - Name-linked: DAC group practices, CLIA sites and CA register sites without an NPI, all matched by name + ZIP (`c5.name_linked_sources`).
 - **Verified** (`verification_strength = strict`) = the address is in CA **and** either at least **2 source families with an identifier link** report it (`two_id_linked_sources`), **or** the CA licence register lists it by NPI (`state_license_register`).
 - **Corroborated** = in CA, 2 source families agree, but one of them is name-linked (`id_and_name_linked_sources`).
@@ -130,33 +141,27 @@ Scoring is done with grouped aggregations (no per-address Python loop).
 
 | Sources behind a verified best address | NPIs |
 |---|---|
-| CA register + NPPES primary | 199 |
-| DAC (by NPI) + NPPES primary | 179 |
+| DAC group (name + ZIP) + DAC by PAC ID + NPPES primary | 496 |
+| CA register + NPPES primary | 177 |
+| CLIA + DAC group + DAC by PAC ID + NPPES primary | 149 |
+| DAC by PAC ID + NPPES primary | 133 |
 | CA register + CLIA + NPPES primary | 94 |
-| CLIA + DAC (by NPI) + NPPES primary | 34 |
-| CA register + DAC group (+ CLIA) + NPPES primary | 40 |
-| CA register + IRS + NPPES primary | 18 |
-| IRS + NPPES primary | 16 |
-| Other combinations | 81 |
+| DAC (by NPI) + NPPES primary | 92 |
+| DCA licence + NPPES primary | 85 |
+| DCA licence + DAC (by NPI) + NPPES primary | 83 |
+| Other combinations | 301 |
 
-| Sources behind a corroborated best address | NPIs |
-|---|---|
-| DAC group practice + NPPES primary | 690 |
-| CLIA + NPPES primary | 256 |
-| CLIA + DAC group practice + NPPES primary | 173 |
-| CA register (name + ZIP) + NPPES primary | 21 |
-| CLIA + DAC group practice (no NPPES) | 21 |
-| Other combinations | 64 |
+Corroborated best addresses: 537, almost all organisations whose only second source is a name + ZIP match (DAC group, CLIA or CA register site without an NPI).
 
 `location_status` per NPI:
 
 | Status | Individuals | Organisations | Total |
 |---|---|---|---|
-| `verified` | 223 | 438 | **661** |
-| `corroborated` | 13 | 1,212 | **1,225** |
-| `unverified_single_source` | 292 | 1,049 | 1,341 |
-| `unverified_multiple_candidates` | 123 | 243 | 366 |
-| `out_of_state_only` (e.g. national labs) | 7 | 107 | 114 |
+| `verified` | 349 | 1,261 | **1,610** |
+| `corroborated` | 3 | 534 | **537** |
+| `unverified_single_source` | 135 | 907 | 1,042 |
+| `unverified_multiple_candidates` | 167 | 244 | 411 |
+| `out_of_state_only` (e.g. national labs) | 4 | 103 | 107 |
 | `deactivated_npi` (NPPES withholds their address) | — | — | 7 |
 | `no_address` (not in NPPES, no other source) | — | — | 2 |
 
@@ -219,20 +224,21 @@ Other ways to use the directory, if the organizers allow:
 - ask Health Net or the organizers for a directory extract (California requires health plans to keep directories accurate, so one exists internally);
 - check whether Health Net offers a FHIR provider-directory API for this line of business. CMS requires one for Medicare Advantage and Medicaid plans, but not for commercial plans.
 
-**What's left** (3,055 NPIs not verified; 1,225 of them corroborated):
+**What's left** (2,106 NPIs not verified; 537 of them corroborated):
 
 | Remaining group | NPIs | What would confirm them |
 |---|---|---|
-| Corroborated (NPPES + a name + ZIP site) | 1,225 (1,212 organisations) | An identifier-linked second source for the same site: DAC by NPI, the CA register by NPI, or a directory extract |
-| A single source, almost always NPPES | 1,341 (1,049 organisations) | A second independent address: the Health Net directory (spot check or extract), the CMS POS hospital/non-hospital extract, the CA Secretary of State business registry (principal address by entity name) |
-| Several candidates, none confirmed | 366 | The same sources; the geocoded county can already be checked against `PPO: <County>` labels where present |
-| Only out-of-state addresses (national labs, mail-order, telehealth) | 114 | Mostly correct as-is (e.g. LabCorp, Quest headquarters). Confirming a CA site needs the lab's own location list |
+| Corroborated (NPPES + a name + ZIP site) | 537 (534 organisations) | An identifier-linked second source for the same site: DAC by NPI, the CA register by NPI, or a directory extract |
+| A single source, almost always NPPES | 1,042 (907 organisations) | A second independent address: the Health Net directory (spot check or extract), the CMS POS hospital/non-hospital extract, the CA Secretary of State business registry (principal address by entity name) |
+| Several candidates, none confirmed | 411 | The same sources; the geocoded county can already be checked against `PPO: <County>` labels where present |
+| Only out-of-state addresses (national labs, mail-order, telehealth) | 107 | Mostly correct as-is (e.g. LabCorp, Quest headquarters). Confirming a CA site needs the lab's own location list |
 | Deactivated / not in NPPES | 9 | Not mappable from public registries; flag for the organizers |
 
 Each new source becomes another `source` with its own weight and family. The rule doesn't change.
 
 ## 8. Limitations
-- 49.3% of NPIs have neither a verified nor a corroborated address (see §7), and only 17.8% are verified by identifier-linked sources.
+- 42.2% of NPIs have neither a verified nor a corroborated address (see §7).
+- The DCA address of record is self-reported and sometimes a home or mailing address; it is only used together with another source.
 - The CLIA extract is from Q3 2023. A certificate active then may have closed since, so CLIA is weighted lower and never verifies alone.
 - The IRS address is a filing address: it raises confidence and links a TIN, but it isn't treated as a practice site on its own.
 - Name matching is rule-based (word overlap, place words removed, at least 2 shared words). The thresholds (0.5 for TIN names, 0.6 for site names) are configurable, and every similarity is reported.

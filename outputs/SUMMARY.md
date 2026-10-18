@@ -8,11 +8,11 @@ Shares are per NPI and per TIN. *Verified* = two sources linked to the provider 
 
 | Metric | Value |
 |---|---|
-| share npis verified address | 0.1779 |
-| share npis verified or corroborated address | 0.5075 |
-| share tins verified address | 0.1775 |
-| share tins verified or corroborated address | 0.4835 |
-| share tins with tin specific verified address | 0.0449 |
+| share npis verified address | 0.4333 |
+| share npis verified or corroborated address | 0.5778 |
+| share tins verified address | 0.4323 |
+| share tins verified or corroborated address | 0.5144 |
+| share tins with tin specific verified address | 0.048 |
 
 ## All run metrics
 
@@ -34,30 +34,30 @@ Shares are per NPI and per TIN. *Verified* = two sources linked to the provider 
 | unique npis | 3716 |
 | unique tins | 2873 |
 | npi tin pairs | 3761 |
-| npis with verified address | 661 |
-| npis with corroborated address | 1225 |
-| tins with verified address | 510 |
-| tins with tin specific verified address | 129 |
-| rate file rows npi tin address code | 457783 |
+| npis with verified address | 1610 |
+| npis with corroborated address | 537 |
+| tins with verified address | 1242 |
+| tins with tin specific verified address | 138 |
+| rate file rows npi tin address code | 474967 |
 | rate file npis | 3715 |
 | rate file npis with specialty | 3707 |
-| row weighted share verified or corroborated | 0.9622 |
+| row weighted share verified or corroborated | 0.9659 |
 | rate rows excluded invalid npi | 5 |
 | c7 providers scored | 685 |
-| c7 cost effective providers | 190 |
-| c7 high cost providers | 165 |
+| c7 cost effective providers | 192 |
+| c7 high cost providers | 159 |
 
 ## Provider rate file
 
-- `outputs/c6/provider_rate_file.xlsx`: 457,783 rows across 1 sheet(s) (457,783), plus About and Summary sheets.
+- `outputs/c6/provider_rate_file.xlsx`: 474,967 rows across 1 sheet(s) (474,967), plus About and Summary sheets.
 - `outputs/c6/provider_rate_file.parquet`: the same rows with every evidence column (address sources, confidence, coordinates, rate range, selection rule, HiLabs specialty, all service names).
-- Grain check: {'duplicate_keys_on_full_grain': 0, 'keys_npi_tin_address_code_with_several_rows': 7400, 'rows_sharing_npi_tin_address_code': 435553}
+- Grain check: {'duplicate_keys_on_full_grain': 0, 'keys_npi_tin_address_code_with_several_rows': 7758, 'rows_sharing_npi_tin_address_code': 450744}
 
 Rows by address status (row-weighted; large multi-site organisations dominate):
 
-- corroborated: 119,561
+- corroborated: 104,046
 - deactivated_npi: 3
 - no_address: 46
-- out_of_state: 929
-- unverified: 16,335
-- verified: 320,909
+- out_of_state: 902
+- unverified: 15,259
+- verified: 354,711

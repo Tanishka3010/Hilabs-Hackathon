@@ -238,3 +238,32 @@ def test_tin_consensus_is_tin_specific_and_org_name_is_not():
     assert first11["tin_specific"] and "shared_by_tin_npis" in first11["link_evidence"] and first11["tin_consensus"] == 2
     acme = links[links["npi"] == 13].iloc[0]
     assert "nppes_org_name_matches_tin" in acme["link_evidence"] and not acme["tin_specific"]
+
+
+def test_dca_licence_links_by_licence_number_and_surname():
+    nppes = nppes_frame().assign(licences=["CA:12345", "", "", ""])
+    dca = pd.DataFrame([
+        {"licence_digits": "12345", "last_name": "LEE", "board": "Board of Psychology", "licence_type": "Psychologist", "address_line1": "123 Main Street",
+         "address_line2": "Suite 4", "city": "SF", "state": "CA", "zip": "94107", "expiration_date": pd.Timestamp("2027-01-01")},
+        {"licence_digits": "12345", "last_name": "OTHER", "board": "Medical Board", "licence_type": "Physician", "address_line1": "9 Elsewhere",
+         "address_line2": "", "city": "LA", "state": "CA", "zip": "90001", "expiration_date": pd.Timestamp("2027-01-01")},
+    ])
+    cand = c5m.dca_candidates(dca, nppes)
+    assert cand["npi"].tolist() == [1] and cand["address_line1"].tolist() == ["123 Main Street"]
+    addr = c5m.score_addresses(c5m.build_candidates(nppes, pd.DataFrame(), pd.DataFrame(columns=["npi"]), [cand]), nppes, C5, AS_OF)
+    best = addr[(addr["npi"] == 1) & (addr["rank"] == 1)].iloc[0]
+    assert best["verification_strength"] == "strict" and "ca_dca_licence" in best["sources"]
+
+
+def test_ppef_pac_id_links_organisation_to_dac_group_sites():
+    nppes = nppes_frame()
+    ppef = pd.DataFrame([{"npi": 2, "pac_id": "555", "enrollment_id": "O2020"}, {"npi": 1, "pac_id": "777", "enrollment_id": "I2020"}])
+    dac_state = pd.DataFrame([
+        {"npi": 9, "org_pac_id": "555", "facility_name": "ACME CLINIC", "address_line1": "9 Oak Road", "address_line2": "", "city": "LA", "state": "CA", "zip": "90001"},
+        {"npi": 8, "org_pac_id": "777", "facility_name": "X", "address_line1": "1 X St", "address_line2": "", "city": "LA", "state": "CA", "zip": "90001"},
+    ])
+    cand = c5m.ppef_dac_candidates(ppef, dac_state, nppes)
+    assert cand["npi"].tolist() == [2] and cand["source"].tolist() == ["dac_pac_id"]
+    addr = c5m.score_addresses(c5m.build_candidates(nppes, pd.DataFrame(), pd.DataFrame(columns=["npi"]), [cand]), nppes, C5, AS_OF)
+    best = addr[(addr["npi"] == 2) & (addr["rank"] == 1)].iloc[0]
+    assert best["verification_strength"] == "strict" and best["sources"] == "dac_pac_id|nppes_primary"
