@@ -181,7 +181,18 @@ Rows can carry several kinds of evidence. **1,564 of 3,780 pairs (41%)** have at
 - `address_matches` (Y/N: same street address, suites ignored);
 - `checked_by`, `checked_on`, `notes`.
 
-A person looks each one up in the Health Net directory and fills the columns. On the next run, C5 reads the file (never overwriting it) and reports **precision for verified and unverified addresses** in `c5_stats.json → directory_check`. That gives the judges a measured accuracy for the address mapping, beyond agreement between sources. If the directory shows a different site for a provider, that's direct evidence of stale data, and it belongs in the notes.
+A person looks each one up in the Health Net directory and fills the columns.
+
+**Partial result (2026-10-18; stopped after 12 of 50 at the user's request).** The 12 lookups were done by NPI search in the directory's "PPO – Large Group/Small Group" network, 2026, with a name search when the NPI returned nothing:
+- **3 of the 12 were found:**
+    - Coast Plaza Hospital, Norwalk: **matches**.
+    - Paru Chaudhari MD Inc, Walnut Creek, found through its owner-practitioner: **matches**.
+    - A hospital-based OB/GYN: the directory lists Arcadia; our best address is Pasadena, **differs**.
+- **9 organisation NPIs weren't listed at all**, by NPI or by name. They include White Memorial Medical Center, UC Irvine Pediatrics and a Sutter lab.
+
+So the directory indexes clinicians and facilities rather than group or billing NPIs. And several organisations in the shared CA rate file don't appear in the PPO directory, which supports open question Q3 (the file mixes networks). Precision on 3 found rows (2 of 3) is too small a sample to quote.
+
+The directory also confirmed independently that **EOA = "Elect Open Access", a POS product**: it's listed as "POS – Elect Open Access Small Group/Large Group". On the next run, C5 reads the file (never overwriting it) and reports **precision for verified and unverified addresses** in `c5_stats.json → directory_check`. That gives the judges a measured accuracy for the address mapping, beyond agreement between sources. If the directory shows a different site for a provider, that's direct evidence of stale data, and it belongs in the notes.
 
 Other ways to use the directory, if the organizers allow:
 - ask Health Net or the organizers for a directory extract (California requires health plans to keep directories accurate, so one exists internally);

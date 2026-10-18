@@ -71,6 +71,6 @@ def test_directory_check_scoring():
         {"stratum": "unverified", "directory_found": "", "address_matches": ""},
     ])
     out = c5m.score_directory_check(df)
-    assert out == {"checked": 3, "found_in_directory": 2, "precision_unverified": 0.0, "checked_unverified": 1,
+    assert out == {"looked_up": 3, "found_in_directory": 2, "checked": 3, "precision_unverified": 0.0, "checked_unverified": 1,
                    "precision_verified": 0.5, "checked_verified": 2}
     assert c5m.score_directory_check(df.iloc[[3]])["checked"] == 0

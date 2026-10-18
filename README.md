@@ -9,9 +9,10 @@ A reproducible pipeline over Centene's Transparency-in-Coverage (TiC) files. Sco
 | `c2` | Applies the scope filters and the network-type rule cascade to every plan and file | `outputs/c2/plan_classification.csv`, `file_classification.csv`, `ppo_plans.csv`, `ppo_files.csv`, `exclusions_summary.csv`, `conflicts.csv`, `c2_stats.json` |
 | `c4` | Downloads each PPO rate file to `raw/ptd/` (resumable), streams it into rate tables, then keeps one rate per provider context with a documented selection rule | `outputs/c4/<file_key>/rates_selected.parquet`, `rates.parquet`, `provider_refs.parquet`, `selection_summary.csv`, `c4_stats.json` |
 | `c3` | Grades every file used: 13 quality metrics per rate file, 5 per index file, with a weighted score and grade | `outputs/c3/file_scores.csv`, `metric_values.csv`, `metric_details.json`, `index_file_scores.csv`, `c3_stats.json` |
+| `c6` | Builds the provider rate file: one row per NPI × TIN × address × billing code, with specialty and rate (Excel + Parquet), plus the run summary | `outputs/c6/provider_rate_file.xlsx` (rebuilt locally), `provider_rate_file.parquet`, `outputs/SUMMARY.md` |
 | `c5` | Maps every NPI and TIN to scored candidate addresses from 8 sources (CA licensed-facility register, CMS DAC and DAC group practices, CMS POS CLIA sites, NPPES primary and secondary, IRS nonprofits, rate-file names), verifies them, and links TIN → NPI → address | `outputs/c5/provider_locations.csv`, `npi_addresses.csv`, `tin_npi_address.csv`, `c5_stats.json` |
 
-The logic and the reasons behind each decision are in [docs/logic_c1_c2.md](docs/logic_c1_c2.md) (C1, C2), [docs/logic_c3.md](docs/logic_c3.md) (C3 file-quality metrics), [docs/logic_c4.md](docs/logic_c4.md) (C4 rate extraction and selection) and [docs/logic_c5.md](docs/logic_c5.md) (C5 provider addresses). To resume the project in a new session, start with [docs/PROJECT_CONTEXT.md](docs/PROJECT_CONTEXT.md). Unresolved data ambiguities are in [docs/open_questions.md](docs/open_questions.md).
+The logic and the reasons behind each decision are in [docs/logic_c1_c2.md](docs/logic_c1_c2.md) (C1, C2), [docs/logic_c3.md](docs/logic_c3.md) (C3 file-quality metrics), [docs/logic_c4.md](docs/logic_c4.md) (C4 rate extraction and selection), [docs/logic_c5.md](docs/logic_c5.md) (C5 provider addresses) and [docs/logic_c6.md](docs/logic_c6.md) (C6 rate file). The run summary is [outputs/SUMMARY.md](outputs/SUMMARY.md). To resume the project in a new session, start with [docs/PROJECT_CONTEXT.md](docs/PROJECT_CONTEXT.md). Unresolved data ambiguities are in [docs/open_questions.md](docs/open_questions.md).
 
 ## Setup (Python 3.11+)
 ```bash
@@ -76,6 +77,8 @@ Assumptions the organizers haven't confirmed are switches in `config/config.yaml
 - C4: **840,574 selected rates** for 3,735 NPIs and 2,888 TINs. 4,859 provider contexts had several rates; each kept one by a fixed rule: drop unusable → prefer negotiated → set aside more-than-10× outliers → most frequent → lower median on a tie. See [docs/logic_c4.md](docs/logic_c4.md).
 
 - C5: 3,727 of 3,735 NPIs have a candidate address. **1,899 NPIs (50.8%) and 1,435 TINs (49.7%) have a verified address**: 2 independent sources agree, or the CA licence register confirms it. 93% of best addresses are confirmed by the US Census geocoder. 41% of NPI–TIN pairs have TIN-specific evidence. C5 needs `raw/sources/health_facility_locations.csv`, `eo_ca.csv` and `POS_CLIA_*.csv`; the first run calls the Census geocoder over the internet (cached afterwards). A Health Net directory spot check sample is written to `outputs/c5/directory_check_sample.csv` (see [docs/logic_c5.md](docs/logic_c5.md)).
+
+- C6: `outputs/c6/provider_rate_file.xlsx` has 1,466,669 rows (NPI × TIN × address × billing code, with specialty and rate), and 97% of rows have a verified address. The xlsx is 103 MB, so it's git-ignored; rebuild it with `--stage c6`. The Parquet copy is committed.
 
 ## Tests
 ```bash

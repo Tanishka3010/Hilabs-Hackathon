@@ -62,8 +62,11 @@
     "no_county": 8
   },
   "directory_check": {
-    "checked": 0,
-    "status": "no rows filled in yet"
+    "checked": 3,
+    "checked_verified": 3,
+    "found_in_directory": 3,
+    "looked_up": 12,
+    "precision_verified": 0.6667
   },
   "distinct_npi_addresses": 7214,
   "geocode": {

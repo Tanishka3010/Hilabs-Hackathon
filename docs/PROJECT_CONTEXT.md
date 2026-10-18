@@ -29,17 +29,17 @@ Provider types: Type 1 (individual) and Type 2 (organisation) NPIs.
 | C3 | Define PTD quality and completeness metrics, score every file used, justify each metric | **Done**: 13 rate-file metrics and 5 index-file metrics |
 | C4 | Extract rates for every PPO provider; when a provider has several rates for one code, say which is kept and why | **Done** |
 | C5 | Map TINs and NPIs to their practising address, without relying on NPPES alone | **Done**: 8 sources + Census geocoding; 1,899 NPIs (50.8%) and 1,435 TINs (49.7%) verified; 93% of best addresses geocoded; 41% of NPI–TIN pairs have TIN-specific evidence |
-| C6 | Build the provider rate file (NPI, TIN, address, billing code, specialty, rate), as Excel | Not started |
+| C6 | Build the provider rate file (NPI, TIN, address, billing code, specialty, rate), as Excel | **Done**: 1,466,669 rows, 97% with a verified address; xlsx (103 MB, git-ignored, rebuilt by `--stage c6`) + Parquet (committed) |
 | C7 (optional) | Cost-effectiveness metrics vs similar providers | Not started |
 
 Deliverables:
 
 | # | Deliverable | Status |
 |---|---|---|
-| 1 | Rate file (Excel) | Needs C5 and C6 |
+| 1 | Rate file (Excel) | Done: `outputs/c6/provider_rate_file.xlsx` (rebuilt locally) |
 | 2 | Logic file | Network part done (`logic_c1_c2.md`); address part done (`logic_c5.md`) |
 | 3 | File-quality metrics | Done (`logic_c3.md`) |
-| 4 | Summary file | Partly: README, `c*_stats.json`, and the shared summary doc (claude.ai artifact) |
+| 4 | Summary file | Done: `outputs/SUMMARY.md` + `summary.json` (written by C6) |
 | 5 | Video (≤ 5 min) | Not started |
 | 6 | Code repo | Re-runs from the README, no hard-coded paths |
 
@@ -94,6 +94,7 @@ Scoring weights (logic and metrics track): Logic 40, Metrics 35, Structure 25. E
 | `src/contracts.py` | Column contracts for the rate tables |
 | `src/c5_provider_location.py` | C5: address candidates, normalising, confidence scoring, verification, TIN–NPI–address links, county check, directory spot-check sample |
 | `src/geocode.py` | Census batch geocoder client (multipart upload, parallel batches, cache, retries) |
+| `src/c6_rate_file.py` | C6: rate file (Parquet + Excel split across sheets) and run summary |
 | `src/run.py` | CLI entry point and summary print |
 | `docs/` | `logic_c1_c2.md`, `logic_c3.md`, `logic_c4.md`, `open_questions.md`, `work_split.md` (the two-person split, **abandoned**: one person now does everything), this file, and a Word summary `HiLabs_PTD_C1_C2_Summary.docx` |
 
@@ -308,6 +309,23 @@ It isn't an independent source. Its version is accepted only if the house number
 
 See `logic_c5.md` §7 for what each remaining group needs.
 
+## 7c. C6: provider rate file
+
+Full logic: [logic_c6.md](logic_c6.md).
+
+**How rows are built:** C4 `rates_selected` (840,574) × the C5 TIN–NPI address list × NPPES name and taxonomy → NUCC specialty (plus the HiLabs specialty in the Parquet file). For each pair: every verified address, else the best candidate, else a `no_address` row. The rate repeats across a pair's addresses (TiC has no site-level pricing).
+
+**Result:**
+- **1,466,669 rows**; 3,734 NPIs; 2,888 TINs.
+- **97.0% of rows have a verified address**: verified 1,422,786, unverified 42,887, out of state 947, no address 46, deactivated 3.
+- 5 rows with NPI 0 are excluded from the Excel file (kept in Parquet with `npi_valid = false`).
+
+**Excel:** sheets About, Summary, Rates 1 (1,048,575 rows), Rates 2 (418,094). Sheets split at an NPI boundary after 1M rows, or at the hard limit. Written by `xlsxwriter` in constant-memory mode in about 60 s. The file is 103 MB, so it's git-ignored; the Parquet file (2 MB) is committed.
+
+**Summary (deliverable 4):** `outputs/SUMMARY.md` and `outputs/summary.json`.
+
+**Spot check:** stopped after 12 of 50 at the user's request; results in `logic_c5.md` §7. The directory also confirmed EOA = Elect Open Access (POS).
+
 ## 8. Reference-data loaders (`src/reference_data.py`)
 
 - **Benchmark workbook** with three sheets:
@@ -358,6 +376,6 @@ Commit messages end with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com
 ## 12. What's next
 
 1. **C5 optional extras:** Census batch geocoding and the Health Net directory. The CMS POS file was skipped (see logic_c5 §7). Each plugs in as a new source with its own weight.
-2. **C6 (provider rate file, Excel).** Join `rates_selected` to addresses and specialty (NPPES taxonomy → NUCC / HiLabs crosswalk). One row per NPI, TIN, address and billing code, with columns NPI, TIN, Address, Billing Code, Specialty and Rate. 840k contexts may exceed Excel's row limit (1,048,576) once multiplied by addresses: plan to split by sheet or filter to procedure-coded rows, and document the choice.
+2. **Remaining deliverables:** the video (≤ 5 min), the final README pass, refreshing the shared summary doc and Word copy with the C3–C6 numbers, and optionally C7 and a UI.
 3. **The summary file and the shared summary doc** (claude.ai artifact `https://claude.ai/code/artifact/acdaa8c8-b12a-4364-8f9b-d25bb3d3dd88`) need C3, C4, C5 and C6 numbers. A refreshed Word copy goes in `docs/`.
 4. **Optional:** C7 cost-effectiveness metrics, a UI, and the video.

@@ -348,12 +348,13 @@ def directory_check_sample(prov, nppes, refs, c5):
 
 def score_directory_check(check):
     yes = {"Y", "YES", "TRUE", "1"}
+    looked = check[check["directory_found"].fillna("").astype(str).str.strip() != ""]
     done = check[check["address_matches"].fillna("").astype(str).str.strip() != ""].copy()
-    if not len(done):
+    if not len(looked) and not len(done):
         return {"checked": 0, "status": "no rows filled in yet"}
     done["ok"] = done["address_matches"].astype(str).str.strip().str.upper().isin(yes)
-    found = done["directory_found"].fillna("").astype(str).str.strip().str.upper().isin(yes)
-    out = {"checked": int(len(done)), "found_in_directory": int(found.sum())}
+    found = looked["directory_found"].astype(str).str.strip().str.upper().isin(yes)
+    out = {"looked_up": int(len(looked)), "found_in_directory": int(found.sum()), "checked": int(len(done))}
     for stratum, g in done.groupby("stratum"):
         out[f"precision_{stratum}"] = round(float(g["ok"].mean()), 4)
         out[f"checked_{stratum}"] = int(len(g))
