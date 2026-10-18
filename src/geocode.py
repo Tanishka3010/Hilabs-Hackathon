@@ -64,15 +64,21 @@ def geocode(addresses, cache_path, settings, fetch=census_fetch):
 
         def run(b):
             rows = [[k, s, c, st, z] for k, s, c, st, z in zip(b["address_key"], b["street"], b["city"], b["state"], b["zip"])]
-            return parse_census(fetch(rows, settings))
+            try:
+                return parse_census(fetch(rows, settings))
+            except IOError as e:
+                # one failed batch must not stop C5: its addresses stay Not_Geocoded and are retried on the next run
+                log.warning("geocode: batch of %d skipped (%s)", len(rows), e)
+                return pd.DataFrame(columns=RESULT_COLS)
 
         with ThreadPoolExecutor(max_workers=int(settings.get("workers", 4))) as ex:
             results = list(ex.map(run, batches))
-        fresh = pd.concat(results, ignore_index=True) if results else pd.DataFrame(columns=RESULT_COLS)
+        fresh = pd.concat([r for r in results if len(r)], ignore_index=True) if any(len(r) for r in results) else pd.DataFrame(columns=RESULT_COLS)
         missing = set(todo["address_key"]) - set(fresh["address_key"])
         if missing:
-            fresh = pd.concat([fresh, pd.DataFrame({"address_key": sorted(missing), "geo_status": "No_Response"})], ignore_index=True)
+            log.warning("geocode: %d addresses got no response; not cached, so the next run retries them", len(missing))
         cached = pd.concat([cached, fresh], ignore_index=True).drop_duplicates("address_key", keep="last").sort_values("address_key")
+        cached = cached[cached["geo_status"] != "No_Response"]
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         cached.reindex(columns=RESULT_COLS).to_parquet(cache_path, index=False)
     out = addresses[["address_key"]].drop_duplicates().merge(cached, on="address_key", how="left")

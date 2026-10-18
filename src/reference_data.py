@@ -51,9 +51,10 @@ NPPES_RENAME = {
     "Last Update Date": "last_update_date",
     "NPI Deactivation Date": "deactivation_date",
     "NPI Reactivation Date": "reactivation_date",
-    "Healthcare Provider Taxonomy Code_1": "taxonomy_code",
-    "Healthcare Provider Primary Taxonomy Switch_1": "taxonomy_primary",
+    **{f"Healthcare Provider Taxonomy Code_{i}": f"taxonomy_{i}" for i in range(1, 16)},
+    **{f"Healthcare Provider Primary Taxonomy Switch_{i}": f"taxonomy_switch_{i}" for i in range(1, 16)},
 }
+NPPES_CACHE_VERSION = "v2"  # v2: all 15 taxonomy slots, primary taxonomy chosen by the switch
 
 PL_RENAME = {
     "NPI": "npi",
@@ -66,6 +67,27 @@ PL_RENAME = {
 }
 
 NPPES_DATE_COLS = ("enumeration_date", "last_update_date", "deactivation_date", "reactivation_date")
+
+
+def primary_taxonomy(df):
+    """NPPES lists up to 15 taxonomies; the practising specialty is the one flagged primary (switch = Y), which is often not slot 1.
+    Falls back to the first non-empty slot when no slot is flagged."""
+    codes = [df.get(f"taxonomy_{i}", pd.Series("", index=df.index)).fillna("").astype(str).str.strip() for i in range(1, 16)]
+    switches = [df.get(f"taxonomy_switch_{i}", pd.Series("", index=df.index)).fillna("").astype(str).str.strip().str.upper() for i in range(1, 16)]
+    primary = pd.Series("", index=df.index)
+    slot = pd.Series(0, index=df.index)
+    for i in range(15, 0, -1):
+        hit = (switches[i - 1] == "Y") & (codes[i - 1] != "")
+        primary, slot = primary.mask(hit, codes[i - 1]), slot.mask(hit, i)
+    first = pd.Series("", index=df.index)
+    for i in range(15, 0, -1):
+        first = first.mask(codes[i - 1] != "", codes[i - 1])
+    out = df.drop(columns=[c for c in df.columns if c.startswith("taxonomy_")])
+    out["taxonomy_code"] = primary.where(primary != "", first)
+    out["taxonomy_slot"] = slot
+    out["taxonomy_primary"] = (primary != "").map({True: "Y", False: "N"})
+    out["taxonomy_codes_all"] = ["|".join(c for c in row if c) for row in zip(*codes)]
+    return out
 
 
 def npi_is_valid(npi):
@@ -96,7 +118,7 @@ def ref_settings(cfg):
 
 
 def target_npis(cfg):
-    paths = sorted((cfg["output_dir"] / "c4").glob("*/provider_refs.parquet"))
+    paths = sorted((cfg["output_dir"] / "c4").glob("*/provider_refs*.parquet"))
     if not paths:
         return None
     npis = set()
@@ -230,9 +252,9 @@ def load_nppes(cfg, npis=None, states=None, force=False):
         for c in NPPES_DATE_COLS:
             df[c] = pd.to_datetime(df[c], errors="coerce", format="%m/%d/%Y")
         df["nppes_status"] = nppes_status(df)
-        return df
+        return primary_taxonomy(df)
 
-    df = cached(cache_path(cfg, f"nppes_{tag}.parquet"), build, force)
+    df = cached(cache_path(cfg, f"nppes_{NPPES_CACHE_VERSION}_{tag}.parquet"), build, force)
     log.info("NPPES (%s): %s rows, status %s, states %s", tag, f"{len(df):,}", df["nppes_status"].value_counts().to_dict(),
              df["state"].value_counts().head(5).to_dict())
     return df

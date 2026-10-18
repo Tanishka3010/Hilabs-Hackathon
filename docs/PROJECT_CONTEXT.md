@@ -375,6 +375,8 @@ Commit messages end with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com
 
 ## 12. What's next
 
+**Scalability improvements** (judged under "Scalability", 40 points): see [scalability_review.md](scalability_review.md) for the gap analysis and a prioritised to-do list (about half a day for the recommended set).
+
 1. **C5 optional extras:** Census batch geocoding and the Health Net directory. The CMS POS file was skipped (see logic_c5 §7). Each plugs in as a new source with its own weight.
 2. **Remaining deliverables:** the video (≤ 5 min), the final README pass, refreshing the shared summary doc and Word copy with the C3–C6 numbers, and optionally C7 and a UI.
 3. **The summary file and the shared summary doc** (claude.ai artifact `https://claude.ai/code/artifact/acdaa8c8-b12a-4364-8f9b-d25bb3d3dd88`) need C3, C4, C5 and C6 numbers. A refreshed Word copy goes in `docs/`.

@@ -2,7 +2,8 @@ import argparse
 import json
 import sys
 
-from src import c0_recon, c1_parse_index, c2_classify_network, c3_quality, c4_extract_rates, c5_provider_location, c6_rate_file
+from src import (c0_recon, c1_parse_index, c2_classify_network, c3_quality, c4_extract_rates, c5_provider_location, c6_rate_file,
+                 c7_cost_effectiveness, ui_report)
 from src.common import load_config, setup_logging
 
 STAGES = {
@@ -13,7 +14,10 @@ STAGES = {
     "c3": [c3_quality],
     "c5": [c5_provider_location],
     "c6": [c6_rate_file],
-    "all": [c0_recon, c1_parse_index, c2_classify_network, c4_extract_rates, c3_quality, c5_provider_location, c6_rate_file],
+    "c7": [c7_cost_effectiveness],
+    "ui": [ui_report],
+    "all": [c0_recon, c1_parse_index, c2_classify_network, c4_extract_rates, c3_quality, c5_provider_location, c6_rate_file,
+            c7_cost_effectiveness, ui_report],
 }
 
 

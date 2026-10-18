@@ -37,7 +37,19 @@ def test_geocode_caches_and_only_sends_new_addresses(tmp_path):
 def test_geocode_marks_missing_responses(tmp_path):
     addrs = pd.DataFrame({"address_key": ["1 A ST|90001"], "street": ["1 A ST"], "city": ["X"], "state": ["CA"], "zip": ["90001"]})
     out = geo.geocode(addrs, tmp_path / "g.parquet", {}, fetch=lambda rows, s: "")
-    assert out.iloc[0]["geo_status"] == "No_Response"
+    assert out.iloc[0]["geo_status"] == "Not_Geocoded"
+    # a miss is not cached, so the next run asks again
+    assert len(pd.read_parquet(tmp_path / "g.parquet")) == 0
+
+
+def test_failed_batch_does_not_stop_geocoding(tmp_path):
+    addrs = pd.DataFrame({"address_key": ["1 A ST|90001"], "street": ["1 A ST"], "city": ["X"], "state": ["CA"], "zip": ["90001"]})
+
+    def boom(rows, s):
+        raise IOError("census geocoder unavailable")
+
+    out = geo.geocode(addrs, tmp_path / "g.parquet", {}, fetch=boom)
+    assert out.iloc[0]["geo_status"] == "Not_Geocoded"
 
 
 @pytest.mark.parametrize("raw,canon,mt,ok", [

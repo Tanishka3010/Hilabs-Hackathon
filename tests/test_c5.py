@@ -147,8 +147,11 @@ def test_registry_and_irs_sources_verify_and_link():
     cand = c5m.build_candidates(nppes, pl, pd.DataFrame(columns=["npi"]), [fac, c5m.irs_candidates(irs, refs)])
     addr = c5m.score_addresses(cand, nppes, C5, AS_OF)
     best = addr[addr["rank"] == 1].set_index("npi")
-    assert best.loc[2, "verified"] and best.loc[2, "verification_basis"] == "two_independent_sources"
+    assert best.loc[2, "verified"] and best.loc[2, "verification_basis"] == "two_id_linked_sources" and best.loc[2, "verification_strength"] == "strict"
     assert best.loc[6, "verified"] and best.loc[6, "sources"] == "ca_facility_name_zip|nppes_primary"
+    # a site found by name + ZIP (ZIP from NPPES) only corroborates NPPES; it is not an independent verification
+    assert best.loc[6, "verification_strength"] == "corroborated" and best.loc[6, "verification_basis"] == "id_and_name_linked_sources"
+    assert best.loc[7, "verification_strength"] == "strict"
     assert best.loc[7, "verified"] and "irs_eo" in best.loc[7, "sources"]
     links = c5m.link_tin_npi_address(refs, addr, nppes, C5)
     assert "irs_address_for_tin" in links[links["npi"] == 7].iloc[0]["link_evidence"]
@@ -215,3 +218,23 @@ def test_clia_sites_become_candidates_for_people_and_organisations():
     addr = c5m.score_addresses(c5m.build_candidates(nppes, pd.DataFrame(), pd.DataFrame(), [cand]), nppes, C5, AS_OF)
     best = addr[addr["rank"] == 1].set_index("npi")
     assert best.loc[2, "verified"] and best.loc[2, "sources"] == "cms_clia|nppes_primary"
+
+
+def test_tin_consensus_is_tin_specific_and_org_name_is_not():
+    nppes = pd.DataFrame([
+        {"npi": 11, "entity_type": "1", "org_name": "", "first_name": "A", "last_name": "B", "address_line1": "1 Shared St", "address_line2": "",
+         "city": "SF", "state": "CA", "zip": "94107", "last_update_date": pd.Timestamp("2026-05-01"), "nppes_status": "active", "taxonomy_code": "X"},
+        {"npi": 12, "entity_type": "1", "org_name": "", "first_name": "C", "last_name": "D", "address_line1": "1 Shared Street", "address_line2": "",
+         "city": "SF", "state": "CA", "zip": "94107", "last_update_date": pd.Timestamp("2026-05-01"), "nppes_status": "active", "taxonomy_code": "X"},
+        {"npi": 13, "entity_type": "2", "org_name": "ACME CLINIC", "first_name": "", "last_name": "", "address_line1": "9 Own Rd", "address_line2": "",
+         "city": "SF", "state": "CA", "zip": "94108", "last_update_date": pd.Timestamp("2026-05-01"), "nppes_status": "active", "taxonomy_code": "X"},
+    ])
+    pl = pd.DataFrame([{"npi": 11, "address_line1": "5 Other Ave", "address_line2": "", "city": "SF", "state": "CA", "zip": "94110"}])
+    addr = c5m.score_addresses(c5m.build_candidates(nppes, pl, pd.DataFrame(columns=["npi"])), nppes, C5, AS_OF)
+    refs = pd.DataFrame([{"npi": 11, "tin": "1", "business_name": "Group"}, {"npi": 12, "tin": "1", "business_name": "Group"},
+                         {"npi": 13, "tin": "2", "business_name": "Acme Clinic"}])
+    links = c5m.link_tin_npi_address(refs, addr, nppes, C5)
+    first11 = links[(links["npi"] == 11) & (links["pair_rank"] == 1)].iloc[0]
+    assert first11["tin_specific"] and "shared_by_tin_npis" in first11["link_evidence"] and first11["tin_consensus"] == 2
+    acme = links[links["npi"] == 13].iloc[0]
+    assert "nppes_org_name_matches_tin" in acme["link_evidence"] and not acme["tin_specific"]

@@ -8,6 +8,7 @@ RATES_LONG_COLUMNS = {
     "billing_code_type_version": "string",
     "billing_code": "string",
     "name": "string",
+    "description": "string",
     "rate_idx": "int64",
     "price_idx": "int64",
     "provider_group_id": "string",
@@ -45,11 +46,22 @@ RATES_SELECTED_COLUMNS = {
 
 RATES_COLUMNS = {
     **{k: RATES_LONG_COLUMNS[k] for k in ("file_key", "in_network_idx", "negotiation_arrangement", "billing_code_type", "billing_code_type_version",
-                                          "billing_code", "name", "rate_idx", "price_idx", "provider_group_id", "negotiated_type",
+                                          "billing_code", "name", "description", "rate_idx", "price_idx", "provider_group_id", "negotiated_type",
                                           "negotiated_rate", "expiration_date", "billing_class")},
     "setting": "string",
     **{k: RATES_LONG_COLUMNS[k] for k in ("service_code", "billing_code_modifier", "additional_information")},
 }
+
+PROCEDURE_CODE_TYPES = ("CPT", "HCPCS", "MS-DRG", "APR-DRG", "CDT")
+PROCEDURE_CODE_RE = "^[A-Z0-9][0-9]{3}[A-Z0-9]$"
+
+# One provider context = one price that C4 must resolve to a single rate. C3 (conflicting_rates) and C4 use the same definition.
+# service_key is the item name, blanked when the file repeats the same rates under several names (see c3_quality.connect_rates).
+CONTEXT_COLS = ["npi", "tin", "negotiation_arrangement", "billing_code_type", "billing_code", "associated_code", "service_key",
+                "billing_code_modifier", "billing_class", "setting", "service_code"]
+# Peer group for the 10x outlier rule (C3 outlier_rate and C4 step 3).
+OUTLIER_GROUP_COLS = ["billing_code_type", "billing_code", "associated_code", "service_key", "billing_class", "negotiated_type"]
+EXTRACT_VERSION = 2
 
 FILE_HEADER_KEYS = (
     "file_key", "file_url", "reporting_entity_name", "reporting_entity_type", "version", "last_updated_on",

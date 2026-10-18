@@ -1,0 +1,5 @@
+c7:
+  min_peers: 5                  # other providers needed in a peer group; the county group is widened to the state below this
+  min_services: 5               # services compared before a provider gets a label
+  cost_effective_max_index: 0.90  # at least 10% below similar providers on a typical service
+  high_cost_min_index: 1.10       # at least 10% above

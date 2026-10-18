@@ -27,6 +27,10 @@ c5:
     nppes_secondary: nppes
     irs_eo: irs
   high_trust_sources: [ca_facility]
+  # found by a name + ZIP search (ZIP taken from NPPES), so agreement with NPPES counts as "corroborated", not "verified"
+  name_linked_sources: [ca_facility_name_zip, dac_group, cms_clia]
+  # every source is required; set true to run without a missing one (it is then listed in c5_stats.json -> missing_sources)
+  allow_missing_sources: false
   geocode:
     enabled: true
     benchmark: Public_AR_Current
@@ -36,6 +40,7 @@ c5:
     timeout_s: 600
     retries: 3
   directory_check:
+    path: reference/directory_check_sample.csv
     per_stratum: 25
     seed: 7
   name_match_threshold: 0.5

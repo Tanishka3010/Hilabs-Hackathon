@@ -10,9 +10,16 @@ NETWORK_TYPES = ("PPO", "HMO", "EPO", "POS")
 FINAL_TYPES = NETWORK_TYPES + ("EOA",)
 SPECIAL_TOKENS = ("HSP", "EOA")
 UNKNOWN = "OTHER/UNKNOWN"
+# Defaults only; the scope is read from config c2.target_states / target_market / target_network (see scope()).
 TARGET_STATE = "CA"
 TARGET_MARKET = "group"
 TARGET_NETWORK = "PPO"
+
+
+def scope(cfg2):
+    states = cfg2.get("target_states") or [TARGET_STATE]
+    return ({str(s).upper() for s in states}, str(cfg2.get("target_market") or TARGET_MARKET).lower(),
+            str(cfg2.get("target_network") or TARGET_NETWORK).upper())
 TOKEN_RE = re.compile(r"(?<![A-Za-z])(PPO|HMO|EPO|POS|HSP|EOA)(?![A-Za-z])", re.I)
 HIOS_RE = re.compile(r"^\d{5}([A-Z]{2})\d")
 EIN_RE = re.compile(r"^\d{9}$")
@@ -122,6 +129,7 @@ def apply_scope(plans, plan_files, fsig, cfg2):
     fstate = dict(zip(fsig["file_key"], fsig["file_state"]))
     plans["hios_state"] = plans["plan_id"].map(hios_state)
     bstates = brand_states(plans, float(cfg2.get("brand_state_min_share", 0.9)))
+    target_states, target_market, _ = scope(cfg2)
     rows = []
     for r in plans.itertuples(index=False):
         ust = sorted({fstate.get(k, "") for k in plan_files.get(r.plan_key, [])} - {""})
@@ -139,10 +147,10 @@ def apply_scope(plans, plan_files, fsig, cfg2):
             flags.append("MULTI_STATE_FILES:" + "+".join(ust))
         if ust and r.hios_state and r.hios_state not in ust:
             flags.append(f"STATE_CONFLICT_URL_{'+'.join(ust)}_VS_HIOS_{r.hios_state}")
-        if state != TARGET_STATE:
+        if state not in target_states:
             reasons.append("OUT_OF_STATE" if state else "STATE_UNKNOWN")
         mt = (r.plan_market_type or "").lower()
-        if mt != TARGET_MARKET:
+        if mt != target_market:
             reasons.append({"individual": "INDIVIDUAL_MARKET", "": "MARKET_UNKNOWN"}.get(mt, "NON_GROUP_MARKET"))
         if NON_COMMERCIAL_RE.search(r.plan_name or ""):
             reasons.append("NON_COMMERCIAL_PRODUCT")
@@ -333,6 +341,7 @@ def classify_files(files, fsig, df, plan_files, file_conf):
             "network_label": label, "confidence": conf, "decision_reason": reason,
             "n_plans": len(pks), "n_in_scope_plans": len(ins),
             "n_ppo_plans": sum(1 for p in ins if p["network_label"] == "PPO"),
+            "n_target_plans": sum(1 for p in ins if p["is_target_ppo"]),
             "n_non_ppo_plans": sum(1 for p in ins if p["network_label"] in FINAL_TYPES and p["network_label"] != "PPO"),
             "n_unknown_plans": sum(1 for p in ins if p["network_label"] == UNKNOWN),
             "label_counts": "|".join(f"{k}={v}" for k, v in sorted(lab.items())),
@@ -378,10 +387,11 @@ def run(cfg, fingerprint=False):
     df["propagation_signal"] = df["plan_key"].map(lambda pk: prop.get(pk, ""))
     dec = df.apply(lambda r: decide(r, cfg2), axis=1)
     df["network_label"], df["confidence"], df["decision_reason"] = dec.map(lambda t: t[0]), dec.map(lambda t: t[1]), dec.map(lambda t: t[2])
-    df["is_target_ppo"] = (df["scope_verdict"] == "IN_SCOPE") & (df["network_label"] == TARGET_NETWORK)
+    target_network = scope(cfg2)[2]
+    df["is_target_ppo"] = (df["scope_verdict"] == "IN_SCOPE") & (df["network_label"] == target_network)
     df = df.drop(columns=["pre_label", "pre_conf"])
     df["final_reason_code"] = df.apply(lambda r: r["scope_reason"] if r["scope_verdict"] != "IN_SCOPE" else (
-        "PPO" if r["is_target_ppo"] else {"HMO": "HMO", "EPO": "EPO", "POS": "POS", "EOA": "EOA"}.get(r["network_label"], r["decision_reason"])), axis=1)
+        target_network if r["is_target_ppo"] else {"PPO": "PPO", "HMO": "HMO", "EPO": "EPO", "POS": "POS", "EOA": "EOA"}.get(r["network_label"], r["decision_reason"])), axis=1)
     df["file_keys"] = df["plan_key"].map(lambda pk: "|".join(plan_files.get(pk, [])))
     fcls = classify_files(files, fsig, df, plan_files, file_conf)
     if fingerprint:
@@ -404,14 +414,14 @@ def run(cfg, fingerprint=False):
     fcls.to_csv(c2_dir / "file_classification.csv", index=False)
     ppo_plans = pc[pc["is_target_ppo"]]
     ppo_plans[["plan_key", "plan_name", "plan_id", "plan_id_type", "confidence", "decision_reason", "file_keys", "file_names"]].to_csv(c2_dir / "ppo_plans.csv", index=False)
-    ppo_files = fcls[(fcls["scope_verdict"] == "IN_SCOPE") & (fcls["n_ppo_plans"] > 0)].copy()
-    ppo_files["ppo_plan_share"] = (ppo_files["n_ppo_plans"] / ppo_files["n_in_scope_plans"]).round(4)
-    ppo_files["requires_in_file_network_filter"] = ppo_files["network_label"] != TARGET_NETWORK
+    ppo_files = fcls[(fcls["scope_verdict"] == "IN_SCOPE") & (fcls["n_target_plans"] > 0)].copy()
+    ppo_files["ppo_plan_share"] = (ppo_files["n_target_plans"] / ppo_files["n_in_scope_plans"]).round(4)
+    ppo_files["requires_in_file_network_filter"] = ppo_files["network_label"] != target_network
     ppo_files.to_csv(c2_dir / "ppo_files.csv", index=False)
     conf_df.to_csv(c2_dir / "conflicts.csv", index=False)
     excl = []
     for code, n in Counter(pc["final_reason_code"]).items():
-        excl.append({"level": "plan", "reason_code": code, "count": n, "kept": code == "PPO"})
+        excl.append({"level": "plan", "reason_code": code, "count": n, "kept": code == target_network})
     for code, n in Counter(r for rs in pc["scope_reasons_all"] for r in rs.split("|") if r).items():
         excl.append({"level": "plan_any_scope_reason", "reason_code": code, "count": n, "kept": False})
     for code, n in Counter(fcls.apply(lambda r: r["scope_reason"] if r["scope_verdict"] != "IN_SCOPE" else ("PPO" if r["network_label"] == "PPO" else ("MIXED_CONTAINS_PPO" if r["n_ppo_plans"] else r["network_label"])), axis=1)).items():

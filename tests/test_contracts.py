@@ -8,7 +8,7 @@ from src.contracts import FILE_HEADER_KEYS, RATES_LONG_COLUMNS, conform, empty_f
 def sample_rates_long():
     return pd.DataFrame([
         {"file_key": "k1", "in_network_idx": 0, "negotiation_arrangement": "ffs", "billing_code_type": "CPT", "billing_code_type_version": "2026",
-         "billing_code": "99213", "name": "Office visit", "rate_idx": 0, "price_idx": 0, "provider_group_id": "1", "provider_ref_resolved": True,
+         "billing_code": "99213", "name": "Office visit", "description": "", "rate_idx": 0, "price_idx": 0, "provider_group_id": "1", "provider_ref_resolved": True,
          "npi": 1770688129, "tin_type": "ein", "tin": "68-0273974", "negotiated_type": "negotiated", "negotiated_rate": 95.0,
          "expiration_date": "9999-12-31", "billing_class": "professional", "service_code": "11", "billing_code_modifier": "", "additional_information": ""},
     ])

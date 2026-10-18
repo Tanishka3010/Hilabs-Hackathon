@@ -1,5 +1,6 @@
 import duckdb
 import pandas as pd
+import pytest
 from openpyxl import load_workbook
 
 from src import c6_rate_file as c6
@@ -50,3 +51,23 @@ def test_excel_split_respects_row_limit(tmp_path, monkeypatch):
     first = list(wb["Rates 1"].iter_rows(min_row=2, max_row=2, values_only=True))[0]
     cols = [label for _, label, _ in c6.EXCEL_COLUMNS]
     assert first[cols.index("ZIP")] == "02134" and first[cols.index("Rate")] == 10.5 and first[cols.index("NPI")] == 1
+
+
+def test_grain_check_rejects_duplicate_rows(tmp_path):
+    base = {c: "x" for c in c6.GRAIN} | {"npi": 1, "npi_valid": True}
+    pq = tmp_path / "g.parquet"
+    pd.DataFrame([base, {**base, "billing_class": "y"}]).to_parquet(pq)
+    con = duckdb.connect()
+    stats = c6.grain_check(con, f"read_parquet('{pq}')")
+    assert stats["duplicate_keys_on_full_grain"] == 0 and stats["keys_npi_tin_address_code_with_several_rows"] == 1
+    pd.DataFrame([base, base]).to_parquet(pq)
+    with pytest.raises(ValueError, match="duplicate keys"):
+        c6.grain_check(con, f"read_parquet('{pq}')")
+
+
+def test_corroborated_address_status():
+    links, addr, prov = link_frames()
+    addr["verification_strength"] = ["strict", "corroborated", "", "", "", ""]
+    p = c6.pair_addresses(links, addr, prov)
+    st = dict(zip(p["address_id"], p["address_status"]))
+    assert st["a1"] == "verified" and st["a2"] == "corroborated"

@@ -25,6 +25,7 @@ IN_NETWORK = {
     "provider_references": [
         {"provider_group_id": 1, "provider_groups": [{"npi": [1234567893], "tin": {"type": "ein", "value": "11-1111111"}}]},
         {"provider_group_id": 2, "provider_groups": [{"npi": [1770688129], "tin": {"type": "ein", "value": "22-2222222", "business_name": "PPO: Los Angeles County"}}]},
+        {"provider_group_id": 3, "provider_groups": [{"npi": [1093817361], "tin": {"type": "ein", "value": "33-3333333", "business_name": "DIRECT NETWORK: AMBETTER HMO"}}]},
     ],
     "in_network": [
         item("10001", "mode", [100, 100, 150]),
@@ -35,6 +36,13 @@ IN_NETWORK = {
         item("10005", "outlier", [90, 95, 100, 105, 110], refs=(2,)),
         item("10006", "drops", [0, (70, "negotiated", "2020-01-01"), (5, "percentage"), 80]),
         item("10007", "all invalid", [0]),
+        item("10008", "hmo labelled group", [50], refs=(3,)),
+        {**item("10009", "capitated", [(25, "fee schedule")]), "negotiation_arrangement": "capitation"},
+        # the same RC rate set published under two item names: one price per associated code, not one per name
+        *[{"negotiation_arrangement": "ffs", "name": n, "billing_code_type": "RC", "billing_code": "300",
+           "negotiated_rates": [{"provider_references": [1], "negotiated_prices": [{**price(500, cls="institutional"), "additional_information": "36415"},
+                                                                                  price(600, cls="institutional")]}]}
+          for n in ("LAB A", "LAB B")],
     ],
 }
 
@@ -85,12 +93,45 @@ def test_unusable_rates_are_dropped_with_reasons(selected):
     stats, df = selected
     r = pick(df, "10006")
     assert r.negotiated_rate == 80 and r.selection_rule == "single_rate"
-    assert stats["dropped_rows"] == {"invalid_rate": 2, "expired": 1, "non_dollar_rate_type": 1}
+    assert stats["dropped_rows"] == {"invalid_rate": 2, "expired": 1, "non_dollar_rate_type": 1, "non_ppo_evidence": 2}
     assert df[df["billing_code"] == "10007"].empty
 
 
 def test_one_row_per_context_and_network_hint(selected):
     stats, df = selected
-    assert stats["selected_rows"] == len(df) == 7
+    assert stats["selected_rows"] == len(df) == 9
     other = pick(df, "10005", npi=1770688129)
     assert other.network_hint == "PPO" and other.selection_rule == "lower_median_of_tied_rates" and other.negotiated_rate == 100
+
+
+def test_non_ppo_evidence_is_excluded(selected):
+    stats, df = selected
+    assert df[df["billing_code"].isin(["10008", "10009"])].empty
+    assert stats["non_ppo_excluded"] == {"npis": 2, "tins": 2, "provider_groups": 2}
+    assert set(df["network_label"]) == {"unlabelled", "ppo_label"}
+
+
+def test_rates_repeated_across_item_names_collapse(selected):
+    _, df = selected
+    rc = df[df["billing_code"] == "300"].sort_values("negotiated_rate")
+    assert rc["negotiated_rate"].tolist() == [500, 600]
+    assert rc["associated_code"].iloc[0] == "36415" and pd.isna(rc["associated_code"].iloc[1]) and rc["procedure_code"].isna().all()
+    assert (rc["n_service_names"] == 2).all() and rc["name"].iloc[0] == "LAB A | LAB B" and rc["selection_rule"].eq("single_rate").all()
+
+
+def test_gzip_file_reads_the_same(tmp_path):
+    import gzip
+    src = tmp_path / "in.json.gz"
+    with gzip.open(src, "wt") as fh:
+        json.dump(IN_NETWORK, fh)
+    h = ptd_reader.extract_local(FILE_KEY, "https://example.com/x_in-network.json.gz", src, tmp_path / "c4", parallel=False)
+    assert h["compressed"] and h["n_in_network_items"] == len(IN_NETWORK["in_network"]) and h["n_provider_references"] == 3
+
+
+def test_non_numeric_inline_npi_is_counted_not_fatal(tmp_path):
+    doc = {"in_network": [{"billing_code_type": "CPT", "billing_code": "1", "negotiated_rates": [
+        {"provider_groups": [{"npi": ["abc", 1234567893], "tin": {"type": "ein", "value": "1"}}], "negotiated_prices": [price(10)]}]}]}
+    src = tmp_path / "in.json"
+    src.write_text(json.dumps(doc))
+    h = ptd_reader.extract_local(FILE_KEY, "https://example.com/x.json", src, tmp_path / "c4", parallel=False)
+    assert h["invalid_records"] == {"non_numeric_npi": 1}

@@ -94,7 +94,8 @@ def test_rate_level_metrics(cfg):
     assert v["exact_duplicates"][0] == pytest.approx(1 / 8)
     assert v["rate_type_usability"][0] == pytest.approx(7 / 8)
     assert v["expired_rates"][0] == pytest.approx(1 / 8)
-    assert v["code_identifiability"][0] == pytest.approx(7 / 8)
+    assert v["code_identifiability"][0] == pytest.approx(6 / 8)  # RC 636 + J1100: J1100 is not the item's own service, so it is only an associated code
+    assert v["rate_replication"][0] == pytest.approx(0.0)
     assert v["referential_integrity"][0] == pytest.approx(1.0)
     assert v["outlier_rate"][0] == pytest.approx(0.0)
     assert v["conflicting_rates"][0] == pytest.approx(1 / 8)

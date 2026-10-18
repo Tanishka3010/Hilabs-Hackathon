@@ -1,6 +1,6 @@
 # Logic: C1 (index parsing) and C2 (PPO network identification)
 
-Scope: payer Centene, commercial **group** market, California, **PPO** network.
+Scope: payer Centene, commercial **group** market, California, **PPO** network. The scope is configuration, not code: `config/config.yaml` → `c2.target_states` (a list), `c2.target_market`, `c2.target_network`.
 Inputs: the 11 TiC index (table-of-contents) files in `index_dir`, snapshot 2026-09-28/30.
 
 ## 1. Data sources
@@ -40,7 +40,7 @@ Result on the snapshot:
 ## 4. C2: the key fact that shapes everything
 The index has **one in-network file for all 1,312 Health Net CA group plans**: `2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json` (about 702 MB). HMO, PPO, EOA and POS plans all point to it. So:
 - The **PPO network is identified at plan level.** There is no PPO-only file to pick.
-- The **PPO rate file is that single CA file, labelled `MIXED`.** C3 has to keep only PPO rates and providers inside it (`requires_in_file_network_filter = True` in `ppo_files.csv`).
+- The **PPO rate file is that single CA file, labelled `MIXED`** (`requires_in_file_network_filter = True` in `ppo_files.csv`). Rates in a TiC file are not tied to plans, so the carve-out inside the file uses in-file evidence only: C4 drops provider groups whose TIN business name is labelled HMO-only and every capitation price (an HMO payment model), and keeps a `network_label` on every remaining rate. See [logic_c4.md](logic_c4.md) §1.
 
 No machine learning is used. There are no independent labels to train on: any labels would come from the same name tokens, so a model would just re-learn the regex. Every decision below is a rule with a reason code.
 
@@ -147,7 +147,7 @@ For each of the 33 files, `file_classification.csv` gives the label, confidence,
 | **MIXED** (in scope) | 1 | `healthnet-ca`: PPO 456, HMO 723, EOA 127, POS 6; PPO share 34.8% |
 | out of scope | 32 | 31 `OUT_OF_STATE`, 1 `INDIVIDUAL_MARKET` (`ambetter-ca`) |
 
-`ppo_files.csv` holds that one CA file, with `requires_in_file_network_filter = True`. `ppo_plans.csv` holds the 456 plan keys that C3 should use to keep PPO rates only.
+`ppo_files.csv` holds that one CA file, with `requires_in_file_network_filter = True`. `ppo_plans.csv` holds the 456 PPO plan keys. The in-file filter is applied in C4 ([logic_c4.md](logic_c4.md) §1).
 
 ## 10. Conflict handling
 `conflicts.csv` lists 466 rows. 156 are in scope:
@@ -170,12 +170,12 @@ The remaining 310 rows are out of scope: 308 ID-type data flags (307 QualChoice,
 | Product family names imply network type | **Confirmed for 7 families** (purity 1.0, support 26 to 230). `EC` rejected: it appears on HMO and EOA plans. |
 | Cost-share shape implies network type | **Mostly rejected.** 4-part shape is PPO only 87% of the time, 3-part is HMO 72%; only the 2-part shape passes (97%). |
 | In-file `network_name` separates networks (TiC v2) | **Rejected on sample.** Empty in 2,825/2,825 provider references. |
-| TIN `business_name` prefixes tag networks | **Weak.** `PPO:` on 1.9% of groups, plus `Direct Network: …` (including `AMBETTER PPO/HMO`). Left for C3. |
+| TIN `business_name` prefixes tag networks | **Weak.** `PPO:` on 1.9% of groups, plus `Direct Network: …` (including `AMBETTER PPO/HMO`). Used in C4: HMO-only labels and capitation prices are excluded; PPO labels are kept as `network_label`. |
 
 ## 12. Known limitations
 - All PPO evidence comes from plan names. If the issuer mislabels a plan name, it is misclassified.
 - 130 plans (EOA and PPO+EPO) are classified by the organizers' answers, not by evidence in the public data.
-- The PPO rate file is shared with HMO/POS/EOA plans. Without network tags inside the file, separating PPO rates in C3 depends on provider- or arrangement-level evidence that may be incomplete.
+- The PPO rate file is shared with HMO/POS/EOA plans. The C4 carve-out removes only providers with explicit HMO evidence (HMO-only labels, capitation); providers with no label stay in, so the rate file can still contain providers that are only in other Health Net CA networks.
 - The fingerprint reads only a byte-capped prefix of the 702 MB file, and the NPPES CA share needs `nppes_dir`.
 - Family names were validated against this snapshot only, and could drift in later snapshots.
 

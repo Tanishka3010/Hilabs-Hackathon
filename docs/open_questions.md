@@ -13,7 +13,7 @@ Each item below is something the data leaves ambiguous. Until it's answered, the
 ## Q3. A single CA in-network file for every CA group network
 - **Evidence:** all 1,312 Health Net CA plan entries (HMO 719, PPO 452, EOA 127, POS 6, other 8) point to `2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json` (about 702 MB).
 - **Question:** is a "PPO network file" expected to exist, or should the PPO network be carved out of this file (C3) using plan-level membership and/or in-file provider attributes?
-- **Current handling:** the file is labelled `MIXED` and is the only row in `outputs/c2/ppo_files.csv` (`requires_in_file_network_filter = True`), with the 456 PPO plans in `outputs/c2/ppo_plans.csv`.
+- **Current handling:** the file is labelled `MIXED` and is the only row in `outputs/c2/ppo_files.csv` (`requires_in_file_network_filter = True`), with the 456 PPO plans in `outputs/c2/ppo_plans.csv`. C4 removes rates with in-file HMO evidence: provider groups whose TIN business name is labelled HMO-only (`DIRECT NETWORK: AMBETTER HMO`) and every capitation price. The rest of the file is kept as the PPO network's rates, with a `network_label` per row (`outputs/c4/<file>/non_ppo_exclusions.csv` lists what was removed).
 
 ## Q4. What do the in-file network markers mean?
 - **Evidence:** in the first 40 MB of the CA file, `provider_references[].network_name` is always empty (2,825 of 2,825). About 2% of TIN `business_name` values carry prefixes such as `PPO: Los Angeles County`, `Direct Network: San Diego`, `DIRECT NETWORK: AMBETTER PPO` and `DIRECT NETWORK: AMBETTER HMO`.
@@ -42,3 +42,8 @@ Each item below is something the data leaves ambiguous. Until it's answered, the
 
 ## Q9. Duplicate QualChoice sub-indexes
 - **Evidence:** `big_four` and `city_of_fort_smith` contain the same 4 City of Fort Smith plans. They are deduplicated at plan level. Out of scope anyway (Arkansas).
+
+## Q10. What is `additional_information` on revenue-code rows?
+- **Evidence:** 69% of the CA file's price rows repeat, under another item name, the exact rate set a provider already has for the same revenue code, `additional_information` value and place of service (`outputs/c3/metric_details.json` → `rate_replication`). The `additional_information` code rarely describes the item: an item named "ASSAY OF SEX HORMONE GLOBUL" (RC 300) carries `36415` (venipuncture). Of RC rows whose `additional_information` is a CPT/HCPCS code priced elsewhere in the file, only 2.4% have the matching item name. Rates keyed this way are far above the file's own professional rates for the same code (median ratio about 49×).
+- **Question:** is `additional_information` a primary/grouping code for the revenue-code rate, and are the item names only a list of services the rate covers?
+- **Current handling:** copies across names are collapsed to one price (names kept in `service_names`). The code is shown as `associated_code`, not as the procedure. `procedure_code` is only set when the code really identifies the item.

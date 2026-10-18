@@ -2,6 +2,8 @@
   "bytes_read": 701615514,
   "bytes_total": 701615514,
   "complete": true,
+  "compressed": false,
+  "extract_version": 2,
   "file_key": "5bf4afa2cef9bc2a",
   "file_url": "https://www.centene.com/content/dam/centene/Centene%20Corporate/json/DOCUMENT/2026-09-30_centene-management-company-llc_healthnet-ca_in-network.json",
   "invalid_records": {},

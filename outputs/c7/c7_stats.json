@@ -1,0 +1,44 @@
+{
+  "by_entity_type": {
+    "": {
+      "cost_effective": 0,
+      "high_cost": 0,
+      "in_line": 0,
+      "insufficient_data": 8
+    },
+    "1": {
+      "cost_effective": 0,
+      "high_cost": 2,
+      "in_line": 12,
+      "insufficient_data": 651
+    },
+    "2": {
+      "cost_effective": 190,
+      "high_cost": 163,
+      "in_line": 318,
+      "insufficient_data": 2412
+    }
+  },
+  "by_label": {
+    "cost_effective": 190,
+    "high_cost": 165,
+    "in_line": 330,
+    "insufficient_data": 3071
+  },
+  "compared_at_county_level": 75278,
+  "config": {
+    "cost_effective_max_index": 0.9,
+    "high_cost_min_index": 1.1,
+    "min_peers": 5,
+    "min_services": 5
+  },
+  "cost_index_quartiles": {
+    "0.25": 0.8969,
+    "0.5": 1.0,
+    "0.75": 1.0715
+  },
+  "providers": 3756,
+  "providers_scored": 685,
+  "service_rows_compared": 231608,
+  "service_rows_total": 271048
+}

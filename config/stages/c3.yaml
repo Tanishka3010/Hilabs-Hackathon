@@ -12,6 +12,7 @@ c3:
     zero_invalid_rates: 0.10
     outlier_rate: 0.05
     exact_duplicates: 0.50
+    rate_replication: 0.50
     conflicting_rates: 0.10
     expired_rates: 0.10
   freshness_days:
@@ -33,6 +34,7 @@ c3:
     outlier_rate: 1.5
     rate_type_usability: 1.0
     exact_duplicates: 0.5
+    rate_replication: 1.0
     conflicting_rates: 1.0
     file_freshness: 1.0
     expired_rates: 1.0

@@ -81,7 +81,7 @@ def test_nppes_cache_is_reused_without_raw_file(cfg):
         p.unlink()
     second = rd.load_nppes(cfg, npis=TARGET)
     assert len(first) == len(second) == 4
-    assert list((cfg["output_dir"] / "_cache" / "reference").glob("nppes_npis-*.parquet"))
+    assert list((cfg["output_dir"] / "_cache" / "reference").glob("nppes_v2_npis-*.parquet"))
 
 
 def test_nppes_state_fallback_when_no_provider_refs(cfg):
@@ -144,3 +144,12 @@ def test_real_benchmark_sheets():
     if HAS_NUCC:
         nucc = set(rd.load_nucc(cfg)["taxonomy_code"])
         assert len(set(xwalk["taxonomy_code"]) & nucc) / xwalk["taxonomy_code"].nunique() > 0.9
+
+
+def test_primary_taxonomy_is_the_flagged_slot():
+    df = pd.DataFrame({"taxonomy_1": ["111", "AAA", ""], "taxonomy_switch_1": ["N", "", ""],
+                       "taxonomy_2": ["222", "", "BBB"], "taxonomy_switch_2": ["Y", "", "N"]})
+    out = rd.primary_taxonomy(df)
+    assert out["taxonomy_code"].tolist() == ["222", "AAA", "BBB"]
+    assert out["taxonomy_primary"].tolist() == ["Y", "N", "N"] and out["taxonomy_slot"].tolist() == [2, 0, 0]
+    assert out["taxonomy_codes_all"].tolist() == ["111|222", "AAA", "BBB"]

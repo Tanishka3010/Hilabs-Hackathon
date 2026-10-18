@@ -3,7 +3,7 @@
     "code_coverage": {
       "benchmark_codes": 583,
       "codes_priced": 134,
-      "codes_priced_any_class": 203,
+      "codes_priced_any_class": 134,
       "scored_billing_classes": [
         "professional"
       ],
@@ -30,101 +30,102 @@
         "H0005"
       ],
       "unweighted_share": 0.2298,
-      "weighted_share_any_class": 0.7533
+      "weighted_share_any_class": 0.6812
     },
     "code_identifiability": {
       "by_code_type": {
         "CPT": 3535,
         "HCPCS": 446,
-        "RC": 1123712,
-        "RC (no procedure code)": 372595
+        "RC": 3092,
+        "RC (no procedure code)": 451686
       },
-      "rows": 1500288,
-      "rows_with_procedure_code": 1127693
+      "distinct_prices": 458759,
+      "prices_with_associated_code_only": 332242,
+      "prices_with_procedure_code": 7073
     },
     "conflicting_rates": {
-      "contexts": 841729,
-      "contexts_with_multiple_rates": 4194,
+      "contexts": 271445,
+      "contexts_with_multiple_rates": 1694,
       "widest_examples": [
         {
-          "additional_information": null,
+          "associated_code": null,
           "billing_class": "institutional",
-          "billing_code": "370",
+          "billing_code": "23",
           "billing_code_modifier": null,
           "billing_code_type": "RC",
-          "max_rate": 2391.92,
-          "min_rate": 233.81,
-          "n_rates": 2,
-          "name": "MOD SED OTH PHYS/QHP 5/>YRS",
-          "negotiated_type": "negotiated",
-          "npi": 1730171265,
-          "service_code": "22",
+          "max_rate": 7380.48,
+          "min_rate": 241.34,
+          "n_rates": 6,
+          "negotiation_arrangement": "ffs",
+          "npi": 1851494231,
+          "service_code": "12",
+          "service_key": "EARLY - COMMUNITY, BEHAVIORA",
           "setting": "outpatient",
-          "tin": "51-0519167"
+          "tin": "65-1191375"
         },
         {
-          "additional_information": null,
+          "associated_code": null,
           "billing_class": "institutional",
-          "billing_code": "370",
+          "billing_code": "23",
           "billing_code_modifier": null,
           "billing_code_type": "RC",
-          "max_rate": 2391.92,
-          "min_rate": 233.81,
-          "n_rates": 2,
-          "name": "MOD SED SAME PHYS/QHP 5/>YRS",
-          "negotiated_type": "negotiated",
-          "npi": 1730171265,
-          "service_code": "22",
+          "max_rate": 7380.48,
+          "min_rate": 241.34,
+          "n_rates": 6,
+          "negotiation_arrangement": "ffs",
+          "npi": 1851494231,
+          "service_code": "12",
+          "service_key": "EARLY - COMMUNITY, MMTA - CA",
           "setting": "outpatient",
-          "tin": "51-0519167"
+          "tin": "65-1191375"
         },
         {
-          "additional_information": null,
+          "associated_code": null,
           "billing_class": "institutional",
-          "billing_code": "370",
+          "billing_code": "23",
           "billing_code_modifier": null,
           "billing_code_type": "RC",
-          "max_rate": 2391.92,
-          "min_rate": 233.81,
-          "n_rates": 2,
-          "name": "MOD SED SVC PRV SM PHYS PER",
-          "negotiated_type": "negotiated",
-          "npi": 1730171265,
-          "service_code": "22",
+          "max_rate": 7380.48,
+          "min_rate": 241.34,
+          "n_rates": 6,
+          "negotiation_arrangement": "ffs",
+          "npi": 1851494231,
+          "service_code": "12",
+          "service_key": "EARLY - COMMUNITY, MMTA - GI",
           "setting": "outpatient",
-          "tin": "51-0519167"
+          "tin": "65-1191375"
         },
         {
-          "additional_information": null,
+          "associated_code": null,
           "billing_class": "institutional",
-          "billing_code": "370",
+          "billing_code": "23",
           "billing_code_modifier": null,
           "billing_code_type": "RC",
-          "max_rate": 2391.92,
-          "min_rate": 233.81,
-          "n_rates": 2,
-          "name": "MOD SED OTHER PHYS/QHP EA",
-          "negotiated_type": "negotiated",
-          "npi": 1730171265,
-          "service_code": "22",
+          "max_rate": 7380.48,
+          "min_rate": 241.34,
+          "n_rates": 6,
+          "negotiation_arrangement": "ffs",
+          "npi": 1851494231,
+          "service_code": "12",
+          "service_key": "EARLY - COMMUNITY, MMTA - IN",
           "setting": "outpatient",
-          "tin": "51-0519167"
+          "tin": "65-1191375"
         },
         {
-          "additional_information": null,
+          "associated_code": null,
           "billing_class": "institutional",
-          "billing_code": "370",
+          "billing_code": "23",
           "billing_code_modifier": null,
           "billing_code_type": "RC",
-          "max_rate": 2391.92,
-          "min_rate": 233.81,
-          "n_rates": 2,
-          "name": "Anesthesia General",
-          "negotiated_type": "negotiated",
-          "npi": 1730171265,
-          "service_code": "22",
+          "max_rate": 7380.48,
+          "min_rate": 241.34,
+          "n_rates": 6,
+          "negotiation_arrangement": "ffs",
+          "npi": 1851494231,
+          "service_code": "12",
+          "service_key": "EARLY - COMMUNITY, MMTA - OT",
           "setting": "outpatient",
-          "tin": "51-0519167"
+          "tin": "65-1191375"
         }
       ]
     },
@@ -143,119 +144,125 @@
       "last_updated_on": "2026-10-06",
       "url_date_matches_content": false
     },
+    "network_labels": {
+      "capitation_prices": 46,
+      "groups": 2825,
+      "groups_hmo_only_label": 15,
+      "groups_ppo_label": 75
+    },
     "outlier_rate": {
-      "eligible_rows": 1444075,
-      "outlier_rows": 22499,
+      "eligible_rows": 444837,
+      "outlier_rows": 5703,
       "top_groups": [
         {
+          "associated_code": null,
           "billing_class": "institutional",
           "billing_code": "23",
           "billing_code_type": "RC",
           "max_rate": 7380.48,
           "median": 121.63499999999999,
           "min_rate": 1.45,
-          "name": "EARLY - INSTITUTIONAL, MMTA",
           "outliers": 135,
-          "procedure_code": null
+          "service_key": "EARLY - INSTITUTIONAL, MMTA"
         },
         {
+          "associated_code": null,
           "billing_class": "institutional",
           "billing_code": "23",
           "billing_code_type": "RC",
           "max_rate": 7380.48,
           "median": 121.63499999999999,
           "min_rate": 1.45,
-          "name": "EARLY - INSTITUTIONAL, MS RE",
           "outliers": 90,
-          "procedure_code": null
+          "service_key": "EARLY - INSTITUTIONAL, MS RE"
         },
         {
+          "associated_code": null,
           "billing_class": "institutional",
           "billing_code": "23",
           "billing_code_type": "RC",
           "max_rate": 7380.48,
           "median": 121.63499999999999,
           "min_rate": 1.45,
-          "name": "LATE - COMMUNITY, MS REHAB -",
           "outliers": 75,
-          "procedure_code": null
+          "service_key": "LATE - COMMUNITY, MS REHAB -"
         },
         {
+          "associated_code": null,
           "billing_class": "institutional",
           "billing_code": "23",
           "billing_code_type": "RC",
           "max_rate": 7380.48,
           "median": 121.63499999999999,
           "min_rate": 1.45,
-          "name": "LATE - COMMUNITY, MMTA - END",
           "outliers": 60,
-          "procedure_code": null
+          "service_key": "EARLY - COMMUNITY, MMTA - CA"
         },
         {
+          "associated_code": null,
           "billing_class": "institutional",
           "billing_code": "23",
           "billing_code_type": "RC",
           "max_rate": 7380.48,
           "median": 121.63499999999999,
           "min_rate": 1.45,
-          "name": "EARLY - COMMUNITY, MMTA - CA",
           "outliers": 60,
-          "procedure_code": null
+          "service_key": "EARLY - COMMUNITY, MS REHAB"
         },
         {
+          "associated_code": null,
           "billing_class": "institutional",
           "billing_code": "23",
           "billing_code_type": "RC",
           "max_rate": 7380.48,
           "median": 121.63499999999999,
           "min_rate": 1.45,
-          "name": "LATE - COMMUNITY, MMTA - CAR",
           "outliers": 60,
-          "procedure_code": null
+          "service_key": "LATE - COMMUNITY, MMTA - CAR"
         },
         {
+          "associated_code": null,
           "billing_class": "institutional",
           "billing_code": "23",
           "billing_code_type": "RC",
           "max_rate": 7380.48,
           "median": 121.63499999999999,
           "min_rate": 1.45,
-          "name": "EARLY - COMMUNITY, MS REHAB",
           "outliers": 60,
-          "procedure_code": null
+          "service_key": "LATE - COMMUNITY, MMTA - END"
         },
         {
+          "associated_code": null,
           "billing_class": "institutional",
           "billing_code": "23",
           "billing_code_type": "RC",
           "max_rate": 7380.48,
           "median": 121.63499999999999,
           "min_rate": 1.45,
-          "name": "LATE - COMMUNITY, MMTA - INF",
           "outliers": 45,
-          "procedure_code": null
+          "service_key": "LATE - COMMUNITY, MMTA - INF"
         },
         {
+          "associated_code": null,
           "billing_class": "institutional",
           "billing_code": "23",
           "billing_code_type": "RC",
           "max_rate": 7380.48,
           "median": 121.63499999999999,
           "min_rate": 1.45,
-          "name": "LATE - COMMUNITY, WOUND - LO",
           "outliers": 45,
-          "procedure_code": null
+          "service_key": "LATE - COMMUNITY, WOUND - LO"
         },
         {
+          "associated_code": null,
           "billing_class": "institutional",
           "billing_code": "420",
           "billing_code_type": "RC",
           "max_rate": 144638.65,
           "median": 12893.66,
           "min_rate": 51.57,
-          "name": "THERAPEUTIC ACTIVITIES",
           "outliers": 44,
-          "procedure_code": null
+          "service_key": ""
         }
       ]
     },
@@ -268,6 +275,28 @@
       "in_target_state": 3611,
       "not_in_nppes": 2,
       "usable": 3611
+    },
+    "rate_replication": {
+      "avg_names_per_replicated_cell": 40.35,
+      "by_code_type": {
+        "CPT": {
+          "distinct_prices": 3535,
+          "rows": 3535
+        },
+        "HCPCS": {
+          "distinct_prices": 446,
+          "rows": 446
+        },
+        "RC": {
+          "distinct_prices": 454778,
+          "rows": 1496307
+        }
+      },
+      "cells_name_replicated": 26353,
+      "cells_with_several_names": 33436,
+      "distinct_prices_after_collapse": 458759,
+      "rows": 1500288,
+      "rows_that_only_repeat_another_name": 1041529
     },
     "rate_type_usability": {
       "fee schedule": 46,
@@ -285,7 +314,6 @@
     },
     "specialty_code_coverage": {
       "lowest_specialties": {
-        "035": 0.0,
         "045": 0.0,
         "046": 0.0,
         "052": 0.0,
@@ -294,9 +322,10 @@
         "201": 0.0,
         "202": 0.0,
         "203": 0.0,
+        "P201": 0.0,
         "PEDML": 0.0
       },
-      "npis_with_benchmark_specialty": 2089
+      "npis_with_benchmark_specialty": 2136
     },
     "zero_invalid_rates": {
       "null": 0,

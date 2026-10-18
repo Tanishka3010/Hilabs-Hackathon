@@ -1,3 +1,8 @@
 c4:
   reuse_extract: true
   rate_type_preference: [negotiated, fee schedule, derived]
+  # In-file network evidence (the CA rate file is shared by every Health Net CA network; see docs/logic_c4.md §1).
+  exclude_non_ppo_evidence: true
+  non_ppo_arrangements: [capitation]
+  ppo_label_pattern: '(?i)\bPPO\b'
+  non_ppo_label_pattern: '(?i)\bHMO\b'

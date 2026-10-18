@@ -68,12 +68,12 @@
       "why": "A file is only useful for benchmarking if it prices the codes that drive spend; weighting stops a file scoring well on rare codes"
     },
     "code_identifiability": {
-      "definition": "Share of price rows whose service maps to a standard procedure code: billing_code is CPT/HCPCS/MS-DRG, or a revenue-code row carries a CPT/HCPCS-shaped code in additional_information",
+      "definition": "Share of distinct prices tied to a standard procedure code: billing_code is CPT/HCPCS/DRG, or a revenue-code row whose additional_information code is the item's own service (its name matches that code's name in the file)",
       "group": "validity",
-      "why": "A revenue code alone (e.g. RC 636 'drugs') cannot be compared across payers; rates must be tied to a specific procedure to be benchmarked"
+      "why": "A revenue code alone (e.g. RC 636 'drugs') cannot be compared across payers; a code in additional_information only counts when it describes the item, because in this file it usually does not"
     },
     "conflicting_rates": {
-      "definition": "Share of (NPI, TIN, code, modifier, billing class, place of service, rate type) contexts that carry more than one distinct rate",
+      "definition": "Share of provider contexts (the C4 context: NPI, TIN, arrangement, code, associated code, service, modifier, billing class, setting, place of service) that carry more than one distinct rate",
       "group": "uniqueness",
       "why": "Conflicting prices for the same service and provider make the 'true' rate ambiguous and force a selection rule; tolerance 10%"
     },
@@ -101,6 +101,11 @@
       "definition": "Share of distinct NPIs that pass the check digit, exist in NPPES, are not deactivated and practise in the target state (NPPES primary or secondary address, or CMS DAC)",
       "group": "completeness",
       "why": "Invalid, retired or out-of-state providers inflate the network and point rates at people a CA contracting team cannot use"
+    },
+    "rate_replication": {
+      "definition": "Share of price rows that only repeat, under another service name, the same rates a provider already has for that revenue code, associated code and place of service",
+      "group": "uniqueness",
+      "why": "When one rate set is copied across dozens of service names, the names do not price anything: the file looks granular but holds far fewer real prices; tolerance 50%"
     },
     "rate_type_usability": {
       "definition": "Share of rate rows whose negotiated_type converts directly to dollars (negotiated, fee schedule, derived)",
@@ -130,8 +135,8 @@
   },
   "rate_file_scores": {
     "5bf4afa2cef9bc2a": {
-      "grade": "B",
-      "total": 0.8567
+      "grade": "C",
+      "total": 0.765
     }
   },
   "rate_files_scored": 1,
@@ -140,6 +145,7 @@
     "exact_duplicates": 0.5,
     "expired_rates": 0.1,
     "outlier_rate": 0.05,
+    "rate_replication": 0.5,
     "zero_invalid_rates": 0.1
   },
   "weights": {
@@ -151,6 +157,7 @@
     "file_freshness": 1.0,
     "outlier_rate": 1.5,
     "provider_validity": 1.5,
+    "rate_replication": 1.0,
     "rate_type_usability": 1.0,
     "referential_integrity": 1.0,
     "schema_validity": 1.0,

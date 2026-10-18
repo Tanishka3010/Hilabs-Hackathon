@@ -4,11 +4,18 @@ ptd_dir: raw/ptd
 reference_dir: reference
 output_dir: outputs
 workers: 4
+duckdb:
+  memory_limit: 2GB
+  threads: null
 recon:
   sample_size: 20
   probe_mb: 40
   probe_url_pattern: healthnet-ca_in-network
 c2:
+  # scope (Section 3 of the brief); several states may be listed
+  target_states: [CA]
+  target_market: group
+  target_network: PPO
   eoa_as: eoa
   ppo_epo_as: ppo
   organizer_confirmed: [eoa_as, ppo_epo_as]

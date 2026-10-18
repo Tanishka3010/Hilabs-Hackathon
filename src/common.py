@@ -122,5 +122,26 @@ def join_sorted(values, sep="|"):
     return sep.join(sorted({str(v) for v in values if v is not None and str(v) != ""}))
 
 
+def sql_str(value):
+    return "'" + str(value).replace("'", "''") + "'"
+
+
+def duck(cfg=None):
+    """DuckDB connection with a memory cap and a spill directory, so big files spill to disk instead of growing RAM."""
+    import duckdb
+    con = duckdb.connect()
+    d = (cfg or {}).get("duckdb") or {}
+    if d.get("memory_limit"):
+        con.execute(f"SET memory_limit = {sql_str(d['memory_limit'])}")
+    if d.get("threads"):
+        con.execute(f"SET threads = {int(d['threads'])}")
+    if cfg and cfg.get("output_dir"):
+        tmp = Path(cfg["output_dir"]) / "_cache" / "duckdb"
+        tmp.mkdir(parents=True, exist_ok=True)
+        con.execute(f"SET temp_directory = {sql_str(tmp)}")
+    con.execute("SET preserve_insertion_order = false")
+    return con
+
+
 def to_frame(rows, columns):
     return pd.DataFrame(rows, columns=columns)
