@@ -1,0 +1,101 @@
+npi,tin,business_name,label,best_county,location_status,result
+1104019066,02-0520341,PPO: Alameda County,ALAMEDA,ALAMEDA,verified,agrees
+1366479941,68-0396936,PPO: Contra Costa County,CONTRA COSTA,CONTRA COSTA,verified,agrees
+1952756256,61-5546937,PPO: Contra Costa County,CONTRA COSTA,CONTRA COSTA,verified,agrees
+1821468497,47-5656869,PPO: Imperial County,IMPERIAL,IMPERIAL,unverified_single_source,agrees
+1043399561,95-4214455,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1063447134,38-2985590,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1063468346,20-5234714,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_multiple_candidates,agrees
+1083899959,95-4419431,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_single_source,agrees
+1124066436,95-3754521,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_multiple_candidates,agrees
+1164454286,95-3761240,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1164472460,80-0961833,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_single_source,agrees
+1215095179,33-1008225,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1215358320,46-3228586,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1235230368,95-4742695,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1245238591,95-4055634,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_multiple_candidates,agrees
+1285630202,56-4779982,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1295950533,81-0589699,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_single_source,agrees
+1346583374,46-2274332,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_multiple_candidates,agrees
+1356421606,95-4248140,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1366479099,95-4742695,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_single_source,agrees
+1447437967,46-3228586,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1447478714,30-0590479,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_multiple_candidates,agrees
+1457553620,46-2274332,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1548569197,95-4703080,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_single_source,agrees
+1558360164,68-0111832,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1588642516,95-3751703,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_multiple_candidates,agrees
+1609963933,33-0720052,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_multiple_candidates,agrees
+1629084843,95-4395571,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1659402071,20-3448609,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_single_source,agrees
+1659566875,47-0882292,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_multiple_candidates,agrees
+1720166481,81-0589699,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_single_source,agrees
+1750399622,95-4500132,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1770722696,47-4624645,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_single_source,agrees
+1780651844,95-4419431,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_multiple_candidates,agrees
+1780725408,95-4703080,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1780740746,65-1233636,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1821029042,51-0466709,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_multiple_candidates,agrees
+1821161464,81-0589699,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_single_source,agrees
+1851460893,46-4289544,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_single_source,agrees
+1851485049,95-3688260,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1881726354,95-4630281,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_single_source,agrees
+1912250085,46-0850769,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,unverified_single_source,agrees
+1992884324,20-1444164,PPO: Los Angeles County,LOS ANGELES,LOS ANGELES,verified,agrees
+1841388279,55-1555958,PPO: Monterey County,MONTEREY,MONTEREY,verified,agrees
+1396895512,33-0920884,PPO: Orange County,ORANGE,ORANGE,verified,agrees
+1669551750,33-0920884,PPO: Orange County,ORANGE,ORANGE,verified,agrees
+1952356560,81-0593368,PPO: Orange County,ORANGE,ORANGE,verified,agrees
+1003849621,33-0866905,PPO: Riverside County,RIVERSIDE,RIVERSIDE,unverified_single_source,agrees
+1114118023,46-5678958,PPO: Riverside County,RIVERSIDE,RIVERSIDE,unverified_single_source,agrees
+1154399954,06-1716190,PPO: Riverside County,RIVERSIDE,RIVERSIDE,verified,agrees
+1225032212,33-0866905,PPO: Riverside County,RIVERSIDE,RIVERSIDE,verified,agrees
+1427266691,56-8412964,PPO: Riverside County,RIVERSIDE,RIVERSIDE,verified,agrees
+1508913294,57-1728741,PPO: Sacramento County,SACRAMENTO,SACRAMENTO,verified,agrees
+1942348669,57-3831471,PPO: Sacramento County,SACRAMENTO,SACRAMENTO,unverified_single_source,agrees
+1891998159,23-4510880,PPO: San Benito County,SAN BENITO,SAN BENITO,verified,agrees
+1003856188,26-2203103,PPO: San Bernardino County,SAN BERNARDINO,SAN BERNARDINO,verified,agrees
+1023054699,20-3459127,PPO: San Bernardino County,SAN BERNARDINO,SAN BERNARDINO,verified,agrees
+1083761084,81-0555414,PPO: San Bernardino County,SAN BERNARDINO,SAN BERNARDINO,unverified_single_source,agrees
+1144483256,47-3464295,PPO: San Bernardino County,SAN BERNARDINO,SAN BERNARDINO,verified,agrees
+1255640892,85-1478343,PPO: San Bernardino County,SAN BERNARDINO,SAN BERNARDINO,unverified_multiple_candidates,agrees
+1477096782,87-1542342,PPO: San Bernardino County,SAN BERNARDINO,SAN BERNARDINO,verified,agrees
+1629022819,82-3267453,PPO: San Bernardino County,SAN BERNARDINO,SAN BERNARDINO,unverified_multiple_candidates,agrees
+1679591598,20-3459127,PPO: San Bernardino County,SAN BERNARDINO,SAN BERNARDINO,verified,agrees
+1760595029,95-4704267,PPO: San Bernardino County,SAN BERNARDINO,SAN BERNARDINO,verified,agrees
+1962518407,81-0555414,PPO: San Bernardino County,SAN BERNARDINO,SAN BERNARDINO,unverified_single_source,agrees
+1023258134,46-5589931,PPO: San Diego County,SAN DIEGO,SAN DIEGO,verified,agrees
+1043252786,20-4615687,PPO: San Diego County,SAN DIEGO,SAN DIEGO,verified,agrees
+1255607685,20-4615687,PPO: San Diego County,SAN DIEGO,SAN DIEGO,verified,agrees
+1376851105,33-5609923,PPO: San Diego County,SAN DIEGO,SAN DIEGO,verified,agrees
+1558451963,57-1984527,PPO: San Diego County,SAN DIEGO,SAN DIEGO,unverified_multiple_candidates,agrees
+1619284742,20-4615687,PPO: San Diego County,SAN DIEGO,SAN DIEGO,unverified_single_source,agrees
+1831182971,33-0523727,PPO: San Diego County,SAN DIEGO,SAN DIEGO,verified,agrees
+1952454043,46-3039294,PPO: San Diego County,SAN DIEGO,SAN DIEGO,verified,agrees
+1780752808,47-3151142,PPO: Santa Barbara County,SANTA BARBARA,SANTA BARBARA,verified,agrees
+1063426807,77-0510089,PPO: Santa Clara County,SANTA CLARA,SANTA CLARA,verified,agrees
+1073692489,77-0539415,PPO: Santa Clara County,SANTA CLARA,SANTA CLARA,verified,agrees
+1366967762,82-4553512,PPO: Santa Clara County,SANTA CLARA,SANTA CLARA,verified,agrees
+1427251271,56-9947232,PPO: Santa Clara County,SANTA CLARA,SANTA CLARA,unverified_single_source,agrees
+1669885083,46-5394214,PPO: Santa Clara County,SANTA CLARA,SANTA CLARA,unverified_single_source,agrees
+1194809558,95-3756676,PPO: Ventura County,VENTURA,VENTURA,verified,agrees
+1427657386,85-2041290,PPO: Ventura County,VENTURA,VENTURA,verified,agrees
+1861881666,85-2041290,PPO: Ventura County,VENTURA,VENTURA,unverified_multiple_candidates,agrees
+1033126453,46-5451008,PPO: Los Angeles County,LOS ANGELES,RIVERSIDE,unverified_single_source,differs
+1659352276,95-4566577,PPO: Los Angeles County,LOS ANGELES,SAN DIEGO,verified,differs
+1952595985,47-1293450,PPO: Los Angeles County,LOS ANGELES,SONOMA,unverified_multiple_candidates,differs
+1962501858,51-0546873,PPO: Los Angeles County,LOS ANGELES,SANTA BARBARA,unverified_multiple_candidates,differs
+1376644799,88-0188944,PPO: Marin County,MARIN,SOLANO,unverified_multiple_candidates,differs
+1205826633,87-0754052,PPO: San Bernardino County,SAN BERNARDINO,LOS ANGELES,verified,differs
+1255364949,87-0754052,PPO: San Bernardino County,SAN BERNARDINO,LOS ANGELES,unverified_single_source,differs
+1659314318,68-0669070,PPO: San Bernardino County,SAN BERNARDINO,RIVERSIDE,unverified_single_source,differs
+1649343476,77-0140119,PPO: Santa Clara County,SANTA CLARA,SANTA CRUZ,verified,differs
+1376624858,77-0586477,PPO: Stanislaus County,STANISLAUS,ALAMEDA,unverified_multiple_candidates,differs
+1760410195,94-3370791,PPO: Contra Costa County,CONTRA COSTA,,deactivated_npi,no_county
+0,57-3865868,PPO: Los Angeles County,LOS ANGELES,,no_address,no_county
+1609986975,95-4216368,PPO: Los Angeles County,LOS ANGELES,,unverified_single_source,no_county
+1720011885,57-3865868,PPO: Los Angeles County,LOS ANGELES,,verified,no_county
+1790968618,20-1003617,PPO: Marin County,MARIN,,unverified_multiple_candidates,no_county
+1205869807,33-0987086,PPO: Orange County,ORANGE,,unverified_multiple_candidates,no_county
+1376102152,82-1226953,PPO: Orange County,ORANGE,,verified,no_county
+1215326236,20-4615687,PPO: San Diego County,SAN DIEGO,,out_of_state_only,no_county

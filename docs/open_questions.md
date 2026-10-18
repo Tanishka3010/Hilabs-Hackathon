@@ -19,6 +19,7 @@ Each item below is something the data leaves ambiguous. Until it's answered, the
 - **Evidence:** in the first 40 MB of the CA file, `provider_references[].network_name` is always empty (2,825 of 2,825). About 2% of TIN `business_name` values carry prefixes such as `PPO: Los Angeles County`, `Direct Network: San Diego`, `DIRECT NETWORK: AMBETTER PPO` and `DIRECT NETWORK: AMBETTER HMO`.
 - **Question:** are these prefixes reliable network tags?
 - **Note:** `AMBETTER` appearing inside a commercial-group file is unexpected.
+- **Evidence from C5 (2026-10-18):** for the NPIs in `PPO: <County>` groups that have a geocoded county, the label matches the provider's county 82 times out of 92 (89%). Most mismatches are neighbouring counties. This suggests the labels describe real locations, but they still cover only 3% of provider groups.
 
 ## Q5. Health Net plan-name abbreviations
 - **Abbreviations to confirm:** `CA L` / `CA T` / `CA L&T` (large group? trust?), `SC`, `EC`, `SAL` (Salud?), `CUS` (custom), `CBA`, `GF`, `INF`, `Aon NCA/SCA`, `Mex`.

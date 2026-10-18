@@ -262,7 +262,7 @@ def load_all(cfg, npis=None, states=None):
 
 CA_FACILITY_RENAME = {
     "NPI": "npi", "FACID": "facid", "CCN": "ccn", "FACNAME": "facility_name", "BUSINESS_NAME": "business_name", "ADDRESS": "address_line1",
-    "CITY": "city", "ZIP": "zip", "COUNTY_NAME": "county", "FAC_TYPE_CODE": "fac_type", "LICENSE_STATUS_DESCRIPTION": "license_status",
+    "CITY": "city", "ZIP": "zip", "COUNTY_NAME": "county", "FIPS_COUNTY_CODE": "fips_county", "FAC_TYPE_CODE": "fac_type", "LICENSE_STATUS_DESCRIPTION": "license_status",
     "LICENSED_CERTIFIED": "licensed_certified", "LATITUDE": "latitude", "LONGITUDE": "longitude", "HCAI_ID": "hcai_id", "DATA_DATE": "data_date",
 }
 
@@ -315,3 +315,9 @@ def load_pos_clia(cfg, zips=None):
     df["zip"] = df["zip"].fillna("").str[:5]
     log.info("CMS POS CLIA (%s): %s rows scanned, %s active sites kept", path.name, f"{scanned:,}", f"{len(df):,}")
     return df
+
+
+def ca_county_names(cfg):
+    fac = load_ca_facilities(cfg, active_only=False)
+    m = fac[["fips_county", "county"]].dropna().drop_duplicates("fips_county")
+    return dict(zip(m["fips_county"], m["county"].str.upper()))

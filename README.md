@@ -75,7 +75,7 @@ Assumptions the organizers haven't confirmed are switches in `config/config.yaml
 
 - C4: **840,574 selected rates** for 3,735 NPIs and 2,888 TINs. 4,859 provider contexts had several rates; each kept one by a fixed rule: drop unusable → prefer negotiated → set aside more-than-10× outliers → most frequent → lower median on a tie. See [docs/logic_c4.md](docs/logic_c4.md).
 
-- C5: 3,727 of 3,735 NPIs have a candidate address. **1,813 NPIs (48.5%) and 1,370 TINs (47.4%) have a verified address**: 2 independent sources agree, or the CA licence register confirms it. 41% of NPI–TIN pairs have TIN-specific evidence. C5 also needs `raw/sources/health_facility_locations.csv`, `eo_ca.csv` and `POS_CLIA_*.csv` (see [docs/logic_c5.md](docs/logic_c5.md)).
+- C5: 3,727 of 3,735 NPIs have a candidate address. **1,899 NPIs (50.8%) and 1,435 TINs (49.7%) have a verified address**: 2 independent sources agree, or the CA licence register confirms it. 93% of best addresses are confirmed by the US Census geocoder. 41% of NPI–TIN pairs have TIN-specific evidence. C5 needs `raw/sources/health_facility_locations.csv`, `eo_ca.csv` and `POS_CLIA_*.csv`; the first run calls the Census geocoder over the internet (cached afterwards). A Health Net directory spot check sample is written to `outputs/c5/directory_check_sample.csv` (see [docs/logic_c5.md](docs/logic_c5.md)).
 
 ## Tests
 ```bash

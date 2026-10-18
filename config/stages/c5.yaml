@@ -27,6 +27,17 @@ c5:
     nppes_secondary: nppes
     irs_eo: irs
   high_trust_sources: [ca_facility]
+  geocode:
+    enabled: true
+    benchmark: Public_AR_Current
+    vintage: Current_Current
+    batch_size: 2500
+    workers: 4
+    timeout_s: 600
+    retries: 3
+  directory_check:
+    per_stratum: 25
+    seed: 7
   name_match_threshold: 0.5
   facility_name_match_threshold: 0.6
 reference_data:

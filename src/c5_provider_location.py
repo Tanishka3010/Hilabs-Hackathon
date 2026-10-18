@@ -3,6 +3,7 @@ import re
 
 import pandas as pd
 
+from src import geocode as geo
 from src import reference_data as rd
 from src.c3_quality import as_of_date
 from src.common import log, stable_key, write_json
@@ -86,6 +87,40 @@ def match_sites(npi_zips, sites, c5, place_cols=("city",)):
 
 def place_words(*places):
     return frozenset(GEO_STOP | {w for p in places for w in re.sub(r"[^A-Z0-9 ]", " ", clean(p).upper()).split()})
+
+
+def house_number(key):
+    m = re.match(r"^(\d+)", key or "")
+    return m.group(1) if m else ""
+
+
+def safe_geocode(raw_key, canonical_key, match_type):
+    same_number = house_number(raw_key) == house_number(canonical_key) or not house_number(raw_key)
+    same_zip = raw_key[-5:] == canonical_key[-5:]
+    return same_number and (match_type == "Exact" or same_zip)
+
+
+def geocode_candidates(cand, cfg, c5):
+    settings = c5.get("geocode") or {}
+    if not settings.get("enabled", False) or not len(cand):
+        return cand.assign(raw_address_key=cand["address_key"], geo_status="Not_Geocoded", geo_address="", longitude="", latitude="", county_fips="")
+    reps = cand.drop_duplicates("address_key")
+    reps = pd.DataFrame({"address_key": reps["address_key"], "street": [UNIT_RE.sub(" ", clean(a)).strip(" ,") for a in reps["address_line1"]],
+                         "city": reps["city"], "state": reps["state"], "zip": reps["zip"]})
+    g = geo.geocode(reps, cfg["output_dir"] / "_cache" / "geocode" / "census_results.parquet", settings)
+    canon = [address_key(ga.split(", ")[0], "", ga.split(", ")[-1]) if st == "Match" and isinstance(ga, str) and ga else k
+             for k, st, ga in zip(g["address_key"], g["geo_status"], g["geo_address"])]
+    g["canonical_key"] = [c if safe_geocode(k, c, mt) else k for k, c, mt in zip(g["address_key"], canon, g["geo_match_type"].fillna(""))]
+    g["geo_status"] = [st if st != "Match" or safe_geocode(k, c, mt) else "Rejected_Non_Exact"
+                       for k, c, st, mt in zip(g["address_key"], canon, g["geo_status"], g["geo_match_type"].fillna(""))]
+    g["county_fips"] = (g["state_fips"].fillna("") + g["county_fips"].fillna("")).where(g["geo_status"] == "Match", "")
+    for col in ("geo_address", "longitude", "latitude"):
+        g[col] = g[col].where(g["geo_status"] == "Match", "")
+    keep = ["address_key", "canonical_key", "geo_status", "geo_address", "longitude", "latitude", "county_fips"]
+    out = cand.merge(g[keep], on="address_key", how="left").rename(columns={"address_key": "raw_address_key", "canonical_key": "address_key"})
+    out["address_key"] = out["address_key"].fillna(out["raw_address_key"])
+    out["geo_status"] = out["geo_status"].fillna("Not_Geocoded")
+    return out
 
 
 def recency_factor(update_date, as_of, c5):
@@ -181,6 +216,12 @@ def score_addresses(cand, nppes, c5, as_of):
             "n_source_families": g["source_family"].nunique(), "confidence": round(1 - conf, 4),
             "nppes_last_update": g.loc[g["source"].str.startswith("nppes"), "source_date"].max(),
             "dac_facility_names": "|".join(sorted({n for n in g.loc[g["source"] == "dac", "source_name"] if n})),
+            "geocoded": bool((g["geo_status"] == "Match").any()) if "geo_status" in g else False,
+            "geo_address": next((x for x, st in zip(g.get("geo_address", []), g.get("geo_status", [])) if st == "Match"), ""),
+            "latitude": next((x for x, st in zip(g.get("latitude", []), g.get("geo_status", [])) if st == "Match"), ""),
+            "longitude": next((x for x, st in zip(g.get("longitude", []), g.get("geo_status", [])) if st == "Match"), ""),
+            "county_fips": next((x for x, st in zip(g.get("county_fips", []), g.get("geo_status", [])) if st == "Match"), ""),
+            "n_raw_spellings": g["raw_address_key"].nunique() if "raw_address_key" in g else 1,
             "registry_names": "|".join(sorted({n for n in g.loc[g["source"].isin(["ca_facility", "ca_facility_name_zip", "irs_eo", "dac_group", "cms_clia"]), "source_name"] if n})),
             "irs_tins": "|".join(sorted({t for t in g.loc[g["source"] == "irs_eo", "source_tin"] if t})),
             "high_trust": bool(g["source"].isin(c5.get("high_trust_sources") or []).any()),
@@ -193,8 +234,8 @@ def score_addresses(cand, nppes, c5, as_of):
     two = a["n_source_families"] >= int(c5["min_agreeing_sources"])
     a["verified"] = (two | a["high_trust"]) & a["in_target_state"]
     a["verification_basis"] = [("two_independent_sources" if t else "state_license_register") if v else "" for v, t in zip(a["verified"], two)]
-    a = a.sort_values(["npi", "in_target_state", "verified", "confidence", "nppes_last_update", "address_key"],
-                      ascending=[True, False, False, False, False, True], na_position="last")
+    a = a.sort_values(["npi", "in_target_state", "verified", "confidence", "geocoded", "nppes_last_update", "address_key"],
+                      ascending=[True, False, False, False, False, False, True], na_position="last")
     a["rank"] = a.groupby("npi").cumcount() + 1
     return a.reset_index(drop=True)
 
@@ -228,6 +269,9 @@ def provider_summary(npis, addr, nppes, c5):
             "location_status": status, "best_address_id": None if b is None else b["address_id"],
             "best_address": None if b is None else ", ".join(x for x in [b["address_line1"], b["address_line2"], b["city"], f"{b['state']} {b['zip']}".strip()] if x),
             "best_state": None if b is None else b["state"], "best_zip": None if b is None else b["zip"],
+            "best_county": None if b is None else b.get("county_name"), "best_geocoded": None if b is None else bool(b["geocoded"]),
+            "best_geo_address": None if b is None else b["geo_address"], "best_latitude": None if b is None else b["latitude"],
+            "best_longitude": None if b is None else b["longitude"],
             "best_confidence": None if b is None else b["confidence"], "best_sources": None if b is None else b["sources"],
             "n_addresses": 0 if k is None else int(k["n_addresses"]), "n_verified_addresses": 0 if k is None else int(k["n_verified"]),
             "nppes_last_update": None if m is None else m["last_update_date"],
@@ -264,6 +308,56 @@ def link_tin_npi_address(refs, addr, nppes, c5):
                          "link_evidence": "+".join(e for e in ev if e) or "npi_address_only", "org_name_similarity": org_sim,
                          "dac_name_similarity": a.dac_name_similarity})
     return pd.DataFrame(rows)
+
+
+def county_label_check(refs, prov):
+    lab = refs.assign(label=refs["business_name"].fillna("").str.extract(r"^\s*PPO:\s*(.+?)\s+County\s*$", flags=re.I)[0])
+    lab = lab.dropna(subset=["label"])[["npi", "tin", "business_name", "label"]].drop_duplicates()
+    if not len(lab):
+        return pd.DataFrame(columns=["npi", "tin", "business_name", "label", "best_county", "result"])
+    lab["label"] = lab["label"].str.upper().str.strip()
+    lab = lab.merge(prov[["npi", "best_county", "location_status"]], on="npi", how="left")
+    lab["result"] = ["no_county" if not isinstance(b, str) or not b else ("agrees" if b == l else "differs") for l, b in zip(lab["label"], lab["best_county"])]
+    return lab.sort_values(["result", "label", "npi"]).reset_index(drop=True)
+
+
+CHECK_COLS = ["sample_id", "stratum", "npi", "provider_name", "entity_type", "tin", "tin_business_name", "taxonomy_code", "our_best_address",
+              "our_location_status", "our_confidence", "directory_found", "directory_address", "address_matches", "checked_by", "checked_on", "notes"]
+
+
+def directory_check_sample(prov, nppes, refs, c5):
+    dc = c5.get("directory_check") or {}
+    n, seed = int(dc.get("per_stratum", 25)), int(dc.get("seed", 7))
+    meta = nppes.set_index("npi")
+    first_tin = refs.dropna(subset=["npi"]).sort_values(["npi", "tin"]).drop_duplicates("npi").set_index("npi")
+    pool = prov[prov["best_address"].notna() & (prov["best_state"] == c5["target_state"])]
+    strata = {"verified": pool[pool["location_status"] == "verified"], "unverified": pool[pool["location_status"].str.startswith("unverified")]}
+    rows = []
+    for name, g in strata.items():
+        for r in g.sample(min(n, len(g)), random_state=seed).sort_values("npi").itertuples(index=False):
+            m = meta.loc[r.npi] if r.npi in meta.index else None
+            person = f"{clean(m['first_name'])} {clean(m['last_name'])}".strip() if m is not None else ""
+            rows.append({"stratum": name, "npi": r.npi, "provider_name": (clean(m["org_name"]) or person) if m is not None else "",
+                         "entity_type": r.entity_type, "tin": first_tin["tin"].get(r.npi, ""), "tin_business_name": first_tin["business_name"].get(r.npi, ""),
+                         "taxonomy_code": r.taxonomy_code, "our_best_address": r.best_address, "our_location_status": r.location_status,
+                         "our_confidence": r.best_confidence})
+    df = pd.DataFrame(rows)
+    df.insert(0, "sample_id", range(1, len(df) + 1))
+    return df.reindex(columns=CHECK_COLS)
+
+
+def score_directory_check(check):
+    yes = {"Y", "YES", "TRUE", "1"}
+    done = check[check["address_matches"].fillna("").astype(str).str.strip() != ""].copy()
+    if not len(done):
+        return {"checked": 0, "status": "no rows filled in yet"}
+    done["ok"] = done["address_matches"].astype(str).str.strip().str.upper().isin(yes)
+    found = done["directory_found"].fillna("").astype(str).str.strip().str.upper().isin(yes)
+    out = {"checked": int(len(done)), "found_in_directory": int(found.sum())}
+    for stratum, g in done.groupby("stratum"):
+        out[f"precision_{stratum}"] = round(float(g["ok"].mean()), 4)
+        out[f"checked_{stratum}"] = int(len(g))
+    return out
 
 
 def run(cfg):
@@ -311,14 +405,26 @@ def run(cfg):
         clia = None
     extra = [facility_candidates(fac, nppes, pl, npis, c5), irs_candidates(irs, refs), dac_group_candidates(dac_state, nppes, pl, c5),
              clia_candidates(clia, nppes, pl, c5)]
-    cand = build_candidates(nppes, pl, dac, extra)
+    cand = geocode_candidates(build_candidates(nppes, pl, dac, extra), cfg, c5)
     addr = score_addresses(cand, nppes, c5, as_of)
+    try:
+        counties = rd.ca_county_names(cfg)
+    except FileNotFoundError:
+        counties = {}
+    addr["county_name"] = addr["county_fips"].map(counties) if len(addr) else []
     prov = provider_summary(npis, addr, nppes, c5)
+    county_check = county_label_check(refs, prov)
     links = link_tin_npi_address(refs, addr, nppes, c5)
     cand.to_parquet(out / "address_candidates.parquet", index=False)
     addr.to_csv(out / "npi_addresses.csv", index=False)
     prov.to_csv(out / "provider_locations.csv", index=False)
     links.to_csv(out / "tin_npi_address.csv", index=False)
+    county_check.to_csv(out / "county_label_check.csv", index=False)
+    check_path = out / "directory_check_sample.csv"
+    if not check_path.exists():
+        directory_check_sample(prov, nppes, refs, c5).to_csv(check_path, index=False)
+        log.info("c5: wrote %s for a manual Health Net directory spot check", check_path.name)
+    directory_check = score_directory_check(pd.read_csv(check_path, dtype=str, keep_default_na=False))
     tins = links.groupby("tin").agg(any_address=("address_id", lambda s: s.notna().any()),
                                     verified=("link_evidence", lambda s: s.str.contains("verified_address").any()))
     pairs = links.groupby(["tin", "npi"]).agg(any_address=("address_id", lambda s: s.notna().any()),
@@ -339,6 +445,15 @@ def run(cfg):
         "npi_tin_pairs_with_tin_specific_address": int(pairs["tin_specific"].sum()),
         "link_evidence": links["link_evidence"].value_counts().to_dict(),
         "addresses_per_npi": prov["n_addresses"].describe().round(2).to_dict(),
+        "geocode": {
+            "distinct_raw_addresses": int(cand["raw_address_key"].nunique()) if "raw_address_key" in cand else 0,
+            "raw_addresses_by_status": cand.drop_duplicates("raw_address_key")["geo_status"].value_counts().to_dict() if "raw_address_key" in cand else {},
+            "npi_addresses_merged_from_several_spellings": int((addr["n_raw_spellings"] > 1).sum()) if len(addr) else 0,
+            "best_addresses_geocoded": int(prov["best_geocoded"].fillna(False).sum()),
+            "verified_best_addresses_geocoded": int(prov.loc[prov["location_status"] == "verified", "best_geocoded"].fillna(False).sum()),
+        },
+        "county_label_check": county_check["result"].value_counts().to_dict() if len(county_check) else {},
+        "directory_check": directory_check,
         "config": {k: c5.get(k) for k in ("min_agreeing_sources", "source_weights", "source_family", "high_trust_sources", "recency_factors",
                                             "nppes_stale_years", "name_match_threshold", "facility_name_match_threshold")},
     }
