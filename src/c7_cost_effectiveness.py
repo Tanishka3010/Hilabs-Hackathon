@@ -125,7 +125,8 @@ def run(cfg):
     keep = ["npi", "tin", "provider_name", "kind", "county", "service_label", "billing_code_type", "billing_code", "associated_code", "procedure_code",
             "billing_class", "setting", "place_of_service", "billing_code_modifier", "rate", "peer_level", "n_peers", "peer_median", "peer_p75",
             "price_ratio", "percentile"]
-    comp[keep].sort_values(["npi", "tin", "billing_code_type", "billing_code", "service_label"]).to_parquet(out / "service_comparisons.parquet", index=False)
+    comp = comp.sort_values(["npi", "tin", "service_id"], kind="stable")  # full key, so reruns write identical files
+    comp[keep].to_parquet(out / "service_comparisons.parquet", index=False)
     prov.to_csv(out / "provider_cost_effectiveness.csv", index=False)
     stats = {"providers": int(len(prov)), "providers_scored": int((prov["label"] != "insufficient_data").sum()),
              "by_label": prov["label"].value_counts().to_dict(), "service_rows_compared": int(len(comp)),
